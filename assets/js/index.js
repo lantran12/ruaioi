@@ -4,30 +4,19 @@ import { auth } from "./firebase.js";
 import { onAuthStateChanged, signOut, updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // Khai báo các biến quản lý trạng thái toàn cục
-const ADMIN_UID = "BrZQ9s07ujfIYG1iPtC4vIhGgx33"; // Chị điền UID tài khoản admin của mình vào đây (nếu có)
+const ADMIN_UID = "BrZQ9s07ujfIYG1iPtC4vIhGgx33"; 
 let tuSachListenerRef = null; 
-let selectedAvatarUrl = "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix"; // Mặc định ban đầu
-let globalListBooks = []; // Lưu trữ mảng truyện toàn cục để phục vụ tính năng tìm kiếm nhanh
-let isSignUpMode = true; // Theo dõi đang ở chế độ Đăng ký hay Đăng nhập
+let selectedAvatarUrl = "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix"; 
+let globalListBooks = []; 
+let isSignUpMode = true; 
 
 document.addEventListener("DOMContentLoaded", async () => {
-    // 1. Khởi chạy các Dropdown ẩn hiện
     setupDropdowns();
-
-    // 2. Theo dõi trạng thái Đăng nhập / Đăng xuất Realtime
     listenAuthState();
-
-    // 3. LẤY DATA THẬT TỪ FIREBASE VỀ
     globalListBooks = await fetchStoriesFromFirebase();
-
-    // 4. Hiển thị danh sách truyện và truyện đề cử bằng data thật
     renderBookGrid(globalListBooks);
     renderRandomFeatured(globalListBooks);
-    
-    // 5. Kích hoạt bảng xếp hạng Top 5 lượt xem Realtime
     listenTopViews(globalListBooks); 
-    
-    // 6. Lắng nghe sự kiện bộ lọc Thể loại và Tác giả
     updateFilterMenusAutomatically(globalListBooks);
 });
 
@@ -62,7 +51,7 @@ function listenAuthState() {
             btnAuth.innerText = "Đăng Ký / Đăng Nhập";
             
             if (tuSachListenerRef) { 
-                tuSachListenerRef(); // Hủy lắng nghe realtime trong v10
+                tuSachListenerRef(); 
                 tuSachListenerRef = null; 
             }
             
@@ -79,11 +68,9 @@ function checkAndGrantAdmin(user) {
     if (user && (user.uid === ADMIN_UID || user.email === adminEmail)) {
         console.log("Chào mừng vị vương quyền tối cao của Động Rùa! 🐢");
         
-        // --- DÒNG CHỊ CẦN THÊM VÀO ĐÂY ---
         const adminPanel = document.getElementById('adminPanel'); 
         if (adminPanel) adminPanel.style.display = 'block'; 
-        // ---------------------------------
-
+        
         const adminBtn = document.getElementById('btnOpenAdminPanel'); 
         if (adminBtn) adminBtn.style.display = 'inline-block';
     }
@@ -277,12 +264,10 @@ function renderRandomFeatured(listBooks) {
 }
 
 // --- QUẢN LÝ THÀNH VIÊN, CHỌN AVATAR VÀ TỦ SÁCH CÁ NHÂN ---
-// 👉 HÀM RENDER RA BẢNG 12 AVATAR ANIME SIÊU XINH TRONG HỒ SƠ CÁ NHÂN
 function renderAvatarSelectionGrid() {
     const container = document.getElementById('avatarGridContainer');
     if (!container) return;
 
-    // Danh sách 12 Link Avatar Anime ngẫu nhiên xinh xắn cho độc giả chọn
     const cuteAvatars = [
         "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix",
         "https://api.dicebear.com/7.x/adventurer/svg?seed=Lily",
@@ -324,7 +309,6 @@ function renderUserProfileData(user) {
     if (pEmail) pEmail.innerText = user.email;
     if (dInput) dInput.value = user.displayName || "";
     
-    // Tạo bảng chọn ảnh có sẵn ngay khi load hồ sơ
     renderAvatarSelectionGrid();
     
     const userRef = ref(db, 'users/' + user.uid);
@@ -338,7 +322,7 @@ function renderUserProfileData(user) {
         }
     });
     
-    if (tuSachListenerRef) tuSachListenerRef(); // Gỡ bỏ lắng nghe cũ
+    if (tuSachListenerRef) tuSachListenerRef(); 
     
     const tuSachRef = ref(db, 'users/' + user.uid + '/tuSach');
     tuSachListenerRef = onValue(tuSachRef, (snapshot) => {
@@ -378,7 +362,6 @@ function renderUserProfileData(user) {
     });
 }
 
-// 👉 HÀM LƯU HỒ SƠ - LƯU THẲNG URL AVATAR ĐÃ CHỌN VÀO REALTIME DATABASE
 window.updateUserProfileData = function() {
     const user = auth.currentUser; 
     if (!user) return;
@@ -417,7 +400,7 @@ window.showHome = function() {
     if (document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'block'; 
 };
 
-// --- HỆ THỐNG TÌM KIẾM TRUYỆN NHANH (KHỚP THEO DATA THẬT) ---
+// --- HỆ THỐNG TÌM KIẾM TRUYỆN NHANH ---
 window.triggerSearch = function() {
     const query = document.getElementById('searchInput').value.trim().toLowerCase(); 
     if (!query) { alert("Nhập từ khóa trước khi bấm tìm Chị nha!"); return; }
@@ -444,7 +427,7 @@ window.closeSearch = function() {
     document.getElementById('searchInput').value = ""; 
 };
 
-// --- QUẢN LÝ ĐĂNG CHƯƠNG MỚI DÀNH CHO ADMIN (V10) ---
+// --- QUẢN LÝ ĐĂNG CHƯƠNG MỚI DÀNH CHO ADMIN ---
 window.submitNewChapter = function() {
     const story = document.getElementById('adminStorySelect').value; 
     const title = document.getElementById('adminChapterTitle').value.trim(); 
@@ -588,12 +571,12 @@ function listenTopViews(listBooks) {
         container.innerHTML = itemsHtml || `<div class="bookshelf-empty">Chưa có thống kê lượt xem...</div>`;
     });
 }
+
 // --- HÀM TỰ ĐỘNG CẬP NHẬT MENU TÁC GIẢ VÀ THỂ LOẠI TỪ FIREBASE ---
 function updateFilterMenusAutomatically(listBooks) {
     const authorMenu = document.getElementById('authorMenu');
     const tagMenu = document.getElementById('tagMenu');
 
-    // 1. Lấy danh sách Tác giả không trùng lặp
     const authors = [...new Set(listBooks.map(b => b.author).filter(a => a))];
     if (authorMenu) {
         authorMenu.innerHTML = authors.map(author => 
@@ -601,7 +584,6 @@ function updateFilterMenusAutomatically(listBooks) {
         ).join('');
     }
 
-    // 2. Lấy danh sách Thể loại không trùng lặp
     const allTags = new Set();
     listBooks.forEach(b => {
         if (b.tags && Array.isArray(b.tags)) {
@@ -616,7 +598,6 @@ function updateFilterMenusAutomatically(listBooks) {
     }
 }
 
-// Hàm lọc Tác giả
 window.filterByAuthor = function(authorName) {
     const filtered = globalListBooks.filter(b => b.author === authorName);
     renderBookGrid(filtered);
@@ -624,7 +605,6 @@ window.filterByAuthor = function(authorName) {
     document.getElementById('authorMenu').style.display = 'none';
 };
 
-// Hàm lọc Thể loại
 window.filterByTag = function(tagName) {
     const filtered = globalListBooks.filter(b => b.tags && b.tags.includes(tagName));
     renderBookGrid(filtered);
