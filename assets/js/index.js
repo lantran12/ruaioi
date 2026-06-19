@@ -1,13 +1,14 @@
 import { db, ref } from "./firebase.js";
-import { get, onValue, update, remove, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { get, onValue, update, remove, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { auth } from "./firebase.js";
-import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { onAuthStateChanged, signOut, updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // Khai báo các biến quản lý trạng thái toàn cục
-const ADMIN_UID = "UID_ADMIN_CỦA_CHỊ_Ở_ĐÂY"; // Chị điền UID tài khoản admin của mình vào đây (nếu có)
+const ADMIN_UID = "BrZQ9s07ujfIYG1iPtC4vIhGgx33"; // Chị điền UID tài khoản admin của mình vào đây (nếu có)
 let tuSachListenerRef = null; 
-let selectedAvatarUrl = "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix";
+let selectedAvatarUrl = "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix"; // Mặc định ban đầu
 let globalListBooks = []; // Lưu trữ mảng truyện toàn cục để phục vụ tính năng tìm kiếm nhanh
+let isSignUpMode = true; // Theo dõi đang ở chế độ Đăng ký hay Đăng nhập
 
 document.addEventListener("DOMContentLoaded", async () => {
     // 1. Khởi chạy các Dropdown ẩn hiện
@@ -73,14 +74,108 @@ function listenAuthState() {
 
 // --- HÀM KIỂM TRA QUYỀN ADMIN ---
 function checkAndGrantAdmin(user) {
-    const adminEmail = "dien-email-cua-chi-vao-day@gmail.com"; // 🐢 CHỊ ĐIỀN EMAIL ADMIN CỦA CHỊ VÀO ĐÂY NHA!
+    const adminEmail = "dongbanggei@gmail.com"; // 🐢 CHỊ ĐIỀN EMAIL ADMIN CỦA CHỊ VÀO ĐÂY NHA!
     
-    if (user && user.email === adminEmail) {
+    if (user && (user.uid === ADMIN_UID || user.email === adminEmail)) {
         console.log("Chào mừng vị vương quyền tối cao của Động Rùa! 🐢");
         const adminBtn = document.getElementById('btnOpenAdminPanel'); 
         if (adminBtn) adminBtn.style.display = 'inline-block';
     }
 }
+
+// =======================================================
+// ⚙️ CÁC HÀM ĐIỀU KHIỂN ĐÓNG MỞ VÀ XỬ LÝ FORM MODAL AUTH
+// =======================================================
+window.openAuthModal = function() {
+    try {
+        const user = auth ? auth.currentUser : null;
+        if (user) { 
+            if (document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'none'; 
+            if (document.getElementById('profileSection')) document.getElementById('profileSection').style.display = 'block'; 
+            return; 
+        }
+    } catch (e) {
+        console.warn(e);
+    }
+    isSignUpMode = true; 
+    resetAuthFormFields(); 
+    const authModal = document.getElementById('authModal');
+    if (authModal) authModal.style.display = 'flex';
+};
+
+window.closeAuthModal = function() { 
+    const authModal = document.getElementById('authModal');
+    if (authModal) authModal.style.display = 'none'; 
+};
+
+window.closeAuthModalOverlay = function(e) { 
+    if (e.target.id === 'authModal') closeAuthModal(); 
+};
+
+function resetAuthFormFields() { 
+    if (document.getElementById('authDisplayName')) document.getElementById('authDisplayName').value = ""; 
+    if (document.getElementById('authEmail')) document.getElementById('authEmail').value = ""; 
+    if (document.getElementById('authPassword')) document.getElementById('authPassword').value = ""; 
+}
+
+window.toggleAuthMode = function() {
+    isSignUpMode = !isSignUpMode;
+    const title = document.getElementById('authTitle'); 
+    const nameGrp = document.getElementById('nickNameGroup'); 
+    const submitBtn = document.getElementById('btnAuthSubmit'); 
+    const toggleLnk = document.getElementById('authToggleLink'); 
+    const forgotLnk = document.getElementById('authForgotLink');
+    
+    if (!title || !submitBtn || !toggleLnk) return;
+
+    if (isSignUpMode) {
+        title.innerText = "ĐĂNG KÝ THÀNH VIÊN"; 
+        if (nameGrp) nameGrp.style.display = 'block'; 
+        submitBtn.innerText = "ĐĂNG KÝ TÀI KHOẢN THẬT"; 
+        toggleLnk.innerText = "Đã có tài khoản rồi? Bấm vào đây để Đăng nhập"; 
+        if (forgotLnk) forgotLnk.style.display = 'none';
+    } else {
+        title.innerText = "ĐĂNG NHẬP HỆ THỐNG"; 
+        if (nameGrp) nameGrp.style.display = 'none'; 
+        submitBtn.innerText = "ĐĂNG NHẬP NGAY"; 
+        toggleLnk.innerText = "Chưa có tài khoản? Bấm vào đây để Đăng ký mới"; 
+        if (forgotLnk) forgotLnk.style.display = 'block';
+    }
+};
+
+window.submitAuthForm = function() {
+    const email = document.getElementById('authEmail').value.trim();
+    const password = document.getElementById('authPassword').value;
+    const displayName = document.getElementById('authDisplayName').value.trim();
+    
+    if (!email || !password) { alert("Vui lòng điền đầy đủ Email và Mật khẩu nha!"); return; }
+    
+    if (isSignUpMode) {
+        if (!displayName) { alert("Chưa nhập biệt danh kìa bạn ơi!"); return; }
+        createUserWithEmailAndPassword(auth, email, password)
+            .then((userCredential) => {
+                const user = userCredential.user;
+                return updateProfile(user, { displayName: displayName }).then(() => {
+                    const userRef = ref(db, 'users/' + user.uid);
+                    return set(userRef, { displayName: displayName, email: email, avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" });
+                });
+            })
+            .then(() => { alert("Đăng ký thành công mỹ mãn!"); closeAuthModal(); })
+            .catch(err => alert("Lỗi đăng ký: " + err.message));
+    } else {
+        signInWithEmailAndPassword(auth, email, password)
+            .then(() => { alert("Chị đăng nhập thành công rồi đoá 🌸!"); closeAuthModal(); })
+            .catch(err => alert("Lỗi đăng nhập: " + err.message));
+    }
+};
+
+window.handleForgotPassword = function() {
+    const email = document.getElementById('authEmail').value.trim();
+    if (!email) { alert("Hãy nhập Email của bạn vào ô trên rồi bấm lại nút này để nhận link reset nha!"); return; }
+    sendPasswordResetEmail(auth, email)
+        .then(() => alert("Hệ thống đã gửi link đổi mật khẩu vào mail của bạn. Check hộp thư nha!"))
+        .catch(err => alert("Lỗi gửi mail: " + err.message));
+};
 
 // --- HÀM LẤY DATA TỪ FIREBASE VÀ SẮP XẾP MỚI NHẤT ---
 async function fetchStoriesFromFirebase() {
@@ -175,7 +270,33 @@ function renderRandomFeatured(listBooks) {
     `;
 }
 
-// --- QUẢN LÝ THÀNH VIÊN, CHỌN AVATAR VÀ TỦ SÁCH CÁ NHÂN (V10) ---
+// --- QUẢN LÝ THÀNH VIÊN, CHỌN AVATAR VÀ TỦ SÁCH CÁ NHÂN ---
+// 👉 HÀM RENDER RA BẢNG 12 AVATAR ANIME SIÊU XINH TRONG HỒ SƠ CÁ NHÂN
+function renderAvatarSelectionGrid() {
+    const container = document.getElementById('avatarGridContainer');
+    if (!container) return;
+
+    // Danh sách 12 Link Avatar Anime ngẫu nhiên xinh xắn cho độc giả chọn
+    const cuteAvatars = [
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Lily",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Jack",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Mia",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Bear",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Cookie",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Buster",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Coco",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Lucky",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Milo",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Oliver"
+    ];
+
+    container.innerHTML = cuteAvatars.map(url => `
+        <img src="${url}" class="avatar-option-img" onclick="selectAvatarOption(this, '${url}')" alt="Cute Avatar">
+    `).join('');
+}
+
 window.selectAvatarOption = function(imgEl, url) { 
     selectedAvatarUrl = url; 
     document.querySelectorAll('.avatar-option-img').forEach(img => img.classList.remove('selected')); 
@@ -188,17 +309,6 @@ function highlightSelectedAvatar(url) {
     }); 
 }
 
-window.openAuthModal = function() {
-    const user = auth.currentUser;
-    if (user) { 
-        document.getElementById('homeMainContent').style.display = 'none'; 
-        document.getElementById('profileSection').style.display = 'block'; 
-        return; 
-    }
-    // Chị lưu ý xử lý biến isSignUpMode ở hàm toggleAuthMode bên file modal xử lý đăng nhập nếu có
-    document.getElementById('authModal').style.display = 'flex';
-};
-
 function renderUserProfileData(user) {
     const pName = document.getElementById('userProfileName'); 
     const pEmail = document.getElementById('userProfileEmail'); 
@@ -207,6 +317,9 @@ function renderUserProfileData(user) {
     if (pName) pName.innerText = user.displayName || "Thành Viên Động";
     if (pEmail) pEmail.innerText = user.email;
     if (dInput) dInput.value = user.displayName || "";
+    
+    // Tạo bảng chọn ảnh có sẵn ngay khi load hồ sơ
+    renderAvatarSelectionGrid();
     
     const userRef = ref(db, 'users/' + user.uid);
     get(userRef).then((snapshot) => {
@@ -259,6 +372,7 @@ function renderUserProfileData(user) {
     });
 }
 
+// 👉 HÀM LƯU HỒ SƠ - LƯU THẲNG URL AVATAR ĐÃ CHỌN VÀO REALTIME DATABASE
 window.updateUserProfileData = function() {
     const user = auth.currentUser; 
     if (!user) return;
@@ -273,7 +387,7 @@ window.updateUserProfileData = function() {
         if (curAvt) curAvt.src = selectedAvatarUrl;
         if (document.getElementById('userProfileName')) document.getElementById('userProfileName').innerText = newName; 
         document.getElementById('btnHeaderAuth').innerText = "Chào, " + newName;
-        alert("Cập nhật hồ sơ thành công rực rỡ!");
+        alert("Cập nhật hồ sơ và ảnh đại diện hoạt hình thành công mỹ mãn! 🌸");
     }).catch(err => alert("Lỗi cập nhật: " + err.message));
 };
 
@@ -293,8 +407,8 @@ window.logoutFromProfile = function() {
 };
 
 window.showHome = function() { 
-    document.getElementById('profileSection').style.display = 'none'; 
-    document.getElementById('homeMainContent').style.display = 'block'; 
+    if (document.getElementById('profileSection')) document.getElementById('profileSection').style.display = 'none'; 
+    if (document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'block'; 
 };
 
 // --- HỆ THỐNG TÌM KIẾM TRUYỆN NHANH (KHỚP THEO DATA THẬT) ---
@@ -302,7 +416,6 @@ window.triggerSearch = function() {
     const query = document.getElementById('searchInput').value.trim().toLowerCase(); 
     if (!query) { alert("Nhập từ khóa trước khi bấm tìm Chị nha!"); return; }
     
-    // Lọc theo mảng dữ liệu thật lấy từ Firebase về
     const results = globalListBooks.filter(t => t.title.toLowerCase().includes(query)); 
     const section = document.getElementById('searchResultsSection'); 
     const grid = document.getElementById('resultsGrid'); 
@@ -337,13 +450,22 @@ window.submitNewChapter = function() {
     push(chapterListRef, { 
         title: title, 
         content: content, 
-        timestamp: Date.now() // Sử dụng mốc thời gian v10 chuẩn xác
+        timestamp: Date.now()
     }).then(() => {
         alert("Đã phát hành chương mới thành công rực rỡ! 🚀"); 
         if (typeof closeAdminModal === "function") closeAdminModal();
         document.getElementById('adminChapterTitle').value = ""; 
         document.getElementById('adminChapterContent').value = "";
     }).catch(err => alert("Lỗi đăng chương rồi chị ơi: " + err.message));
+};
+
+window.closeAdminModal = function() {
+    const adminModal = document.getElementById('adminModal');
+    if (adminModal) adminModal.style.display = 'none';
+};
+
+window.closeAdminModalOverlay = function(e) {
+    if (e.target.id === 'adminModal') closeAdminModal();
 };
 
 // --- CÁC HÀM ĐIỀU HƯỚNG DROPDOWN ---
