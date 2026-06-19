@@ -1,12 +1,13 @@
 import { db, ref } from "./firebase.js";
-import { get, onValue } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
-// ✨ Bổ sung thêm các hàm Auth cần thiết cho bản v10
+import { get, onValue, update, remove, push } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { auth } from "./firebase.js";
-import { onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { onAuthStateChanged, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // Khai báo các biến quản lý trạng thái toàn cục
-const ADMIN_UID = "UID_ADMIN_CỦA_CHỊ_Ở_ĐÂY"; // Điền UID tài khoản admin của chị vào đây nếu có
+const ADMIN_UID = "UID_ADMIN_CỦA_CHỊ_Ở_ĐÂY"; // Chị điền UID tài khoản admin của mình vào đây (nếu có)
 let tuSachListenerRef = null; 
+let selectedAvatarUrl = "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix";
+let globalListBooks = []; // Lưu trữ mảng truyện toàn cục để phục vụ tính năng tìm kiếm nhanh
 
 document.addEventListener("DOMContentLoaded", async () => {
     // 1. Khởi chạy các Dropdown ẩn hiện
@@ -16,20 +17,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     listenAuthState();
 
     // 3. LẤY DATA THẬT TỪ FIREBASE VỀ
-    const listBooks = await fetchStoriesFromFirebase();
+    globalListBooks = await fetchStoriesFromFirebase();
 
     // 4. Hiển thị danh sách truyện và truyện đề cử bằng data thật
-    renderBookGrid(listBooks);
-    renderRandomFeatured(listBooks);
+    renderBookGrid(globalListBooks);
+    renderRandomFeatured(globalListBooks);
     
     // 5. Kích hoạt bảng xếp hạng Top 5 lượt xem Realtime
-    listenTopViews(listBooks); 
+    listenTopViews(globalListBooks); 
     
     // 6. Lắng nghe sự kiện bộ lọc Thể loại và Tác giả
-    setupTagFilter(listBooks);
+    setupTagFilter(globalListBooks);
 });
 
-// --- ✨ HÀM THEO DÕI TRẠNG THÁI ĐĂNG NHẬP (ĐÃ NÂNG CẤP V10) ---
+// --- HÀM THEO DÕI TRẠNG THÁI ĐĂNG NHẬP (V10) ---
 function listenAuthState() {
     onAuthStateChanged(auth, (user) => {
         const btnAuth = document.getElementById('btnHeaderAuth');
@@ -43,7 +44,6 @@ function listenAuthState() {
             if (!loginTime) { 
                 localStorage.setItem(loginTimeKey, now); 
             } else {
-                // Kiểm tra nếu quá 24 tiếng (86.400.000 mili-giây) thì tự động đăng xuất
                 if (now - parseInt(loginTime) > 86400000) {
                     localStorage.removeItem(loginTimeKey);
                     signOut(auth).then(() => { 
@@ -54,20 +54,14 @@ function listenAuthState() {
                 }
             }
             
-            // Đổi chữ trên nút Header thành tên người dùng
             btnAuth.innerText = "Chào, " + (user.displayName || "Thành Viên 🌸");
-            
-            // Gọi hàm hiển thị dữ liệu Profile và kiểm tra quyền Admin
-            if (typeof renderUserProfileData === "function") renderUserProfileData(user);
+            renderUserProfileData(user);
             checkAndGrantAdmin(user); 
         } else {
-            // Nếu chưa đăng nhập
             btnAuth.innerText = "Đăng Ký / Đăng Nhập";
             
-            // Hủy lắng nghe tủ sách cũ nếu có
             if (tuSachListenerRef) { 
-                // Bản v10 hủy lắng nghe bằng cách gọi lại chính hàm chứa nó
-                tuSachListenerRef(); 
+                tuSachListenerRef(); // Hủy lắng nghe realtime trong v10
                 tuSachListenerRef = null; 
             }
             
@@ -77,7 +71,7 @@ function listenAuthState() {
     });
 }
 
-// --- HÀM KIỂM TRA EMAIL ĐỂ HIỂN THỊ NÚT ADMIN ---
+// --- HÀM KIỂM TRA QUYỀN ADMIN ---
 function checkAndGrantAdmin(user) {
     const adminEmail = "dien-email-cua-chi-vao-day@gmail.com"; // 🐢 CHỊ ĐIỀN EMAIL ADMIN CỦA CHỊ VÀO ĐÂY NHA!
     
@@ -88,7 +82,7 @@ function checkAndGrantAdmin(user) {
     }
 }
 
-// --- HÀM LẤY DATA TỰ ĐỘNG TỪ FIREBASE VÀ SẮP XẾP MỚI NHẤT ---
+// --- HÀM LẤY DATA TỪ FIREBASE VÀ SẮP XẾP MỚI NHẤT ---
 async function fetchStoriesFromFirebase() {
     const storiesRef = ref(db, "stories");
     const loadedBooks = [];
@@ -154,7 +148,7 @@ function renderBookGrid(booksToShow) {
     `).join('');
 }
 
-// --- HÀM RENDER TRUYỆN ĐỀ CỬ PREMIUM ---
+// --- HÀM RENDER TRUYỆN ĐỀ CỬ PREMIUM (RANDOM) ---
 function renderRandomFeatured(listBooks) {
     const featuredCard = document.getElementById("featuredBook");
     if (!featuredCard || !listBooks || listBooks.length === 0) return;
@@ -180,6 +174,177 @@ function renderRandomFeatured(listBooks) {
         </div>
     `;
 }
+
+// --- QUẢN LÝ THÀNH VIÊN, CHỌN AVATAR VÀ TỦ SÁCH CÁ NHÂN (V10) ---
+window.selectAvatarOption = function(imgEl, url) { 
+    selectedAvatarUrl = url; 
+    document.querySelectorAll('.avatar-option-img').forEach(img => img.classList.remove('selected')); 
+    imgEl.classList.add('selected'); 
+};
+
+function highlightSelectedAvatar(url) { 
+    document.querySelectorAll('.avatar-option-img').forEach(img => { 
+        if (img.src === url) img.classList.add('selected'); else img.classList.remove('selected'); 
+    }); 
+}
+
+window.openAuthModal = function() {
+    const user = auth.currentUser;
+    if (user) { 
+        document.getElementById('homeMainContent').style.display = 'none'; 
+        document.getElementById('profileSection').style.display = 'block'; 
+        return; 
+    }
+    // Chị lưu ý xử lý biến isSignUpMode ở hàm toggleAuthMode bên file modal xử lý đăng nhập nếu có
+    document.getElementById('authModal').style.display = 'flex';
+};
+
+function renderUserProfileData(user) {
+    const pName = document.getElementById('userProfileName'); 
+    const pEmail = document.getElementById('userProfileEmail'); 
+    const dInput = document.getElementById('editDisplayNameInput');
+    
+    if (pName) pName.innerText = user.displayName || "Thành Viên Động";
+    if (pEmail) pEmail.innerText = user.email;
+    if (dInput) dInput.value = user.displayName || "";
+    
+    const userRef = ref(db, 'users/' + user.uid);
+    get(userRef).then((snapshot) => {
+        const data = snapshot.val();
+        if (data && data.avatarUrl) { 
+            const curAvt = document.getElementById('userCurrentAvatar'); 
+            if (curAvt) curAvt.src = data.avatarUrl; 
+            selectedAvatarUrl = data.avatarUrl; 
+            highlightSelectedAvatar(data.avatarUrl); 
+        }
+    });
+    
+    if (tuSachListenerRef) tuSachListenerRef(); // Gỡ bỏ lắng nghe cũ
+    
+    const tuSachRef = ref(db, 'users/' + user.uid + '/tuSach');
+    tuSachListenerRef = onValue(tuSachRef, (snapshot) => {
+        const container = document.getElementById('userBookshelfContainer');
+        if(!container) return; 
+        container.innerHTML = ""; 
+        const data = snapshot.val();
+        
+        if (!data) { 
+            container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! Hãy bấm "Thêm Vào Tủ Sách" ngoài phần giới thiệu truyện nhé. 🐾</div>`; 
+            return; 
+        }
+        
+        let hasItem = false;
+        for (let key in data) {
+            hasItem = true; 
+            const b = data[key]; 
+            const linkDocTiep = `noi-dung.html?truyen=${b.codeTruyen}&id=${b.idChuong || 0}`; 
+            const anhBia = b.image || 'https://api.dicebear.com/7.x/initials/svg?seed=' + encodeURIComponent(b.tenTruyen || 'Rua');
+            const div = document.createElement('div'); 
+            div.className = "bookshelf-item";
+            div.innerHTML = `
+                <div class="bookshelf-left" style="cursor:pointer;" onclick="window.location.href='${linkDocTiep}'">
+                    <img src="${anhBia}" class="bookshelf-thumb" alt="Cover">
+                    <div>
+                        <p class="bookshelf-name" style="margin:0 0 4px 0; font-weight:bold;">${b.tenTruyen || 'Truyện chưa đặt tên'}</p>
+                        <p style="margin:0; font-size:11px; color:#888;">Đọc đến: <span style="color:#2e8b57; font-weight:bold;">${b.chuongGanNhat || 'Văn Án'}</span></p>
+                    </div>
+                </div>
+                <button class="btn-remove-book" onclick="removeFromBookshelf('${key}')">❌</button>
+            `;
+            container.appendChild(div);
+        }
+        if (!hasItem) { 
+            container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! Hãy bấm "Thêm Vào Tủ Sách" ngoài phần giới thiệu truyện nhé. 🐾</div>`; 
+        }
+    });
+}
+
+window.updateUserProfileData = function() {
+    const user = auth.currentUser; 
+    if (!user) return;
+    const newName = document.getElementById('editDisplayNameInput').value.trim();
+    if (!newName) { alert("Tên hiển thị không được bỏ trống nha!"); return; }
+    
+    updateProfile(user, { displayName: newName }).then(() => { 
+        const userRef = ref(db, 'users/' + user.uid);
+        return update(userRef, { displayName: newName, avatarUrl: selectedAvatarUrl }); 
+    }).then(() => {
+        const curAvt = document.getElementById('userCurrentAvatar'); 
+        if (curAvt) curAvt.src = selectedAvatarUrl;
+        if (document.getElementById('userProfileName')) document.getElementById('userProfileName').innerText = newName; 
+        document.getElementById('btnHeaderAuth').innerText = "Chào, " + newName;
+        alert("Cập nhật hồ sơ thành công rực rỡ!");
+    }).catch(err => alert("Lỗi cập nhật: " + err.message));
+};
+
+window.removeFromBookshelf = function(key) { 
+    const user = auth.currentUser; 
+    if (user && confirm("Chị có muốn xóa truyện này khỏi tủ sách không ạ?")) { 
+        const itemRef = ref(db, 'users/' + user.uid + '/tuSach/' + key);
+        remove(itemRef).then(() => alert("Đã xóa khỏi tủ sách!")).catch(err => alert("Lỗi xóa: " + err.message)); 
+    } 
+};
+
+window.logoutFromProfile = function() { 
+    signOut(auth).then(() => { 
+        alert("Đã đăng xuất tài khoản!"); 
+        window.location.reload(); 
+    }).catch(err => alert(err.message)); 
+};
+
+window.showHome = function() { 
+    document.getElementById('profileSection').style.display = 'none'; 
+    document.getElementById('homeMainContent').style.display = 'block'; 
+};
+
+// --- HỆ THỐNG TÌM KIẾM TRUYỆN NHANH (KHỚP THEO DATA THẬT) ---
+window.triggerSearch = function() {
+    const query = document.getElementById('searchInput').value.trim().toLowerCase(); 
+    if (!query) { alert("Nhập từ khóa trước khi bấm tìm Chị nha!"); return; }
+    
+    // Lọc theo mảng dữ liệu thật lấy từ Firebase về
+    const results = globalListBooks.filter(t => t.title.toLowerCase().includes(query)); 
+    const section = document.getElementById('searchResultsSection'); 
+    const grid = document.getElementById('resultsGrid'); 
+    if (!grid || !section) return;
+    
+    grid.innerHTML = "";
+    if (results.length === 0) { 
+        grid.innerHTML = `<p style="font-size:13px; opacity:0.6; padding:15px;">Không tìm thấy truyện nào khớp với từ khóa của chị rồi...</p>`; 
+    } else { 
+        results.forEach(t => { 
+            grid.innerHTML += `<a href="book.html?id=${t.id}" class="book-card" style="margin:0;"><div class="book-cover"><img src="${t.img}" alt="Cover"></div><div class="book-info"><h3 class="book-title" style="font-size:14px; margin-top:8px;">${t.title}</h3></div></a>`; 
+        }); 
+    }
+    section.style.display = "block"; 
+    section.scrollIntoView({ behavior: 'smooth' });
+};
+
+window.closeSearch = function() { 
+    document.getElementById('searchResultsSection').style.display = "none"; 
+    document.getElementById('searchInput').value = ""; 
+};
+
+// --- QUẢN LÝ ĐĂNG CHƯƠNG MỚI DÀNH CHO ADMIN (V10) ---
+window.submitNewChapter = function() {
+    const story = document.getElementById('adminStorySelect').value; 
+    const title = document.getElementById('adminChapterTitle').value.trim(); 
+    const content = document.getElementById('adminChapterContent').value.trim();
+    
+    if(!title || !content) { alert("Chị ơi điền nốt tên chương với nội dung nha!"); return; }
+    
+    const chapterListRef = ref(db, `stories/${story}/chapters`);
+    push(chapterListRef, { 
+        title: title, 
+        content: content, 
+        timestamp: Date.now() // Sử dụng mốc thời gian v10 chuẩn xác
+    }).then(() => {
+        alert("Đã phát hành chương mới thành công rực rỡ! 🚀"); 
+        if (typeof closeAdminModal === "function") closeAdminModal();
+        document.getElementById('adminChapterTitle').value = ""; 
+        document.getElementById('adminChapterContent').value = "";
+    }).catch(err => alert("Lỗi đăng chương rồi chị ơi: " + err.message));
+};
 
 // --- CÁC HÀM ĐIỀU HƯỚNG DROPDOWN ---
 function setupDropdowns() {
