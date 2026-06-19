@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     listenTopViews(globalListBooks); 
     
     // 6. Lắng nghe sự kiện bộ lọc Thể loại và Tác giả
-    setupTagFilter(globalListBooks);
+    updateFilterMenusAutomatically(globalListBooks);
 });
 
 // --- HÀM THEO DÕI TRẠNG THÁI ĐĂNG NHẬP (V10) ---
@@ -582,3 +582,46 @@ function listenTopViews(listBooks) {
         container.innerHTML = itemsHtml || `<div class="bookshelf-empty">Chưa có thống kê lượt xem...</div>`;
     });
 }
+// --- HÀM TỰ ĐỘNG CẬP NHẬT MENU TÁC GIẢ VÀ THỂ LOẠI TỪ FIREBASE ---
+function updateFilterMenusAutomatically(listBooks) {
+    const authorMenu = document.getElementById('authorMenu');
+    const tagMenu = document.getElementById('tagMenu');
+
+    // 1. Lấy danh sách Tác giả không trùng lặp
+    const authors = [...new Set(listBooks.map(b => b.author).filter(a => a))];
+    if (authorMenu) {
+        authorMenu.innerHTML = authors.map(author => 
+            `<span class="author-item" onclick="filterByAuthor('${author}')">${author}</span>`
+        ).join('');
+    }
+
+    // 2. Lấy danh sách Thể loại không trùng lặp
+    const allTags = new Set();
+    listBooks.forEach(b => {
+        if (b.tags && Array.isArray(b.tags)) {
+            b.tags.forEach(tag => allTags.add(tag));
+        }
+    });
+    
+    if (tagMenu) {
+        tagMenu.innerHTML = [...allTags].map(tag => 
+            `<span class="tag-item" onclick="filterByTag('${tag}')">${tag}</span>`
+        ).join('');
+    }
+}
+
+// Hàm lọc Tác giả
+window.filterByAuthor = function(authorName) {
+    const filtered = globalListBooks.filter(b => b.author === authorName);
+    renderBookGrid(filtered);
+    document.getElementById('authorDropdownBtn').innerHTML = `${authorName} <i class="fa-solid fa-caret-down"></i>`;
+    document.getElementById('authorMenu').style.display = 'none';
+};
+
+// Hàm lọc Thể loại
+window.filterByTag = function(tagName) {
+    const filtered = globalListBooks.filter(b => b.tags && b.tags.includes(tagName));
+    renderBookGrid(filtered);
+    document.getElementById('tagDropdownBtn').innerHTML = `${tagName} <i class="fa-solid fa-caret-down"></i>`;
+    document.getElementById('tagMenu').style.display = 'none';
+};
