@@ -61,12 +61,14 @@ function listenAuthState() {
     });
 }
 
-/div>`;
-        }
-    });
+// Hàm kiểm tra quyền Admin để hiện nút
+function checkAndGrantAdmin(user) {
+    const adminBtn = document.getElementById('adminBtn');
+    if (adminBtn) {
+        adminBtn.style.display = (user.uid === ADMIN_UID) ? 'block' : 'none';
+        console.log("Đã kiểm tra quyền Admin! 🌸");
+    }
 }
-
-
 
 // =======================================================
 // ⚙️ CÁC HÀM ĐIỀU KHIỂN ĐÓNG MỞ VÀ XỬ LÝ FORM MODAL AUTH
@@ -94,7 +96,7 @@ window.closeAuthModal = function() {
 };
 
 window.closeAuthModalOverlay = function(e) { 
-    if (e.target.id === 'authModal') closeAuthModal(); 
+    if (e.target.id === 'authModal') window.closeAuthModal(); 
 };
 
 function resetAuthFormFields() { 
@@ -145,11 +147,11 @@ window.submitAuthForm = function() {
                     return set(userRef, { displayName: displayName, email: email, avatarUrl: "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix" });
                 });
             })
-            .then(() => { alert("Đăng ký thành công mỹ mãn!"); closeAuthModal(); })
+            .then(() => { alert("Đăng ký thành công mỹ mãn!"); window.closeAuthModal(); })
             .catch(err => alert("Lỗi đăng ký: " + err.message));
     } else {
         signInWithEmailAndPassword(auth, email, password)
-            .then(() => { alert("Chị đăng nhập thành công rồi đoá 🌸!"); closeAuthModal(); })
+            .then(() => { alert("Chị đăng nhập thành công rồi đoá 🌸!"); window.closeAuthModal(); })
             .catch(err => alert("Lỗi đăng nhập: " + err.message));
     }
 };
@@ -434,7 +436,7 @@ window.submitNewChapter = function() {
         timestamp: Date.now()
     }).then(() => {
         alert("Đã phát hành chương mới thành công rực rỡ! 🚀"); 
-        if (typeof closeAdminModal === "function") closeAdminModal();
+        window.closeAdminModal();
         document.getElementById('adminChapterTitle').value = ""; 
         document.getElementById('adminChapterContent').value = "";
     }).catch(err => alert("Lỗi đăng chương rồi chị ơi: " + err.message));
@@ -446,7 +448,7 @@ window.closeAdminModal = function() {
 };
 
 window.closeAdminModalOverlay = function(e) {
-    if (e.target.id === 'adminModal') closeAdminModal();
+    if (e.target.id === 'adminModal') window.closeAdminModal();
 };
 
 // --- CÁC HÀM ĐIỀU HƯỚNG DROPDOWN ---
@@ -593,13 +595,17 @@ function updateFilterMenusAutomatically(listBooks) {
 window.filterByAuthor = function(authorName) {
     const filtered = globalListBooks.filter(b => b.author === authorName);
     renderBookGrid(filtered);
-    document.getElementById('authorDropdownBtn').innerHTML = `${authorName} <i class="fa-solid fa-caret-down"></i>`;
-    document.getElementById('authorMenu').style.display = 'none';
+    const btn = document.getElementById('authorDropdownBtn');
+    if (btn) btn.innerHTML = `${authorName} <i class="fa-solid fa-caret-down"></i>`;
+    const menu = document.getElementById('authorMenu');
+    if (menu) menu.style.display = 'none';
 };
 
 window.filterByTag = function(tagName) {
     const filtered = globalListBooks.filter(b => b.tags && b.tags.includes(tagName));
     renderBookGrid(filtered);
-    document.getElementById('tagDropdownBtn').innerHTML = `${tagName} <i class="fa-solid fa-caret-down"></i>`;
-    document.getElementById('tagMenu').style.display = 'none';
+    const btn = document.getElementById('tagDropdownBtn');
+    if (btn) btn.innerHTML = `${tagName} <i class="fa-solid fa-caret-down"></i>`;
+    const menu = document.getElementById('tagMenu');
+    if (menu) menu.style.display = 'none';
 };
