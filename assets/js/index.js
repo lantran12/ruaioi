@@ -79,13 +79,20 @@ function checkAndGrantAdmin(user) {
     if (user && (user.uid === ADMIN_UID || user.email === adminEmail)) {
         console.log("Chào mừng vị vương quyền tối cao của Động Rùa! 🐢");
         
-        // --- DÒNG CHỊ CẦN THÊM VÀO ĐÂY ---
-        const adminPanel = document.getElementById('adminPanel'); 
-        if (adminPanel) adminPanel.style.display = 'block'; 
-        // ---------------------------------
-
+        // 1. Chỉ hiện nút bấm trên Header thôi
         const adminBtn = document.getElementById('btnOpenAdminPanel'); 
-        if (adminBtn) adminBtn.style.display = 'inline-block';
+        if (adminBtn) {
+            adminBtn.style.display = 'inline-block';
+            
+            // 2. Thêm sự kiện click để đóng/mở bảng (Toggle)
+            adminBtn.onclick = () => {
+                const adminPanel = document.getElementById('adminPanel');
+                if (adminPanel) {
+                    const isHidden = adminPanel.style.display === 'none';
+                    adminPanel.style.display = isHidden ? 'block' : 'none';
+                }
+            };
+        }
     }
 }
 
