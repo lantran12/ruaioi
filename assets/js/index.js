@@ -34,22 +34,22 @@ window.filterByTag = filterByTag;
 
 // --- KHỞI TẠO ỨNG DỤNG ---
 document.addEventListener("DOMContentLoaded", async () => {
-    setupDropdowns();
+    if (typeof setupDropdowns === "function") setupDropdowns();
     listenAuthState();
     globalListBooks = await fetchStoriesFromFirebase();
-    renderBookGrid(globalListBooks);
-    renderRandomFeatured(globalListBooks);
+    if (typeof renderBookGrid === "function") renderBookGrid(globalListBooks);
+    if (typeof renderRandomFeatured === "function") renderRandomFeatured(globalListBooks);
     listenTopViews(globalListBooks); 
-    updateFilterMenusAutomatically(globalListBooks);
-    setupTagFilter(globalListBooks);
+    if (typeof updateFilterMenusAutomatically === "function") updateFilterMenusAutomatically(globalListBooks);
+    if (typeof setupTagFilter === "function") setupTagFilter(globalListBooks);
 });
 
 // --- THEO DÕI TRẠNG THÁI ĐĂNG NHẬP ---
 function listenAuthState() {
     onAuthStateChanged(auth, (user) => {
         const btnAuth = document.getElementById('btnHeaderAuth');
-        const adminBtn = document.getElementById('btnOpenAdminPanel'); // Nút "👑 Admin" trên hình của bạn
-        const adminPanel = document.getElementById('adminPanel'); // Bảng đăng bài ẩn/hiện
+        const adminBtn = document.getElementById('btnOpenAdminPanel'); 
+        const adminPanel = document.getElementById('adminPanel'); 
 
         if (!btnAuth) return;
 
@@ -59,8 +59,8 @@ function listenAuthState() {
             
             // --- LOGIC KIỂM TRA QUYỀN ADMIN ---
             if (user.uid === ADMIN_UID || user.email === ADMIN_EMAIL) {
-                if (adminBtn) adminBtn.style.display = 'inline-block'; // Hiện nút "👑 Admin" như trên ảnh
-                if (adminPanel) adminPanel.style.display = 'none';    // Nhưng bảng đăng bài vẫn phải MẶC ĐỊNH ẨN
+                if (adminBtn) adminBtn.style.display = 'inline-block'; 
+                if (adminPanel) adminPanel.style.display = 'none'; // Mặc định ẩn bảng khi mới đăng nhập
             } else {
                 if (adminBtn) adminBtn.style.display = 'none';
                 if (adminPanel) adminPanel.style.display = 'none';
@@ -68,7 +68,7 @@ function listenAuthState() {
         } else {
             btnAuth.innerText = "Đăng Ký / Đăng Nhập";
             if (adminBtn) adminBtn.style.display = 'none';
-            if (adminPanel) adminPanel.style.display = 'none'; // Đăng xuất thì ẩn sạch luôn
+            if (adminPanel) adminPanel.style.display = 'none'; 
             
             if (tuSachListenerRef) { 
                 tuSachListenerRef(); 
@@ -82,40 +82,40 @@ function listenAuthState() {
     });
 }
 
-// --- HÀM BẤM NÚT ĐỂ XỔ / ẨN BẢNG ĐĂNG TRUYỆN ---
+// --- HÀM BẤM NÚT ĐỂ XỔ / ẨN BẢNG ĐĂNG TRUYỆN (Đã sửa lỗi trùng lặp) ---
 function toggleAdminPanel() {
     const p = document.getElementById('adminPanel');
     if (!p) return;
 
-    // Lấy trạng thái display hiện tại (kể cả từ file CSS bên ngoài)
+    // Lấy chính xác trạng thái hiển thị hiện tại từ CSS thực tế của trình duyệt
     const currentDisplay = window.getComputedStyle(p).display;
 
     if (currentDisplay === 'none') {
-        p.style.display = 'block'; // Xổ bảng ra
-        // Mẹo nhỏ: Bạn có thể cuộn màn hình xuống bảng đăng bài cho mượt
-        p.scrollIntoView({ behavior: 'smooth' }); 
+        p.style.display = 'block'; // Xổ panel ra
+        p.scrollIntoView({ behavior: 'smooth' }); // Cuộn màn hình xuống khu vực đăng bài
     } else {
-        p.style.display = 'none';  // Thu bảng lại
+        p.style.display = 'none';  // Ẩn panel đi
     }
 }
-// --- QUẢN LÝ PANEL ADMIN ---
-function toggleAdminPanel() {
-    const p = document.getElementById('adminPanel');
-    if (p) p.style.display = window.getComputedStyle(p).display === 'none' ? 'block' : 'none';
-}
 
+// --- QUẢN LÝ ĐĂNG CHƯƠNG MỚI ---
 function submitNewChapter() {
     const user = auth.currentUser;
     
-    // Kiểm tra quyền trước khi push dữ liệu
     if (!user || (user.uid !== ADMIN_UID && user.email !== ADMIN_EMAIL)) {
         alert("Chị không có quyền đăng bài đâu nha! 🚫");
         return;
     }
 
-    const story = document.getElementById('adminStorySelect').value;
-    const title = document.getElementById('adminChapterTitle').value.trim();
-    const content = document.getElementById('adminChapterContent').value.trim();
+    const storySelect = document.getElementById('adminStorySelect');
+    const titleInput = document.getElementById('adminChapterTitle');
+    const contentInput = document.getElementById('adminChapterContent');
+
+    if (!storySelect || !titleInput || !contentInput) return;
+
+    const story = storySelect.value;
+    const title = titleInput.value.trim();
+    const content = contentInput.value.trim();
     
     if (!title || !content) { 
         alert("Chị ơi điền nốt tên chương với nội dung nha!"); 
@@ -128,9 +128,8 @@ function submitNewChapter() {
         timestamp: Date.now()
     }).then(() => {
         alert("Đã phát hành chương mới thành công rực rỡ! 🚀");
-        // Nếu có dùng modal admin, có thể gọi closeAdminModal() ở đây
-        document.getElementById('adminChapterTitle').value = "";
-        document.getElementById('adminChapterContent').value = "";
+        titleInput.value = "";
+        contentInput.value = "";
     }).catch(err => alert("Lỗi đăng chương: " + err.message));
 }
 
@@ -178,10 +177,10 @@ function listenTopViews(listBooks) {
 
 // --- HỒ SƠ THÀNH VIÊN & TỦ SÁCH ---
 function renderUserProfileData(user) {
-    renderAvatarSelectionGrid(); // Khởi tạo danh sách avatar lựa chọn
+    renderAvatarSelectionGrid(); 
     
     const tuSachRef = ref(db, 'users/' + user.uid + '/tuSach');
-    if (tuSachListenerRef) tuSachListenerRef(); // Xóa listener cũ tránh trùng lặp
+    if (tuSachListenerRef) tuSachListenerRef(); 
 
     tuSachListenerRef = onValue(tuSachRef, (snapshot) => {
         const container = document.getElementById('userBookshelfContainer');
