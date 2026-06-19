@@ -63,16 +63,21 @@ function listenAuthState() {
 
 // --- HÀM KIỂM TRA QUYỀN ADMIN ---
 function checkAndGrantAdmin(user) {
-    const adminEmail = "dongbanggei@gmail.com"; 
-    
-    if (user && (user.uid === ADMIN_UID || user.email === adminEmail)) {
-        console.log("Chào mừng vị vương quyền tối cao của Động Rùa! 🐢");
+    const adminBtn = document.getElementById('btnOpenAdminPanel');
+    const adminPanel = document.getElementById('adminPanel');
+
+    if (user && user.uid === "BrZQ9s07ujfIYG1iPtC4vIhGgx33") {
+        console.log("Admin đã được xác nhận!");
         
-        const adminPanel = document.getElementById('adminPanel'); 
-        if (adminPanel) adminPanel.style.display = 'block'; 
-        
-        const adminBtn = document.getElementById('btnOpenAdminPanel'); 
-        if (adminBtn) adminBtn.style.display = 'inline-block';
+        // Dùng removeProperty để xóa cái 'display: none' mặc định
+        if (adminBtn) {
+            adminBtn.style.removeProperty('display'); 
+            adminBtn.style.display = 'inline-block'; 
+        }
+        // Admin Panel không nên để display: block ngay, 
+        // nó nên ẩn và chỉ hiện khi bấm nút.
+    } else {
+        if (adminBtn) adminBtn.style.display = 'none';
     }
 }
 
