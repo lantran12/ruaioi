@@ -158,5 +158,14 @@
     <script type="module" src="assets/js/firebase.js"></script>
     <script type="module" src="assets/js/index.js"></script>
     <script type="module" src="assets/js/notification.js"></script>
+    <div id="adminPanel" style="display: none; padding: 20px; border: 1px solid #ccc; margin: 20px 0;">
+    <h3>Đăng truyện mới</h3>
+    <input type="text" id="adminId" placeholder="ID truyện...">
+    <input type="text" id="adminTitle" placeholder="Tên truyện">
+    <input type="text" id="adminAuthor" placeholder="Tên tác giả">
+    <input type="text" id="adminImg" placeholder="Link ảnh bìa">
+    <textarea id="adminTags" placeholder="Thể loại (cách nhau bằng dấu phẩy)"></textarea>
+    <button onclick="submitNewStory()">Đăng truyện ngay!</button>
+</div>
 </body>
 </html>
