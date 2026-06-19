@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChocoNovel - Trang Quản Trị Đăng Truyện</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+
+    <header class="main-header">
+        <div class="logo">
+            <a href="index.html"><i class="fa-solid fa-book-open-reader"></i> Choco<span>Admin</span></a>
+        </div>
+        <a href="index.html" class="btn btn-login"><i class="fa-solid fa-house"></i> Về trang chủ</a>
+    </header>
+
+    <main class="container" style="max-width: 900px; margin-top: 40px;">
+        <h2 class="section-title" style="margin-bottom: 30px;"><i class="fa-solid fa-screwdriver-wrench"></i> Góc Dành Cho Tác Giả / Admin</h2>
+
+        <section class="featured-card" style="margin-bottom: 40px; background: #ffffff; border: 1px solid var(--accent-color);">
+            <h3 style="color: var(--primary-hover); margin-bottom: 20px;"><i class="fa-solid fa-folder-plus"></i> Bước 1: Tạo Bộ Truyện Mới</h3>
+            
+            <div class="form-group">
+                <label>Tên truyện:</label>
+                <input type="text" id="storyTitle" placeholder="Ví dụ: Yêu Em Từ Cái Nhìn Đầu Tiên..." class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label>Tác giả:</label>
+                <input type="text" id="storyAuthor" placeholder="Ví dụ: Cố Mạn" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label>Link ảnh bìa (URL):</label>
+                <input type="text" id="storyImg" placeholder="https://picsum.photos/200/300" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label>Thể loại (Cách nhau bằng dấu phẩy):</label>
+                <input type="text" id="storyTags" placeholder="Ngôn Tình, Hài Hước, Sủng" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label>Trạng thái:</label>
+                <select id="storyStatus" class="form-input" style="height: 45px;">
+                    <option value="updating">Đang cập nhật (Đang chạy)</option>
+                    <option value="completed">Hoàn thành</option>
+                </select>
+            </div>
+
+            <button class="btn-read-now" id="btnCreateStory" style="border: none; cursor: pointer; margin-top: 10px;">
+                <i class="fa-solid fa-cloud-arrow-up"></i> Tự động tạo truyện mẫu
+            </button>
+        </section>
+
+        <section class="featured-card" style="background: #ffffff; border: 1px solid var(--accent-color);">
+            <h3 style="color: var(--primary-hover); margin-bottom: 20px;"><i class="fa-solid fa-book-medical"></i> Bước 2: Đăng Chương Mới Cho Truyện</h3>
+            
+            <div class="form-group">
+                <label>Nhập chính xác ID Truyện (Lấy trên Firebase hoặc hệ thống):</label>
+                <input type="text" id="chapterStoryId" placeholder="Ví dụ: truyen_01 hoặc mã tự sinh từ Firebase" class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label>Tên chương hoặc số thứ tự chương:</label>
+                <input type="text" id="chapterId" placeholder="Ví dụ: chuong_1, chuong_2..." class="form-input">
+            </div>
+
+            <div class="form-group">
+                <label>Nội dung chương truyện:</label>
+                <textarea id="chapterContent" rows="10" placeholder="Nhập hoặc dán nội dung truyện của chị vào đây..." class="form-input" style="height: auto; padding: 12px;"></textarea>
+            </div>
+
+            <button class="btn-read-now" id="btnCreateChapter" style="border: none; cursor: pointer; margin-top: 10px; background: linear-gradient(135deg, #b5ead7, #9ddcb6); color: #4a5568; box-shadow: 0 4px 15px rgba(181, 234, 215, 0.4);">
+                <i class="fa-solid fa-feather-pointed"></i> Phát hành chương mới ngay
+            </button>
+        </section>
+    </main>
+
+    <footer class="main-footer">
+        <p>&copy; 2026 ChocoNovel - Trang quản trị hồng pastel dịu dàng.</p>
+    </footer>
+
+    <script type="module" src="assets/js/firebase.js"></script>
+    <script type="module" src="assets/js/author.js"></script>
+</body>
+</html>
