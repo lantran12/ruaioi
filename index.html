@@ -9,25 +9,12 @@
 </head>
 <body>
 
-    <header class="main-header">
+    <header class="main-header custom-header">
         <div class="logo">
             <a href="index.html"><i class="fa-solid fa-book-open-reader"></i> Choco<span>Novel</span></a>
         </div>
         <div class="header-right">
-            <div class="notification-dropdown">
-                <button class="noti-btn" id="notiBtn">
-                    <i class="fa-solid fa-bell"></i>
-                    <span class="badge" id="notiBadge">3</span>
-                </button>
-                <div class="noti-content" id="notiContent">
-                    <h4>Thông báo mới</h4>
-                    <ul id="notiList">
-                        <li class="unread"><strong>Mèo Béo</strong> đã bình luận bài viết của bạn: "Bộ này cuốn quá..."</li>
-                        <li class="unread"><strong>Admin</strong> đã duyệt chương 50 truyện "Nắng Ấm"</li>
-                        <li>Truyện <strong>"Ngọt Ngào"</strong> vừa cập nhật Chương mới.</li>
-                    </ul>
-                </div>
-            </div>
+            
             <div class="auth-buttons" id="authSection">
                 <button class="btn btn-login" id="loginBtn"><i class="fa-solid fa-user"></i> Đăng nhập</button>
             </div>
@@ -106,5 +93,6 @@
 
     <script type="module" src="assets/js/firebase.js"></script>
     <script type="module" src="assets/js/index.js"></script>
+    <script type="module" src="assets/js/notification.js"></script>
 </body>
 </html>
