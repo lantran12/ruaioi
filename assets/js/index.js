@@ -171,6 +171,7 @@ function closeAllMenusExcept(exceptionId) {
 }
 
 function setupTagFilter(listBooks) {
+    // 1. XỬ LÝ LỌC THEO THỂ LOẠI (TAG)
     const tagItems = document.querySelectorAll(".tag-item");
     tagItems.forEach(item => {
         item.addEventListener("click", (e) => {
@@ -185,6 +186,27 @@ function setupTagFilter(listBooks) {
             
             const tagMenu = document.getElementById("tagMenu");
             if (tagMenu) tagMenu.style.display = "none";
+            
+            renderBookGrid(filteredBooks);
+        });
+    });
+
+    // 2. XỬ LÝ LỌC THEO TÁC GIẢ (AUTHOR) - ✨ Bổ sung đoạn này để sửa lỗi nút Tác giả
+    const authorItems = document.querySelectorAll(".author-item");
+    authorItems.forEach(item => {
+        item.addEventListener("click", (e) => {
+            e.stopPropagation();
+            const selectedAuthor = item.textContent.trim();
+            // Lọc ra những truyện có tên tác giả trùng với tên vừa bấm
+            const filteredBooks = listBooks.filter(book => book.author && book.author.trim() === selectedAuthor);
+            
+            const authorBtn = document.getElementById("authorDropdownBtn");
+            if (authorBtn) {
+                authorBtn.innerHTML = `${selectedAuthor} <i class="fa-solid fa-caret-down"></i>`;
+            }
+            
+            const authorMenu = document.getElementById("authorMenu");
+            if (authorMenu) authorMenu.style.display = "none";
             
             renderBookGrid(filteredBooks);
         });
