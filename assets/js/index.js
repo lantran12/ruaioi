@@ -74,10 +74,16 @@ function listenAuthState() {
 
 // --- HÀM KIỂM TRA QUYỀN ADMIN ---
 function checkAndGrantAdmin(user) {
-    const adminEmail = "dongbanggei@gmail.com"; // 🐢 CHỊ ĐIỀN EMAIL ADMIN CỦA CHỊ VÀO ĐÂY NHA!
+    const adminEmail = "dongbanggei@gmail.com"; 
     
     if (user && (user.uid === ADMIN_UID || user.email === adminEmail)) {
         console.log("Chào mừng vị vương quyền tối cao của Động Rùa! 🐢");
+        
+        // --- DÒNG CHỊ CẦN THÊM VÀO ĐÂY ---
+        const adminPanel = document.getElementById('adminPanel'); 
+        if (adminPanel) adminPanel.style.display = 'block'; 
+        // ---------------------------------
+
         const adminBtn = document.getElementById('btnOpenAdminPanel'); 
         if (adminBtn) adminBtn.style.display = 'inline-block';
     }
