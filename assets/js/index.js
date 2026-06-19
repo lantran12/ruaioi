@@ -1,5 +1,5 @@
 import { db, ref } from "./firebase.js";
-import { get, onValue, update, remove, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { ref, get, onValue, update, remove, push, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { auth } from "./firebase.js";
 import { onAuthStateChanged, signOut, updateProfile, createUserWithEmailAndPassword, signInWithEmailAndPassword, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
@@ -195,7 +195,7 @@ async function fetchStoriesFromFirebase() {
             for (let id in data) {
                 const bookData = data[id];
                 let latestChapter = "Chương 0";
-                const chaptersRef = ref(db, `comments/${id}`); 
+                const chaptersRef = ref(db, `stories/${id}/chapters`); 
                 const chapterSnapshot = await get(chaptersRef);
                 
                 if (chapterSnapshot.exists()) {
