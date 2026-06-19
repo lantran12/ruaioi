@@ -260,3 +260,165 @@ body {
     margin-top: 50px;
     border-top: 1px solid var(--accent-color);
 }
+/* ==========================================================================
+   BỔ SUNG: KHU VỰC TRUYỆN ĐỀ CỬ PREMIUM & GIAO DIỆN FORM ADMIN
+   ========================================================================== */
+
+/* 1. KHU VỰC ĐỀ CỬ NÂNG CẤP SANG XỊN (Thay thế style cũ của .featured-card nếu cần) */
+.featured-card-premium {
+    position: relative;
+    display: flex;
+    gap: 30px;
+    background: rgba(255, 255, 255, 0.9);
+    border: 2px dashed var(--primary-pastel);
+    padding: 25px;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(255, 154, 162, 0.15);
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.featured-card-premium:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(255, 154, 162, 0.3);
+}
+
+/* Khung ảnh bìa có đổ bóng nghệ thuật */
+.featured-cover-wrapper {
+    position: relative;
+    flex-shrink: 0;
+    width: 140px;
+    height: 200px;
+    border-radius: 12px;
+    box-shadow: 5px 5px 15px rgba(109, 89, 89, 0.2);
+    overflow: hidden;
+}
+
+.featured-cover-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+/* Tag Ribbon chéo góc ảnh HOT */
+.ribbon-pop {
+    position: absolute;
+    top: 15px;
+    left: -30px;
+    background: #ff6b6b;
+    color: white;
+    font-size: 11px;
+    font-weight: bold;
+    padding: 4px 30px;
+    transform: rotate(-45deg);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+}
+
+/* Nội dung thông tin truyện đề cử */
+.featured-detail {
+    flex: 1;
+    z-index: 2;
+    text-align: left; /* Đảm bảo chữ căn trái ngay ngắn */
+}
+
+.featured-detail .badge-trending {
+    background: var(--accent-color);
+    color: #d47a55;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: bold;
+    display: inline-block;
+    margin-bottom: 12px;
+}
+
+.featured-detail h3 {
+    font-size: 24px;
+    color: var(--text-color);
+    margin-bottom: 8px;
+    font-family: 'Georgia', serif; /* Font chữ tạo cảm giác tiểu thuyết, văn học */
+}
+
+.featured-meta {
+    display: flex;
+    gap: 15px;
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 12px;
+}
+.featured-meta span i { 
+    color: var(--primary-hover); 
+    margin-right: 4px;
+}
+
+.featured-summary {
+    font-size: 14px;
+    color: #6d5959;
+    line-height: 1.6;
+    margin-bottom: 20px;
+    display: -webkit-box;
+    -webkit-line-clamp: 3; /* Giới hạn tối đa 3 dòng tóm tắt, dài hơn tự hiện ... */
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Nút Đọc Ngay lấp lánh có hiệu ứng di chuột */
+.btn-read-now {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(135deg, var(--primary-pastel), var(--primary-hover));
+    color: white;
+    padding: 10px 24px;
+    border-radius: 25px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 4px 15px rgba(255, 154, 162, 0.3);
+    transition: all 0.3s ease;
+    border: none;
+}
+.btn-read-now:hover {
+    opacity: 0.95;
+    box-shadow: 0 6px 20px rgba(255, 154, 162, 0.5);
+    padding-right: 28px; /* Đẩy nhẹ nút tạo cảm giác chuyển động mượt */
+}
+
+/* 2. CẤU HÌNH THÊM CHO CÁC Ô NHẬP LIỆU FORM TRANG ADMIN (author.html) */
+.form-group {
+    margin-bottom: 18px;
+    text-align: left;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 14px;
+    color: var(--text-color);
+}
+
+.form-input {
+    width: 100%;
+    padding: 11px 15px;
+    border: 2px solid #ffe3e1; /* Hồng siêu nhạt hài hòa */
+    background-color: #fffcfc;
+    border-radius: 10px;
+    outline: none;
+    font-size: 14px;
+    color: var(--text-color);
+    transition: all 0.3s;
+}
+
+.form-input:focus {
+    border-color: var(--primary-pastel);
+    background-color: #ffffff;
+    box-shadow: 0 0 10px rgba(255, 183, 178, 0.25);
+}
+
+/* Tinh chỉnh riêng cho khung viết nội dung truyện dài */
+textarea.form-input {
+    resize: vertical;
+    line-height: 1.7;
+}
