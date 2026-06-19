@@ -8,11 +8,11 @@
     --text-color: #6d5959;
     --card-bg: #ffffff;
     --accent-color: #ffdac1;
-    --accent-fresh: #ff9aa2; /* Đồng bộ màu nổi bật sang hồng ngọt */
+    --accent-fresh: #ff9aa2;
     --completed-color: #b5ead7;
     --updating-color: #e2f0cb;
     --box-bg: #ffffff;
-    --box-border: #ffe3e1; /* Viền hồng pastel siêu nhạt tinh tế */
+    --box-border: #ffe3e1;
 }
 
 * {
@@ -29,6 +29,27 @@ body {
 }
 
 /* ==========================================================================
+   HIỆU ỨNG HOVER CHO ẢNH BÌA (MỚI THÊM)
+   ========================================================================== */
+.book-cover img, 
+.featured-cover-wrapper img, 
+.story-list-thumb,
+.card-cover img,
+.nomination-thumb img {
+    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    cursor: pointer;
+}
+
+.book-cover:hover img, 
+.featured-cover-wrapper img:hover, 
+.story-list-thumb:hover,
+.card-cover:hover img,
+.nomination-thumb:hover img {
+    transform: scale(1.05);
+    box-shadow: 0 10px 20px rgba(255, 154, 162, 0.4);
+}
+
+/* ==========================================================================
    HEADER VÀ ĐƯỜNG GẠCH NHẸ
    ========================================================================== */
 .main-header {
@@ -38,7 +59,7 @@ body {
     background-color: var(--card-bg);
     padding: 15px 5%;
     box-shadow: 0 4px 15px rgba(255, 183, 178, 0.15);
-    border-bottom: 1px solid var(--box-border); /* ✨ Đường gạch nhẹ nhàng dưới Header */
+    border-bottom: 1px solid var(--box-border);
     position: sticky;
     top: 0;
     z-index: 100;
@@ -103,6 +124,7 @@ body {
     box-shadow: 0 10px 30px rgba(255, 154, 162, 0.15);
     align-items: center;
     transition: all 0.3s ease;
+    backdrop-filter: blur(5px);
 }
 .featured-card-premium:hover {
     transform: translateY(-3px);
@@ -205,10 +227,7 @@ body {
 /* ==========================================================================
    BỘ LỌC VÀ Ô TÌM KIẾM HỒNG PASTEL
    ========================================================================== */
-.search-bar {
-    display: flex;
-    margin-bottom: 15px;
-}
+.search-bar { display: flex; margin-bottom: 15px; }
 .search-bar input, .search-input {
     flex: 1;
     padding: 12px 20px;
@@ -228,7 +247,7 @@ body {
     cursor: pointer;
     font-weight: bold;
 }
-.search-btn { border-radius: 15px; } /* Override riêng cho nút vuông cũ nếu cần */
+.search-btn { border-radius: 15px; }
 .search-input { border-radius: 15px; }
 
 .search-box-container { max-width: 1200px; margin: 15px auto; display: flex; gap: 10px; }
@@ -473,37 +492,31 @@ textarea.form-input, .admin-textarea { width: 100%; height: 150px; padding: 10px
     .logo a { font-size: 20px; }
     .book-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); gap: 15px; }
 }
-/* --- TỐI ƯU GIAO DIỆN DI ĐỘNG CHO NÚT AUTH & ADMIN --- */
 @media screen and (max-width: 600px) {
     .auth-buttons {
         display: flex;
-        flex-direction: column; /* Xếp dọc các nút để không bị dính */
-        align-items: flex-end; /* Căn lề phải */
-        gap: 5px; /* Khoảng cách giữa các nút */
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 5px;
     }
-    
     .btn-login, .btn-admin {
-        font-size: 11px !important; /* Thu nhỏ chữ để không bị tràn */
-        padding: 5px 8px !important; /* Giảm padding để nút gọn hơn */
+        font-size: 11px !important;
+        padding: 5px 8px !important;
         margin-left: 0 !important;
-        white-space: nowrap; /* Tránh chữ bị ngắt dòng lung tung */
+        white-space: nowrap;
     }
-
-    /* Nếu nút Admin chiếm chỗ quá, ta có thể ẩn nó trên điện thoại */
-    /* Nếu chị muốn hiện thì bỏ dòng display: none đi nhé */
-    #btnOpenAdminPanel {
-        display: none !important; 
-    }
+    #btnOpenAdminPanel { display: none !important; }
 }
+
 .admin-panel {
     background: #fff;
     padding: 25px;
     border-radius: 15px;
     box-shadow: 0 4px 15px rgba(255, 154, 162, 0.2);
     border: 1px solid #ff9aa2;
-    margin: 40px 20px; /* 40px trên dưới, 20px trái phải để không dính sát màn hình */
-    max-width: 1200px; /* Giới hạn độ rộng nếu màn hình quá lớn */
-    margin-left: auto; /* Căn giữa bảng */
+    margin: 40px 20px;
+    max-width: 1200px;
+    margin-left: auto;
     margin-right: auto;
 }
 .admin-panel h3 { color: #ff9aa2; margin-top: 0; display: flex; align-items: center; gap: 10px; }
