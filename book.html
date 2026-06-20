@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Đọc Truyện - Động Chăn Rùa</title>
+    <link rel="stylesheet" href="assets/css/style.css">
+</head>
+<body>
+    <div id="bookDetailContainer" style="max-width: 800px; margin: 50px auto; padding: 20px;">
+        <h1 id="bookTitle">Đang tải tên truyện...</h1>
+        <img id="bookCover" src="" style="width: 200px; border-radius: 10px;">
+        <p id="bookAuthor"></p>
+        
+        <button id="btnSaveToShelf" style="padding: 10px 20px; background: #ff4d6d; color: white; border: none; border-radius: 20px; cursor: pointer;">
+            ❤️ Lưu vào tủ sách
+        </button>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+    <script src="assets/js/firebase.js"></script>
+    
+    <script>
+        // Lấy ID truyện từ đường dẫn URL (ví dụ: book.html?id=-NjAbc123)
+        const urlParams = new URLSearchParams(window.location.search);
+        const storyId = urlParams.get('id');
+
+        // Hàm lấy dữ liệu truyện để hiển thị
+        firebase.database().ref('stories/' + storyId).once('value').then(snapshot => {
+            const story = snapshot.val();
+            if (story) {
+                document.getElementById('bookTitle').innerText = story.title;
+                document.getElementById('bookCover').src = story.img || story.cover;
+                
+                // Gán sự kiện cho nút lưu
+                document.getElementById('btnSaveToShelf').onclick = () => {
+                    // Gọi hàm addToBookshelf mà chị đã viết ở file index.js
+                    // Vì index.js đã được include, nên chị có thể gọi hàm này trực tiếp
+                    addToBookshelf(storyId, story);
+                };
+            }
+        });
+    </script>
+</body>
+</html>
