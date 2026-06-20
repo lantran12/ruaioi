@@ -554,3 +554,19 @@ function loadUserBookshelf(user) {
         bookshelfContainer.innerHTML = "<p style='color: red;'>Lỗi kết nối dữ liệu 🐢</p>";
     });
 }
+function addToBookshelf(storyId, storyData) {
+    const user = auth.currentUser;
+    if (!user) { alert("Chị ơi, chị đăng nhập để lưu truyện nha!"); return; }
+
+    // Dùng .set() hoặc .update() tại đúng đường dẫn này
+    db.ref('users/' + user.uid + '/tuSach/' + storyId).set({
+        tenTruyen: storyData.title,
+        image: storyData.img || storyData.cover || storyData.image,
+        chuongGanNhat: 'Chương 1',
+        addedAt: firebase.database.ServerValue.TIMESTAMP
+    }).then(() => {
+        alert("Đã lưu vào tủ sách của chị! 🐢");
+        // HÀM NÀY LÀ MẤU CHỐT: Nếu nó không tự cập nhật, chị có thể gọi lại loadUserBookshelf(user) ở đây
+        loadUserBookshelf(user); 
+    });
+}
