@@ -417,7 +417,13 @@ if (data?.avatarType === "custom") {
     const container = document.getElementById('userBookshelfContainer');
     if (!container) return;
 
-    db.ref('users/' + user.uid + '/tuSach').on('value', (snapshot) => {
+    if (tuSachListenerRef) {
+    tuSachListenerRef.off();
+}
+
+tuSachListenerRef = db.ref('users/' + user.uid + '/tuSach');
+
+tuSachListenerRef.on('value', (snapshot) => {
         const data = snapshot.val();
         if (!data) { 
             container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! Chị hãy thêm vào ngay đi ạ! 🐾</div>`; 
