@@ -341,7 +341,7 @@ auth.onAuthStateChanged((user) => {
         // PHÂN QUYỀN ADMIN CHO CHỊ ĐỘNG CHĂN RÙA (UID CHUẨN)
         if (user.uid === 'BrZQ9s07ujfIYG1iPtC4vIhGgx33') {
             if (btnHeaderAuth) {
-                btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i> Chào, Admin`;
+                btnHeaderAuth.innerHTML = `Chào, Chị Trân ạ`;
                 btnHeaderAuth.style.cssText = "width: auto; padding: 0 12px; border-radius: 20px; font-size: 13px; flex-shrink: 0; background: #ff4d6d; color: white; border: none; height: 36px; cursor: pointer;";
                 btnHeaderAuth.onclick = openProfileZone;
             }
@@ -355,7 +355,7 @@ auth.onAuthStateChanged((user) => {
         } else {
             // Nếu là người đọc bình thường
             if (btnHeaderAuth) {
-                btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i> Chào, ${user.displayName || 'Thành Viên'}`;
+                btnHeaderAuth.innerHTML = `Chào, ${user.displayName || 'Thành Viên'}`;
                 btnHeaderAuth.style.cssText = "width: auto; padding: 0 12px; border-radius: 20px; font-size: 13px; flex-shrink: 0; background: #ff4d6d; color: white; border: none; height: 36px; cursor: pointer;";
                 btnHeaderAuth.onclick = openProfileZone;
             }
