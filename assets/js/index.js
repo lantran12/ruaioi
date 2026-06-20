@@ -635,6 +635,7 @@ function submitChapter() {
 }
 
 // Hàm xử lý đọc file văn bản (.docx hoặc .txt) và tự bóc tách tiêu đề chuẩn xác
+// Hàm xử lý đọc file văn bản (.docx hoặc .txt) và tự bóc tách tiêu đề chuẩn xác từ file Word
 function importChapterFile(input) {
     const file = input.files[0];
     if (!file) return;
@@ -646,43 +647,44 @@ function importChapterFile(input) {
 
     // Hàm nội bộ để bóc tách chữ sau khi đã đọc xong file
     function processRawText(rawText) {
-        // Regex chuẩn: Tìm chữ "Chương" ở đầu dòng, theo sau là số, rồi đến dấu tách (:, -, hoặc khoảng trắng) và tên chương
-        // Ví dụ khớp: "Chương 93: Nhận thưởng hoàn thành" hoặc "chương 05 - Gặp Gỡ"
+        // Regex quét diện rộng: Tìm chữ "Chương" đứng đầu dòng, theo sau là số, dấu tách và tên chương
         const chapterRegex = /^\s*Chương\s+(\d+)\s*[:\-\s]\s*(.*)$/i;
         
-        // Cắt văn bản thành các dòng để kiểm tra dòng đầu tiên
+        // Cắt văn bản thành một mảng các dòng chữ
         const lines = rawText.split(/\r?\n/);
-        let firstLine = lines[0] ? lines[0].trim() : "";
         
-        // Nếu dòng đầu tiên trống, thử tìm dòng tiếp theo có chữ
-        if (!firstLine && lines.length > 1) {
-            for (let i = 1; i < lines.length; i++) {
-                if (lines[i].trim()) {
-                    firstLine = lines[i].trim();
-                    // Xóa các dòng trống trước đó khỏi mảng
-                    lines.splice(0, i);
-                    break;
-                }
+        let foundIndex = -1;
+        let chapterNum = "";
+        let chapterName = "";
+
+        // Quét qua từng dòng để tìm dòng chứa tiêu đề chương truyện
+        for (let i = 0; i < lines.length; i++) {
+            const currentLine = lines[i].trim();
+            const match = currentLine.match(chapterRegex);
+            
+            if (match) {
+                foundIndex = i; // Ghi nhớ dòng này nằm ở đâu
+                chapterNum = match[1]; // Lấy số chương (Ví dụ: 93)
+                chapterName = match[2].trim(); // Lấy tên chương (Ví dụ: Gặp gỡ)
+                break; // Tìm thấy rồi thì dừng quét luôn
             }
         }
 
-        const match = firstLine.match(chapterRegex);
-
-        if (match) {
-            const chapterNum = match[1]; // Lấy ra số chương (VD: 93)
-            const chapterName = match[2].trim(); // Lấy ra tên chương
-
+        // Nếu tìm thấy dòng tiêu đề chương trong file
+        if (foundIndex !== -1) {
             // Tự động điền vào các ô Input phía trên form cho chị
             if (inputNumber) inputNumber.value = chapterNum;
             if (inputTitle) inputTitle.value = `Chương ${chapterNum}: ${chapterName}`;
 
-            // Xóa bỏ dòng tiêu đề đầu tiên này ra khỏi nội dung truyện
-            lines.shift(); 
+            // Xóa bỏ đúng cái dòng tiêu đề đó ra khỏi mảng nội dung truyện
+            lines.splice(foundIndex, 1); 
+            
+            // Đổ toàn bộ phần còn lại vào ô nội dung truyện
             textarea.value = lines.join('\n').trim();
         } else {
-            // Nếu không tìm thấy định dạng "Chương xx: xxx" ở đầu file, đổ hết vào ô nội dung như cũ
+            // Nếu quét cả file mà không có dòng nào đúng dạng "Chương xx: xxx", đổ hết vào ô nội dung
             textarea.value = rawText.trim();
-            alert("Em không tìm thấy định dạng 'Chương xx: Tên chương' ở đầu file nên đã giữ nguyên toàn bộ nội dung file nha chị! 🐢");
+            alert("Em đã đọc được file nhưng không tìm thấy dòng nào có dạng 'Chương xx: Tên chương' nên giữ nguyên hết nội dung nha chị! 🐢");
         }
     }
 
