@@ -17,3 +17,6 @@ if (!firebase.apps.length) {
 // Khai báo biến toàn cục để index.js dùng chung
 const db = firebase.database();
 const auth = firebase.auth();
+// Khai báo biến global để các file khác dùng
+window.db = firebase.database();
+window.auth = firebase.auth();
