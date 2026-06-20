@@ -511,6 +511,7 @@ function renderAvatarSelectionGrid() {
 
 function selectAvatarOption(imgEl, url) { 
     selectedAvatarUrl = url; 
+    document.getElementById('userCurrentAvatar').src = url;
     document.querySelectorAll('.avatar-option-img').forEach(img => img.style.border = '2px solid transparent'); 
     imgEl.style.border = '2px solid #ff4d6d'; 
 }
@@ -519,7 +520,7 @@ function removeFromBookshelf(key) {
     if (confirm("Chị có muốn xóa truyện này không ạ? 🐢")) {
         firebase.database().ref('users/' + auth.currentUser.uid + '/tuSach/' + key).remove();
     }
-}
+}t
 
 // --- C. ĐIỀU KHIỂN POPUP ĐĂNG NHẬP VÀ FORM SUBMIT ---
 function openAuthModal() { const modal = document.getElementById('authModal'); if (modal) modal.style.display = 'flex'; }
