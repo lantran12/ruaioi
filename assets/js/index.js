@@ -45,7 +45,7 @@ function initSubBarFilters() {
                 closeSearch();
                 loadMainStories();
             } else if (filterType === 'completed') {
-                loadStoriesByCondition('status', 'Hoàn thành', '🍿 Danh Sách Truyện Đã Hoàn Thành');
+                loadStoriesByCondition('status', 'Hoàn thành', '📜 Danh Sách Truyện Đã Hoàn Thành');
             }
         });
     });
@@ -109,7 +109,7 @@ function loadGenresDropdown() {
             span.textContent = genreName;
             
             span.addEventListener('click', () => {
-                loadStoriesByCondition('genre', genreName, `🍿 Thể Loại: ${genreName}`);
+                loadStoriesByCondition('genre', genreName, `📜 Thể Loại: ${genreName}`);
             });
             tagMenu.appendChild(span);
         });
@@ -274,7 +274,7 @@ function triggerSearch() {
     const resultsGrid = document.getElementById('resultsGrid');
     const rowTitle = searchSection.querySelector('.row-title');
 
-    if (rowTitle) rowTitle.innerText = `🍿 Kết quả tìm kiếm cho: "${searchInput.value}"`;
+    if (rowTitle) rowTitle.innerText = `🔍 Kết quả tìm kiếm cho: "${searchInput.value}"`;
     searchSection.style.display = 'block';
     resultsGrid.innerHTML = '';
 
