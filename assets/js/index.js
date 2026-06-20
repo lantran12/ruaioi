@@ -1,6 +1,10 @@
 // ==========================================================================
-// 1. CẤU HÌNH FIREBASE 
+// 1. CẤU HÌNH FIREBASE (MODULAR SDK v10)
 // ==========================================================================
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, child, get, set, update, remove, onValue, query, orderByChild, equalTo, limitToLast } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getAuth, onAuthStateChanged, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, updateProfile } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
 const firebaseConfig = {
     apiKey: "AIzaSyBimiEGQcW9at2pOxfdUaJHjim2fmyjjcc",
     authDomain: "dongchanrua.firebaseapp.com",
@@ -11,12 +15,9 @@ const firebaseConfig = {
     appId: "1:640115424540:web:c9713b7921c09283150ed9"
 };
 
-// Khởi tạo Firebase
-if (!firebase.apps.length) {
-    firebase.initializeApp(firebaseConfig);
-}
-const db = firebase.database();
-const auth = firebase.auth();
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
 
 // Chạy các hàm chức năng khi trang tải xong
 document.addEventListener('DOMContentLoaded', () => {
@@ -28,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   2. XỬ LÝ BỘ LỌC TẠI SUB-BAR (Mới phát hành / Đã trọn bộ)
+   2. XỬ LÝ BỘ LỌC TẠI SUB-BAR
    ========================================================================== */
 function initSubBarFilters() {
     const filterButtons = document.querySelectorAll('.nav-link-btn');
@@ -52,13 +53,12 @@ function initSubBarFilters() {
 }
 
 /* ==========================================================================
-   3. TRUYỆN ĐỀ CỬ NGẪU NHIÊN (Đọc trường 'img' chị tạo)
+   3. TRUYỆN ĐỀ CỬ NGẪU NHIÊN
    ========================================================================== */
 function handleFeaturedRandomBook(storiesData) {
     const keys = Object.keys(storiesData);
     if (keys.length === 0) return;
 
-    // Bốc ngẫu nhiên 1 Key (ID) truyện từ Firebase
     const randomKey = keys[Math.floor(Math.random() * keys.length)];
     const story = storiesData[randomKey];
 
@@ -70,11 +70,9 @@ function handleFeaturedRandomBook(storiesData) {
     if (heroTitle) heroTitle.innerText = story.title || "Tác phẩm độc quyền";
     if (heroSynopsis) heroSynopsis.innerText = story.description || story.synopsis || "Bấm vào để khám phá thế giới nội tâm đầy cảm xúc của tác phẩm này...";
 
-    // Tạo link dẫn tới trang chi tiết truyện của chị
     const storyReadUrl = `book.html?id=${randomKey}`;
     if (heroLink) heroLink.setAttribute('href', storyReadUrl);
 
-    // Ưu tiên đọc trường 'img' từ Form Admin của chị, nếu không có mới tìm trường 'cover' hoặc 'image'
     const storyImg = story.img || story.cover || story.image;
 
     if (storyImg && featuredBookSection) {
@@ -99,7 +97,7 @@ function loadGenresDropdown() {
     const tagMenu = document.getElementById('tagMenu');
     if (!tagMenu) return;
 
-    db.ref('genres').once('value').then((snapshot) => {
+    get(ref(db, 'genres')).then((snapshot) => {
         tagMenu.innerHTML = '';
         if (!snapshot.exists()) return;
 
@@ -117,7 +115,7 @@ function loadGenresDropdown() {
 }
 
 /* ==========================================================================
-   5. BỘ LỌC ĐIỀU KIỆN (Xổ dữ liệu ra vùng Tìm kiếm chuyên sâu)
+   5. BỘ LỌC ĐIỀU KIỆN
    ========================================================================== */
 function loadStoriesByCondition(field, value, titleText) {
     const searchSection = document.getElementById('searchResultsSection');
@@ -132,7 +130,8 @@ function loadStoriesByCondition(field, value, titleText) {
 
     searchSection.scrollIntoView({ behavior: 'smooth' });
 
-    db.ref('stories').orderByChild(field).equalTo(value).once('value')
+    const storyQuery = query(ref(db, 'stories'), orderByChild(field), equalTo(value));
+    get(storyQuery)
     .then((snapshot) => {
         resultsGrid.innerHTML = '';
         if (!snapshot.exists()) {
@@ -156,7 +155,7 @@ function closeSearch() {
 }
 
 /* ==========================================================================
-   6. THƯ VIỆN CHÍNH (Mới Cập Nhật Trên Hệ Thống)
+   6. THƯ VIỆN CHÍNH
    ========================================================================== */
 function loadMainStories() {
     const bookGrid = document.getElementById('bookGrid');
@@ -164,14 +163,13 @@ function loadMainStories() {
 
     bookGrid.innerHTML = '<div style="grid-column: 1/-1; color: var(--smoke);">Đang liên kết Động Chăn Rùa...</div>';
 
-    db.ref('stories').orderByChild('updatedAt').once('value')
+    const storiesQuery = query(ref(db, 'stories'), orderByChild('updatedAt'));
+    get(storiesQuery)
     .then((snapshot) => {
         bookGrid.innerHTML = '';
         if (!snapshot.exists()) return;
 
         const storiesData = snapshot.val();
-        
-        // Gọi hàm Random Banner Hero ngay tại đây
         handleFeaturedRandomBook(storiesData);
 
         const storiesArray = [];
@@ -190,13 +188,14 @@ function loadMainStories() {
 }
 
 /* ==========================================================================
-   7. TOP 5 ĐỘT PHÁ LƯỢT XEM (Hàng Ngang Kiểu Dáng Xịn)
+   7. TOP 5 ĐỘT PHÁ LƯỢT XEM
    ========================================================================== */
 function loadTopViews() {
     const nominationContainer = document.getElementById('nominationListContainer');
     if (!nominationContainer) return;
 
-    db.ref('stories').orderByChild('views').limitToLast(5).once('value')
+    const topViewsQuery = query(ref(db, 'stories'), orderByChild('views'), limitToLast(5));
+    get(topViewsQuery)
     .then((snapshot) => {
         nominationContainer.innerHTML = '';
         if (!snapshot.exists()) return;
@@ -213,7 +212,6 @@ function loadTopViews() {
             card.className = 'story-card';
             card.onclick = () => window.location.href = `book.html?id=${story.id}`;
             
-            // Tự động kiểm tra trường ảnh mượt mà
             const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
             
             card.innerHTML = `
@@ -229,15 +227,15 @@ function loadTopViews() {
 }
 
 /* ==========================================================================
-   8. LẮNG NGHE THÔNG BÁO REALTIME (Chuông thông báo trên Header)
+   8. LẮNG NGHE THÔNG BÁO REALTIME
    ========================================================================== */
 function listenToNotifications() {
     const notiCountBadge = document.getElementById('notiCount');
     if (!notiCountBadge) return;
     
-    db.ref('notifications').on('value', (snapshot) => {
+    onValue(ref(db, 'notifications'), (snapshot) => {
         if (snapshot.exists()) {
-            notiCountBadge.textContent = snapshot.numChildren();
+            notiCountBadge.textContent = snapshot.size;
         } else {
             notiCountBadge.textContent = "0";
         }
@@ -245,14 +243,13 @@ function listenToNotifications() {
 }
 
 /* ==========================================================================
-   9. HÀM BỔ TRỢ: TẠO CARD TRUYỆN PHONG CÁCH NETFLIX (Kiểm tra trường 'img')
+   9. HÀM BỔ TRỢ: TẠO CARD
    ========================================================================== */
 function createNetflixCard(id, story) {
     const div = document.createElement('div');
     div.className = 'story-card';
     div.onclick = () => window.location.href = `book.html?id=${id}`;
     
-    // Tự động dùng 'img' chị tạo, hoặc các trường cũ dự phòng
     const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
     
     div.innerHTML = `
@@ -263,13 +260,11 @@ function createNetflixCard(id, story) {
     return div;
 }
 
-// Hàm Tìm kiếm thủ công khi bấm kính lúp
 function triggerSearch() {
     const searchInput = document.getElementById('searchInput');
     if (!searchInput || !searchInput.value.trim()) return;
     
     const keyword = searchInput.value.trim().toLowerCase();
-    
     const searchSection = document.getElementById('searchResultsSection');
     const resultsGrid = document.getElementById('resultsGrid');
     const rowTitle = searchSection.querySelector('.row-title');
@@ -278,7 +273,7 @@ function triggerSearch() {
     searchSection.style.display = 'block';
     resultsGrid.innerHTML = '';
 
-    db.ref('stories').once('value').then((snapshot) => {
+    get(ref(db, 'stories')).then((snapshot) => {
         if(!snapshot.exists()) return;
         
         let hasResult = false;
@@ -300,23 +295,21 @@ function triggerSearch() {
 }
 
 /* ==========================================================================
-   10. QUẢN LÝ ĐĂNG NHẬP, ĐIỀU KHIỂN VƯƠNG MIỆN ADMIN VÀ HỒ SƠ / AVATAR
+   10. QUẢN LÝ ĐĂNG NHẬP VÀ HỒ SƠ
    ========================================================================== */
 let isSignUpMode = true; 
 let selectedAvatarUrl = "";
-let tuSachListenerRef = null; 
 
-auth.onAuthStateChanged((user) => {
+onAuthStateChanged(auth, (user) => {
     const btnHeaderAuth = document.getElementById('btnHeaderAuth'); 
-
     let btnAdminCrown = document.getElementById('btnOpenAdminPanel');
+    
+    // ... (Giữ nguyên logic khởi tạo nút admin nếu chưa có) ...
     if (!btnAdminCrown && btnHeaderAuth) {
         btnAdminCrown = document.createElement('button');
         btnAdminCrown.id = 'btnOpenAdminPanel';
         btnAdminCrown.innerHTML = '👑';
-        
         btnAdminCrown.style.cssText = "background: #2e8b57; color: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 16px; cursor: pointer; display: none; align-items: center; justify-content: center; flex-shrink: 0;";
-        
         if (btnHeaderAuth.parentNode) {
             btnHeaderAuth.parentNode.style.display = "flex";
             btnHeaderAuth.parentNode.style.alignItems = "center";
@@ -328,9 +321,8 @@ auth.onAuthStateChanged((user) => {
     if (user) {
         if (document.getElementById('userProfileEmail')) document.getElementById('userProfileEmail').textContent = user.email;
         if (document.getElementById('userProfileName')) document.getElementById('userProfileName').textContent = user.displayName || "Thành viên Động Rùa";
-
         renderUserProfileData(user);
-
+        
         if (user.uid === 'BrZQ9s07ujfIYG1iPtC4vIhGgx33') {
             if (btnHeaderAuth) {
                 btnHeaderAuth.innerHTML = `Chào, Chị Admin`;
@@ -359,38 +351,20 @@ auth.onAuthStateChanged((user) => {
             btnHeaderAuth.onclick = openAuthModal;
         }
         if (btnAdminCrown) btnAdminCrown.style.display = 'none';
-
-        const container = document.getElementById('userBookshelfContainer');
-        if (container) {
-            container.innerHTML = `<div class="bookshelf-empty" style="color: #ff4d6d; font-weight: bold; text-align: center; width: 100%; padding: 20px 0;">⚠️ Vui lòng đăng nhập để sử dụng tủ sách cá nhân!</div>`;
-        }
         showHome();
     }
 });
 
-function openProfileZone() {
-    if (document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'none';
-    if (document.getElementById('profileSection')) document.getElementById('profileSection').style.display = 'block';
-}
-
 function renderUserProfileData(user) {
-    renderAvatarSelectionGrid(); 
-    
-    const currentAvatarImg = document.getElementById('userCurrentAvatar');
-    if (currentAvatarImg) {
-        currentAvatarImg.style.cssText = "width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 15px auto; border: 3px solid #ff4d6d;";
-    }
-
+    renderAvatarSelectionGrid();
     const container = document.getElementById('userBookshelfContainer');
     if (!container) return;
 
-    if (typeof db !== 'undefined' && typeof firebase !== 'undefined') {
-        db.ref('users/' + user.uid + '/tuSach').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (!data) { container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! 🐾</div>`; return; }
-            buildBookshelfHTML(data, container);
-        });
-    }
+    onValue(ref(db, 'users/' + user.uid + '/tuSach'), (snapshot) => {
+        const data = snapshot.val();
+        if (!data) { container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! 🐾</div>`; return; }
+        buildBookshelfHTML(data, container);
+    });
 }
 
 function buildBookshelfHTML(data, container) {
@@ -439,21 +413,16 @@ function selectAvatarOption(imgEl, url) {
 
 function updateProfile() {
     const user = auth.currentUser;
-    if (!user) {
-        alert("Chị vui lòng đăng nhập trước nhé! 🐢");
-        return;
-    }
+    if (!user) { alert("Chị vui lòng đăng nhập trước nhé! 🐢"); return; }
 
     const newDisplayName = document.getElementById('inputNewDisplayName').value.trim();
     
-    user.updateProfile({
-        displayName: newDisplayName || user.displayName
-    }).then(() => {
+    updateProfile(user, { displayName: newDisplayName || user.displayName }).then(() => {
         if (selectedAvatarUrl) {
-            firebase.database().ref('users/' + user.uid + '/avatar').set(selectedAvatarUrl);
+            set(ref(db, 'users/' + user.uid + '/avatar'), selectedAvatarUrl);
         }
         if (newDisplayName) {
-            firebase.database().ref('users/' + user.uid + '/displayName').set(newDisplayName);
+            set(ref(db, 'users/' + user.uid + '/displayName'), newDisplayName);
         }
         alert("🎉 Đã cập nhật hồ sơ thành công!");
         location.reload();
@@ -464,12 +433,13 @@ function updateProfile() {
 
 function removeFromBookshelf(key) {
     if (confirm("Chị có muốn xóa truyện này không ạ? 🐢")) {
-        firebase.database().ref('users/' + auth.currentUser.uid + '/tuSach/' + key).remove();
+        remove(ref(db, 'users/' + auth.currentUser.uid + '/tuSach/' + key));
     }
 }
 
 function openAuthModal() { const modal = document.getElementById('authModal'); if (modal) modal.style.display = 'flex'; }
 function closeAuthModal() { const modal = document.getElementById('authModal'); if (modal) modal.style.display = 'none'; }
+
 function toggleAuthMode() {
     isSignUpMode = !isSignUpMode;
     const authTitle = document.getElementById('authTitle');
@@ -492,15 +462,20 @@ function submitAuthForm() {
     if (!email || !password) { alert("Chị vui lòng điền đủ thông tin nha!"); return; }
 
     if (isSignUpMode) {
-        auth.createUserWithEmailAndPassword(email, password).then((userCredential) => {
-            if (displayName) userCredential.user.updateProfile({ displayName: displayName });
+        createUserWithEmailAndPassword(auth, email, password).then((userCredential) => {
+            if (displayName) updateProfile(userCredential.user, { displayName: displayName });
             alert("🎉 Đăng ký thành công!"); closeAuthModal();
         }).catch(err => alert(err.message));
     } else {
-        auth.signInWithEmailAndPassword(email, password).then(() => {
+        signInWithEmailAndPassword(auth, email, password).then(() => {
             alert("🎉 Chào mừng chị trở lại!"); closeAuthModal();
         }).catch(err => alert(err.message));
     }
+}
+
+function openProfileZone() {
+    if (document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'none';
+    if (document.getElementById('profileSection')) document.getElementById('profileSection').style.display = 'block';
 }
 
 function showHome() {
@@ -510,7 +485,7 @@ function showHome() {
 
 function logoutFromProfile() {
     if(confirm("Chị muốn đăng xuất tài khoản đúng không ạ? 🐢")) {
-        auth.signOut();
+        signOut(auth);
     }
 }
 
