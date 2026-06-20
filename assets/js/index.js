@@ -361,24 +361,41 @@ function openProfileZone() {
 }
 
 function renderUserProfileData(user) {
+    // 1. Hiển thị lưới chọn Avatar
     renderAvatarSelectionGrid(); 
-    const currentAvatarImg = document.getElementById('userCurrentAvatar');
-    if (currentAvatarImg) {
-        currentAvatarImg.style.cssText = "width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 15px auto; border: 3px solid #ff4d6d;";
-    }
+    
+    // 2. Load thông tin hiện tại từ database về
+    db.ref('users/' + user.uid).once('value').then((snapshot) => {
+        const userData = snapshot.val();
+        if (userData) {
+            // Hiển thị tên (nếu có)
+            if (userData.displayName) {
+                document.getElementById('userProfileName').textContent = userData.displayName;
+            }
 
-    const container = document.getElementById('userBookshelfContainer');
-    if (!container) return;
-
-    // Lắng nghe dữ liệu tủ sách
-    db.ref('users/' + user.uid + '/tuSach').on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (!data) { 
-            container.innerHTML = `<div class="bookshelf-empty" style="text-align:center; padding:20px; color:#777;">Tủ sách trống trơn! 🐾</div>`; 
-            return; 
+            // --- ĐOẠN CHỊ CẦN THAY VÀO ĐÂY ---
+            const avatarImg = document.getElementById('userCurrentAvatar');
+            if (avatarImg) {
+                if (userData.avatar) {
+                    avatarImg.src = userData.avatar;
+                    selectedAvatarUrl = userData.avatar;
+                } else {
+                    avatarImg.src = "https://via.placeholder.com/100"; // Ảnh mặc định
+                }
+            }
         }
-        buildBookshelfHTML(data, container);
     });
+
+    // 3. Tự động tạo nút Lưu nếu chưa có
+    const profileSection = document.getElementById('profileSection');
+    if (!document.getElementById('btnUpdateProfile')) {
+        const btn = document.createElement('button');
+        btn.id = 'btnUpdateProfile';
+        btn.textContent = "Lưu Thay Đổi Hồ Sơ";
+        btn.style.cssText = "display: block; margin: 20px auto; background: #ff4d6d; color: white; padding: 12px 25px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold;";
+        btn.onclick = updateProfileData;
+        profileSection.appendChild(btn);
+    }
 }
 
 function buildBookshelfHTML(data, container) {
@@ -476,5 +493,26 @@ function logoutFromProfile() {
     if(confirm("Chị muốn đăng xuất tài khoản đúng không ạ? 🐢")) {
         auth.signOut();
         location.reload(); // Reload lại trang để reset trạng thái
+    }
+}
+function updateProfileData() {
+    const newName = document.getElementById('userProfileName').textContent;
+    const user = auth.currentUser;
+
+    if (user) {
+        // 1. Cập nhật tên lên Firebase Auth
+        user.updateProfile({
+            displayName: newName
+        }).then(() => {
+            // 2. Cập nhật thêm vào Database (nếu chị có lưu cấu trúc users/uid)
+            db.ref('users/' + user.uid).update({
+                displayName: newName,
+                avatar: selectedAvatarUrl
+            }).then(() => {
+                alert("Đã cập nhật hồ sơ thành công! 🐢");
+            });
+        }).catch((error) => {
+            alert("Có lỗi xảy ra: " + error.message);
+        });
     }
 }
