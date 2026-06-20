@@ -259,3 +259,28 @@ body {
 .textarea-custom { min-height: 120px; }
 .btn-link-management { display: block; text-align: center; padding: 12px; background: #eedfff; color: #6b21a8; text-decoration: none; border-radius: 12px; font-weight: bold; font-size: 0.85rem; margin: 15px 0; border: 1px solid #d8b4fe; }
 .btn-submit-custom { width: 100%; padding: 14px; background: linear-gradient(135deg, #a78bfa, #7c3aed); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 1rem; }
+
+.modal-content-custom {
+    background: #ffffff;
+    padding: 30px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 600px;
+    
+    /* CHỐT HẠ CHO VIỆC KHÔNG TRÀN */
+    max-height: 85vh;      /* Chiều cao tối đa chỉ bằng 85% màn hình */
+    overflow-y: auto;      /* Nếu nội dung dài hơn 85%, nó sẽ tự tạo thanh cuộn */
+    
+    box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+    position: relative;
+    box-sizing: border-box; /* Quan trọng: để padding không làm vỡ khung */
+}
+
+/* Thêm tí xíu cho đẹp thanh cuộn */
+.modal-content-custom::-webkit-scrollbar {
+    width: 8px;
+}
+.modal-content-custom::-webkit-scrollbar-thumb {
+    background: #ffccd5;
+    border-radius: 10px;
+}
