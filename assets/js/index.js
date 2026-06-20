@@ -245,7 +245,7 @@ function listenToNotifications() {
 }
 
 /* ==========================================================================
-   HÀM BỔ TRỢ: TẠO CARD TRUYỆN PHONG CÁCH NETFLIX (Kiểm tra trường 'img')
+   9. HÀM BỔ TRỢ: TẠO CARD TRUYỆN PHONG CÁCH NETFLIX (Kiểm tra trường 'img')
    ========================================================================== */
 function createNetflixCard(id, story) {
     const div = document.createElement('div');
@@ -296,5 +296,88 @@ function triggerSearch() {
         if(!hasResult) {
             resultsGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--smoke);">Không tìm thấy tác phẩm nào khớp từ khóa 🐢</p>`;
         }
+    });
+}
+/* ==========================================================================
+   10. QUẢN LÝ ĐĂNG NHẬP VÀ KÍCH HOẠT NÚT ADMIN QUA UID BẢO MẬT
+   ========================================================================== */
+
+// Theo dõi trạng thái đăng nhập Realtime từ Firebase
+auth.onAuthStateChanged((user) => {
+    const loginBtn = document.querySelector('.login-btn') || document.querySelector('.nav-btn'); // Nút đăng nhập trên Header
+    const adminPanel = document.getElementById('adminPanel') || document.querySelector('.admin-panel'); // Khối bảng đăng truyện của chị
+
+    if (user) {
+        // --- TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP ---
+        console.log("Đăng nhập thành công với UID:", user.uid);
+
+        // Kiểm tra chính xác chuỗi UID quyền lực của chị
+        if (user.uid === 'BrZQ9s07ujfIYG1iPtC4vIhGgx33') {
+            
+            // 1. Biến nút Đăng nhập thành nút ADMIN bản Premium
+            if (loginBtn) {
+                loginBtn.innerHTML = `<i class="fa-solid fa-crown" style="color: #ffca28; margin-right: 5px;"></i> Admin`;
+                loginBtn.style.background = "var(--netflix-red)"; // Màu đỏ nổi bật
+                
+                // 2. Click vào nút Admin sẽ đóng/mở (Toggle) bảng đăng truyện mượt mà
+                loginBtn.onclick = () => {
+                    if (adminPanel) {
+                        if (adminPanel.style.display === 'block' || adminPanel.classList.contains('active')) {
+                            adminPanel.style.display = 'none';
+                            adminPanel.classList.remove('active');
+                        } else {
+                            adminPanel.style.display = 'block';
+                            adminPanel.classList.add('active');
+                            adminPanel.scrollIntoView({ behavior: 'smooth' }); // Cuộn màn hình xuống form đăng
+                        }
+                    } else {
+                        if (typeof toggleAdminPanel === 'function') toggleAdminPanel();
+                    }
+                };
+            }
+        } else {
+            // Nếu là tài khoản người đọc bình thường (Không trùng UID admin)
+            if (loginBtn) {
+                loginBtn.textContent = "Đăng xuất";
+                loginBtn.onclick = handleSignOut;
+            }
+            if (adminPanel) adminPanel.style.display = 'none';
+        }
+
+    } else {
+        // --- TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP HOẶC VỪA ĐĂNG XUẤT ---
+        if (loginBtn) {
+            loginBtn.innerHTML = `<i class="fa-regular fa-user"></i> Đăng nhập`;
+            loginBtn.style.background = "transparent"; // Reset giao diện nút
+            loginBtn.onclick = showLoginPopup; // Gọi hộp thoại đăng nhập
+        }
+        if (adminPanel) {
+            adminPanel.style.display = 'none';
+            adminPanel.classList.remove('active');
+        }
+    }
+});
+
+// Hàm đăng xuất
+function handleSignOut() {
+    auth.signOut().then(() => {
+        alert("Đã đăng xuất tài khoản Động Chăn Rùa 🐢");
+    });
+}
+
+// Hàm hiển thị hộp thoại đăng nhập bảo mật
+function showLoginPopup() {
+    const email = prompt("Nhập Email tài khoản Admin của chị:");
+    if (!email) return;
+    const password = prompt("Nhập mật khẩu Admin:");
+    if (!password) return;
+
+    auth.signInWithEmailAndPassword(email, password)
+    .then((userCredential) => {
+        alert("🎉 Chào mừng Quản trị viên tối cao trở lại Động!");
+    })
+    .catch((error) => {
+        console.error("Lỗi xác thực:", error);
+        alert("⚠️ Tài khoản hoặc mật khẩu không chính xác rồi chị ơi!");
     });
 }
