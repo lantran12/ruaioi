@@ -433,36 +433,43 @@ tuSachListenerRef.on('value', (snapshot) => {
     });
 }
 
-function saveAvatar() {
+function updateUserProfileData() {
     const user = auth.currentUser;
-    if (!user || !selectedAvatarUrl) {
-        alert("Chọn avatar trước nha chị 🐢");
+    const newName = document.getElementById('editDisplayNameInput').value.trim();
+
+    if (!user) {
+        alert("Chưa đăng nhập nha chị 🐢");
         return;
     }
 
-    db.ref('users/' + user.uid + '/profile').set({
-        avatar: selectedAvatarUrl,
-        avatarType: "custom" // 👈 THÊM DÒNG NÀY
-    });
+    const updates = {};
 
-    document.getElementById('userCurrentAvatar').src = selectedAvatarUrl;
+    // ✅ Đổi tên
+    if (newName) {
+        updates.displayName = newName;
+        user.updateProfile({ displayName: newName });
+        document.getElementById('userProfileName').textContent = newName;
+    }
 
-    alert("Đã lưu avatar ✨");
+    // ✅ Đổi avatar
+    if (selectedAvatarUrl) {
+        updates.avatar = selectedAvatarUrl;
+        updates.avatarType = "custom"; // 👈 QUAN TRỌNG
+        document.getElementById('userCurrentAvatar').src = selectedAvatarUrl;
+    }
+
+    // ✅ Nếu không thay đổi gì
+    if (Object.keys(updates).length === 0) {
+        alert("Chưa thay đổi gì hết nha chị 😅");
+        return;
+    }
+
+    // ✅ Lưu DB
+    db.ref('users/' + user.uid + '/profile').update(updates);
+
+    alert("Cập nhật hồ sơ thành công ✨");
 }
 
-function useGoogleAvatar() {
-    const user = auth.currentUser;
-    if (!user) return;
-
-    db.ref('users/' + user.uid + '/profile').set({
-        avatar: user.photoURL || null,
-        avatarType: "google" // 👈 THÊM DÒNG NÀY
-    });
-
-    document.getElementById('userCurrentAvatar').src = user.photoURL;
-
-    alert("Đã dùng ảnh Google 🌸");
-}
 
 function buildBookshelfHTML(data, container) {
     container.innerHTML = Object.keys(data).map(key => {
