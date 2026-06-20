@@ -299,76 +299,76 @@ function triggerSearch() {
     });
 }
 /* ==========================================================================
-   10. QUẢN LÝ ĐĂNG NHẬP, ĐĂNG XUẤT VÀ PHÂN QUYỀN ADMIN (UID CHUẨN)
+   10. QUẢN LÝ ĐĂNG NHẬP, ĐĂNG XUẤT VÀ HIỂN THỊ MODAL ADMIN QUA UID CHUẨN
    ========================================================================== */
 
-// Biến toàn cục để theo dõi chế độ của Modal (true = Đăng ký, false = Đăng nhập)
+// Biến toàn cục để theo dõi chế độ Modal Đăng nhập (true = Đăng ký, false = Đăng nhập)
 let isSignUpMode = true; 
 
 // --- THEO DÕI TRẠNG THÁI ĐĂNG NHẬP REALTIME TỪ FIREBASE ---
 auth.onAuthStateChanged((user) => {
-    const btnHeaderAuth = document.getElementById('btnHeaderAuth'); // Nút avatar góc phải
-    const btnOpenAdminPanel = document.getElementById('btnOpenAdminPanel'); // Nút vương miện 👑
-    const adminPanel = document.getElementById('adminPanel'); // Bảng đăng truyện
+    const btnHeaderAuth = document.getElementById('btnHeaderAuth'); // Nút Đăng ký / Đăng nhập
+    const adminModal = document.getElementById('adminModal'); // Hộp thoại đăng chương Admin
 
     if (user) {
         // A. TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP THÀNH CÔNG
         console.log("Đăng nhập thành công với UID:", user.uid);
         
-        // 1. Đổi icon người dùng thành icon Đăng xuất để chị click khi muốn thoát
-        if (btnHeaderAuth) {
-            btnHeaderAuth.innerHTML = `<i class="fa-solid fa-sign-out-alt" style="color: #ff4d6d;"></i>`;
-            btnHeaderAuth.title = "Đăng xuất tài khoản";
-            btnHeaderAuth.onclick = () => {
-                if(confirm("Chị muốn đăng xuất khỏi Động đúng không ạ? 🐢")) {
-                    auth.signOut().then(() => alert("Đã đăng xuất tài khoản thành công!"));
-                }
-            };
+        // Cập nhật thông tin cơ bản lên Profile cá nhân nếu có
+        if (document.getElementById('userProfileEmail')) {
+            document.getElementById('userProfileEmail').textContent = user.email;
+            document.getElementById('userProfileName').textContent = user.displayName || "Thành viên Động Rùa";
         }
 
-        // 2. Kiểm tra chính xác chuỗi UID tối cao của Chị
+        // KIỂM TRA QUYỀN ADMIN: Nếu đúng UID tối cao của chị
         if (user.uid === 'BrZQ9s07ujfIYG1iPtC4vIhGgx33') {
-            if (btnOpenAdminPanel) btnOpenAdminPanel.style.display = 'inline-block'; // Hiện vương miện 👑
+            if (btnHeaderAuth) {
+                // Biến nút ngoài Header thành nút mở Khu Vực Đăng Chương
+                btnHeaderAuth.innerHTML = `<i class="fa-solid fa-crown" style="color: #ffca28; margin-right: 5px;"></i> ĐĂNG CHƯƠNG (ADMIN)`;
+                btnHeaderAuth.style.background = "#2e8b57"; // Đổi sang màu xanh seegreen chuẩn admin của chị
+                btnHeaderAuth.onclick = openAdminModal; // Bấm vào là xổ bảng đăng chương liền
+            }
         } else {
-            if (btnOpenAdminPanel) btnOpenAdminPanel.style.display = 'none';
+            // Nếu là người đọc bình thường: Biến nút thành nút xem Hồ sơ/Tủ sách
+            if (btnHeaderAuth) {
+                btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user-circle"></i> TỦ SÁCH CỦA BẠN`;
+                btnHeaderAuth.style.background = "#34495e";
+                btnHeaderAuth.onclick = () => {
+                    // Ẩn trang chủ và hiện khu vực cá nhân
+                    if(document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'none';
+                    if(document.getElementById('profileSection')) document.getElementById('profileSection').style.display = 'block';
+                };
+            }
         }
 
     } else {
         // B. TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP HOẶC VỪA ĐĂNG XUẤT
         if (btnHeaderAuth) {
-            btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i>`;
-            btnHeaderAuth.title = "Đăng nhập / Đăng ký";
-            btnHeaderAuth.onclick = openAuthModal; // Bấm vào gọi lại hộp thoại đăng nhập
+            btnHeaderAuth.textContent = "Đăng Ký / Đăng Nhập";
+            btnHeaderAuth.style.background = ""; // Trả về giao diện CSS gốc
+            btnHeaderAuth.onclick = openAuthModal; // Gọi modal đăng nhập gốc
         }
         
-        // Giấu hoàn toàn nút vương miện và bảng đăng truyện
-        if (btnOpenAdminPanel) btnOpenAdminPanel.style.display = 'none';
-        if (adminPanel) adminPanel.style.display = 'none';
+        // Đóng giấu hoàn toàn các khu vực nhạy cảm
+        closeAdminModal();
+        showHome();
     }
 });
 
-// --- CÁC HÀM ĐIỀU KHIỂN HỘP THOẠI (AUTH MODAL) ---
-
-// Mở Modal Đăng Nhập / Đăng Ký
+// --- CÁC HÀM ĐIỀU KHIỂN ĐÓNG / MỞ MODAL ĐĂNG NHẬP ---
 function openAuthModal() {
     const modal = document.getElementById('authModal');
     if (modal) modal.style.display = 'flex';
 }
-
-// Đóng Modal
 function closeAuthModal() {
     const modal = document.getElementById('authModal');
     if (modal) modal.style.display = 'none';
 }
-
-// Đóng khi click ra ngoài vùng xám vùng nền
 function closeAuthModalOverlay(event) {
-    if (event.target.id === 'authModal') {
-        closeAuthModal();
-    }
+    if (event.target.id === 'authModal') closeAuthModal();
 }
 
-// Chuyển đổi qua lại giữa chế độ Đăng Ký và Đăng Nhập
+// Chuyển đổi qua lại giữa Đăng ký và Đăng nhập trong Modal của chị
 function toggleAuthMode() {
     isSignUpMode = !isSignUpMode;
     const authTitle = document.getElementById('authTitle');
@@ -377,68 +377,69 @@ function toggleAuthMode() {
     const authToggleLink = document.getElementById('authToggleLink');
 
     if (isSignUpMode) {
-        if (authTitle) authTitle.textContent = "GIA NHẬP RÙA STREAM";
+        if (authTitle) authTitle.textContent = "ĐĂNG KÝ THÀNH VIÊN";
         if (nickNameGroup) nickNameGroup.style.display = 'block';
-        if (btnAuthSubmit) btnAuthSubmit.textContent = "BẮT ĐẦU TRẢI NGHIỆM";
-        if (authToggleLink) authToggleLink.textContent = "Đã có tài khoản? Đăng nhập ngay";
+        if (btnAuthSubmit) btnAuthSubmit.textContent = "ĐĂNG KÝ TÀI KHOẢN THẬT";
+        if (authToggleLink) authToggleLink.textContent = "Đã có tài khoản rồi? Bấm vào đây để Đăng nhập";
     } else {
-        if (authTitle) authTitle.textContent = "CHÀO MỪNG TRỞ LẠI ĐỘNG";
-        if (nickNameGroup) nickNameGroup.style.display = 'none'; // Đăng nhập thì ẩn ô biệt danh đi
-        if (btnAuthSubmit) btnAuthSubmit.textContent = "ĐĂNG NHẬP NGAY";
-        if (authToggleLink) authToggleLink.textContent = "Chưa có tài khoản? Đăng ký tại đây";
+        if (authTitle) authTitle.textContent = "ĐĂNG NHẬP THÀNH VIÊN";
+        if (nickNameGroup) nickNameGroup.style.display = 'none';
+        if (btnAuthSubmit) btnAuthSubmit.textContent = "ĐĂNG NHẬP VÀO ĐỘNG NGAY";
+        if (authToggleLink) authToggleLink.textContent = "Chưa có tài khoản? Bấm vào đây để Đăng ký";
     }
 }
 
-// --- XỬ LÝ GỬI FORM XÁC THỰC LÊN FIREBASE AUTH ---
+// Gửi form xác thực tài khoản lên Firebase
 function submitAuthForm() {
     const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value.trim();
     const displayName = document.getElementById('authDisplayName').value.trim();
 
     if (!email || !password) {
-        alert("Chị ơi, vui lòng nhập đầy đủ Email và Mật mã nhé! 🐢");
+        alert("Vui lòng điền đủ Email và Mật khẩu nha chị! 🐢");
         return;
     }
 
     if (isSignUpMode) {
-        // 1. LOGIC XỬ LÝ ĐĂNG KÝ TÀI KHOẢN MỚI
         auth.createUserWithEmailAndPassword(email, password)
         .then((userCredential) => {
-            // Cập nhật tên hiển thị nếu có nhập
-            if (displayName) {
-                userCredential.user.updateProfile({ displayName: displayName });
-            }
-            alert("🎉 Đăng ký thành viên Động Chăn Rùa thành công!");
+            if (displayName) userCredential.user.updateProfile({ displayName: displayName });
+            alert("🎉 Đăng ký tài khoản Động Chăn Rùa thành công!");
             closeAuthModal();
         })
-        .catch((error) => {
-            alert("Lỗi đăng ký: " + error.message);
-        });
+        .catch(err => alert("Lỗi đăng ký: " + err.message));
     } else {
-        // 2. LOGIC XỬ LÝ ĐĂNG NHẬP TÀI KHOẢN CÓ SẴN
         auth.signInWithEmailAndPassword(email, password)
         .then(() => {
-            alert("🎉 Đăng nhập thành công!");
+            alert("🎉 Chào mừng trở lại hệ thống!");
             closeAuthModal();
         })
-        .catch((error) => {
-            alert("⚠️ Đăng nhập thất bại: " + error.message);
-        });
+        .catch(err => alert("Lỗi đăng nhập: " + err.message));
     }
 }
 
-// Hàm xử lý nhanh khi người dùng quên mật khẩu
-function handleForgotPassword() {
-    const email = document.getElementById('authEmail').value.trim();
-    if (!email) {
-        alert("Vui lòng nhập Email của chị vào ô trống trước rồi bấm nút này nhé!");
-        return;
+// --- CÁC HÀM ĐIỀU KHIỂN ĐÓNG / MỞ KHU VỰC ADMIN ---
+function openAdminModal() {
+    const adminModal = document.getElementById('adminModal');
+    if (adminModal) adminModal.style.display = 'flex';
+}
+function closeAdminModal() {
+    const adminModal = document.getElementById('adminModal');
+    if (adminModal) adminModal.style.display = 'none';
+}
+function closeAdminModalOverlay(event) {
+    if (event.target.id === 'adminModal') closeAdminModal();
+}
+
+// Hàm quay lại màn hình chính từ trang cá nhân
+function showHome() {
+    if(document.getElementById('profileSection')) document.getElementById('profileSection').style.display = 'none';
+    if(document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'block';
+}
+
+// Hàm xử lý nút Đăng xuất trong Tủ sách/Hồ sơ cá nhân
+function logoutFromProfile() {
+    if(confirm("Chị có chắc chắn muốn đăng xuất không? 🐢")) {
+        auth.signOut();
     }
-    auth.sendPasswordResetEmail(email)
-    .then(() => {
-        alert("Một link đặt lại mật khẩu đã được gửi vào Email của chị, hãy kiểm tra hòm thư nha!");
-    })
-    .catch((error) => {
-        alert("Có lỗi xảy ra: " + error.message);
-    });
 }
