@@ -391,26 +391,33 @@ function openProfileZone() {
 function renderUserProfileData(user) {
     renderAvatarSelectionGrid(); 
     
-    // Thu nhỏ Avatar hiển thị cho vừa vặn, không bị chiếm hết màn hình
     const currentAvatarImg = document.getElementById('userCurrentAvatar');
-    if (currentAvatarImg) {
-        currentAvatarImg.style.cssText = "width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 15px auto; border: 3px solid #ff4d6d;";
-    }
 
-    // Kết nối database lấy tủ sách thật (Hỗ trợ cả Realtime Database v8/v9 tùy cấu hình của chị)
+    // Lấy avatar từ DB trước, fallback sang Google
+    db.ref('users/' + user.uid + '/profile').once('value').then(snapshot => {
+        const data = snapshot.val();
+
+        const avatar = data?.avatar || user.photoURL || 'https://via.placeholder.com/100';
+
+        if (currentAvatarImg) {
+            currentAvatarImg.src = avatar;
+            currentAvatarImg.style.cssText = "width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 15px auto; border: 3px solid #ff4d6d;";
+        }
+    });
+
+    // ===== TỦ SÁCH =====
     const container = document.getElementById('userBookshelfContainer');
     if (!container) return;
 
-    // Chỗ này kiểm tra nếu chị đang xài Firebase database cũ
-    if (typeof db !== 'undefined' && typeof firebase !== 'undefined') {
-        firebase.database().ref('users/' + user.uid + '/tuSach').on('value', (snapshot) => {
-            const data = snapshot.val();
-            if (!data) { container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! 🐾</div>`; return; }
-            buildBookshelfHTML(data, container);
-        });
-    }
+    db.ref('users/' + user.uid + '/tuSach').on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (!data) { 
+            container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! 🐾</div>`; 
+            return; 
+        }
+        buildBookshelfHTML(data, container);
+    });
 }
-
 function buildBookshelfHTML(data, container) {
     container.innerHTML = Object.keys(data).map(key => {
         const b = data[key];
