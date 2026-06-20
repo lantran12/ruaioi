@@ -307,7 +307,9 @@ let tuSachListenerRef = null; // Quản lý lắng nghe tủ sách realtime
 
 // --- A. THEO DÕI TRẠNG THÁI TÀI KHOẢN REALTIME ---
 auth.onAuthStateChanged((user) => {
-    const btnHeaderAuth = document.getElementById('btnHeaderAuth'); // Nút Account gốc
+    const btnHeaderAuth = document.getElementById('btnHeaderAuth'); 
+    const btnNotification = document.getElementById('btnNotification'); // 👈 THÊM DÒNG 
+    
 
     // Tự động tạo nút Vương Miện màu xanh Admin nằm CẠNH NHAU (ngang hàng)
     let btnAdminCrown = document.getElementById('btnOpenAdminPanel');
@@ -328,9 +330,9 @@ auth.onAuthStateChanged((user) => {
     }
 
     if (user) {
-        // TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP
-        console.log("Đăng nhập thành công với UID:", user.uid);
-        
+    console.log("Đăng nhập thành công với UID:", user.uid);
+
+    if (btnNotification) btnNotification.style.display = 'inline-flex'; // 👈 HIỆN CHUÔNG
         // Gắn dữ liệu Email và Tên vào form profile ẩn phía dưới
         if (document.getElementById('userProfileEmail')) document.getElementById('userProfileEmail').textContent = user.email;
         if (document.getElementById('userProfileName')) document.getElementById('userProfileName').textContent = user.displayName || "Thành viên Động Rùa";
@@ -361,7 +363,8 @@ auth.onAuthStateChanged((user) => {
             }
             if (btnAdminCrown) btnAdminCrown.style.display = 'none';
         }
-    } else {
+  } else {
+    if (btnNotification) btnNotification.style.display = 'none'; // 👈 ẨN CHUÔNG
         // TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP / ĐĂNG XUẤT
         if (btnHeaderAuth) {
             btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i>`;
