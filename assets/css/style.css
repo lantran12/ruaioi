@@ -213,3 +213,24 @@ body {
 
 /* --- FOOTER --- */
 .netflix-footer { text-align: center; padding: 40px 0; color: var(--smoke); font-size: 0.8rem; margin-top: 60px; }
+
+/* Màu cho badge chứa icon */
+.trending-badge {
+    display: inline-flex; /* Dùng flex để canh chỉnh icon và chữ */
+    align-items: center;
+    background: rgba(255, 77, 109, 0.1);
+    color: var(--netflix-red); /* Màu chủ đạo của chữ */
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+/* Ép icon lấy đúng màu của class cha (trending-badge) */
+.trending-badge i {
+    color: inherit; /* Lấy màu của chữ bao quanh nó */
+    margin-right: 6px; /* Tạo khoảng cách đẹp giữa icon và chữ */
+    font-size: 0.9em; /* Làm icon nhỏ lại một chút cho cân đối với chữ */
+}
+
