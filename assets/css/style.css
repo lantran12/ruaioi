@@ -1,355 +1,343 @@
 /* ==========================================================================
-   1. ĐỊNH HÌNH HỆ MÀU & PHÔNG CHỮ (Sáng - Sang - Mịn)
+   1. ĐỊNH HÌNH PHONG CÁCH EDITORIAL CAO CẤP
    ========================================================================== */
 :root {
-    --primary-pink: #ffb7b2;     /* Hồng pastel chủ đạo */
-    --light-pink: #ffe5ec;       /* Hồng nhạt nền phụ */
-    --dark-pink: #ff8fa3;        /* Hồng đậm nhấn chữ/icon */
-    --bg-main: #fdfbfc;          /* Nền trắng kem mịn, không loá mắt */
-    --card-bg: #ffffff;          /* Nền thẻ trắng tinh khôi */
-    --text-main: #3d3d3d;        /* Chữ chính màu xám đậm sang trọng */
-    --text-muted: #8a8a8a;       /* Chữ phụ xám nhạt tinh tế */
-    --radius-main: 16px;
-    --radius-round: 24px;
-    --shadow-smooth: 0 10px 30px rgba(255, 183, 178, 0.12);
-    --shadow-hover: 0 15px 35px rgba(255, 143, 163, 0.2);
-    --font-heading: 'Playfair Display', serif;
-    --font-body: 'Quicksand', sans-serif;
+    --p-pink: #ffb7b2;        /* Hồng Pastel Thượng Lưu */
+    --l-pink: #fff0f2;        /* Hồng Nhạt Sương Mai */
+    --d-pink: #ff6b8b;        /* Hồng Nhấn Đậm Tinh Tế */
+    --luxury-gold: #dfb1a3;   /* Sắc Vàng Kem Hồng */
+    --bg-premium: #fdfafb;    /* Nền Trắng Mịn Nhung */
+    --text-dark: #2a2a2a;     /* Đen Than Sang Trọng */
+    --text-soft: #7a7a7a;     /* Xám Khói Thanh Lịch */
+    --font-serif: 'Playfair Display', serif;
+    --font-sans: 'Quicksand', sans-serif;
+    --border-smooth: 1px solid rgba(255, 183, 178, 0.25);
 }
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+* { box-sizing: border-box; margin: 0; padding: 0; }
 
 body {
-    background-color: var(--bg-main);
-    font-family: var(--font-body);
-    color: var(--text-main);
-    line-height: 1.6;
+    background-color: var(--bg-premium);
+    font-family: var(--font-sans);
+    color: var(--text-dark);
     -webkit-font-smoothing: antialiased;
 }
 
 .container {
-    max-width: 1140px;
+    max-width: 1200px;
     margin: 0 auto;
-    padding: 24px 20px;
-}
-
-/* Tiêu đề phân khu */
-.section-title {
-    font-family: var(--font-heading);
-    font-size: 1.6rem;
-    font-weight: 600;
-    color: var(--text-main);
-    margin-bottom: 24px;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}
-.section-title i {
-    color: var(--dark-pink);
-    font-size: 1.3rem;
+    padding: 30px 24px;
 }
 
 /* ==========================================================================
-   2. HEADER CỰC KỲ HIỆN ĐẠI (Hiệu ứng kính mờ thanh lịch)
+   2. HEADER CAO CẤP CHUẨN VIP
    ========================================================================== */
 .main-header.custom-header {
-    background: rgba(255, 255, 255, 0.8);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(255, 255, 255, 0.75);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     position: sticky;
     top: 0;
-    z-index: 999;
-    padding: 14px 40px;
+    z-index: 1000;
+    padding: 16px 60px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid rgba(255, 229, 236, 0.6);
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(255, 183, 178, 0.15);
 }
 
 .main-header .logo a {
-    font-family: var(--font-heading);
-    font-size: 1.6rem;
+    font-family: var(--font-serif);
+    font-size: 1.8rem;
     font-weight: 700;
-    color: #4a4a4a;
+    color: var(--text-dark);
     text-decoration: none;
-    letter-spacing: -0.5px;
+    letter-spacing: -1px;
+}
+.main-header .logo i {
+    color: var(--p-pink);
+    font-size: 1.5rem;
+    margin-right: 5px;
 }
 .main-header .logo span {
-    color: var(--dark-pink);
+    color: var(--d-pink);
     font-weight: 400;
     font-style: italic;
+    font-size: 1.5rem;
 }
 
-/* Các nút trên header */
-.btn {
-    font-family: var(--font-body);
+.header-right { display: flex; align-items: center; gap: 24px; }
+
+/* Chuông thông báo tinh gọn */
+.noti-btn {
+    font-size: 1.4rem;
+    color: var(--text-dark);
+    position: relative;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: color 0.3s;
+}
+.noti-btn:hover { color: var(--d-pink); }
+.noti-btn .badge {
+    position: absolute;
+    top: -4px;
+    right: -6px;
+    background: var(--d-pink);
+    color: white;
+    font-size: 0.65rem;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: bold;
+}
+
+/* Nút thành viên sang trọng */
+.btn-login {
+    font-family: var(--font-sans);
     font-weight: 600;
     border: none;
-    padding: 10px 20px;
-    border-radius: var(--radius-round);
+    padding: 10px 24px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, var(--l-pink), #fff);
+    color: var(--d-pink);
+    border: 1px solid rgba(255,183,178,0.4);
     cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.btn-login {
-    background: var(--light-pink);
-    color: var(--dark-pink);
+    transition: all 0.3s ease;
 }
 .btn-login:hover {
-    background: var(--primary-pink);
+    background: var(--p-pink);
     color: white;
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(255, 183, 178, 0.4);
+    transform: translateY(-1px);
+    box-shadow: 0 8px 20px rgba(255, 183, 178, 0.3);
 }
 
 /* ==========================================================================
-   3. TRUYỆN ĐỀ CỬ HÔM NAY (Bố cục Premium)
+   3. BỐ CỤC HERO ZONE VIP (CHIA TỶ LỆ 65% - 35%)
    ========================================================================== */
-.featured-section {
-    max-width: 1140px;
+.premium-hero-zone {
+    max-width: 1200px;
     margin: 30px auto;
-    padding: 0 20px;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: 1.6fr 1fr;
+    gap: 35px;
 }
 
+.tag-headline {
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 2px;
+    color: var(--luxury-gold);
+    margin-bottom: 15px;
+}
+
+/* Khối đề cử mang phong cách Luxury */
 .featured-card {
-    background: var(--card-bg);
-    border-radius: var(--radius-main);
-    padding: 30px;
-    box-shadow: var(--shadow-smooth);
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 35px;
     display: flex;
     gap: 30px;
     align-items: center;
-    border: 1px solid rgba(255, 229, 236, 0.5);
-    transition: transform 0.3s ease;
+    border: var(--border-smooth);
+    box-shadow: 0 10px 40px rgba(255, 183, 178, 0.06);
+    height: calc(100% - 30px);
 }
-.featured-card:hover {
-    transform: translateY(-3px);
-}
-
 .featured-card img {
-    width: 135px;
-    height: 185px;
+    width: 150px;
+    height: 210px;
     object-fit: cover;
     border-radius: 12px;
-    box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.08);
 }
+.featured-info h3 {
+    font-family: var(--font-serif);
+    font-size: 1.7rem;
+    margin-bottom: 8px;
+}
+.featured-info h3 a { text-decoration: none; color: var(--text-dark); transition: color 0.2s; }
+.featured-info h3 a:hover { color: var(--d-pink); }
+.featured-info p { font-size: 0.9rem; color: var(--text-soft); line-height: 1.6; }
 
-.featured-info h3 a {
-    color: var(--text-main);
-    text-decoration: none;
-    transition: color 0.2s;
-}
-.featured-info h3 a:hover {
-    color: var(--dark-pink);
-}
-
-/* ==========================================================================
-   4. KHU VỰC BỘ LỌC & TÌM KIẾM TỐI GIẢN
-   ========================================================================== */
-.filter-section {
-    max-width: 1140px;
-    margin: 40px auto;
-    padding: 0 20px;
+/* Khối Top 5 xếp cạnh cực gọn gàng, quý phái */
+.nomination-list {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    border: var(--border-smooth);
+    box-shadow: 0 10px 40px rgba(255, 183, 178, 0.06);
     display: flex;
     flex-direction: column;
-    gap: 20px;
-}
-
-/* Thanh tìm kiếm */
-.search-bar {
-    display: flex;
-    background: var(--card-bg);
-    padding: 6px 6px 6px 20px;
-    border-radius: var(--radius-round);
-    box-shadow: var(--shadow-smooth);
-    border: 1px solid rgba(255, 229, 236, 0.5);
-}
-.searchInput, #searchInput {
-    flex: 1;
-    border: none;
-    outline: none;
-    font-family: var(--font-body);
-    font-size: 1rem;
-    color: var(--text-main);
-    background: transparent;
-}
-.btn-search {
-    background: var(--primary-pink);
-    color: white;
-    border: none;
-    width: 45px;
-    height: 45px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-.btn-search:hover {
-    background: var(--dark-pink);
-}
-
-/* Hàng nút bấm chọn tab */
-.filter-buttons {
-    display: flex;
     gap: 12px;
-    flex-wrap: wrap;
+    height: calc(100% - 30px);
+    justify-content: space-between;
 }
-.filter-btn {
-    font-family: var(--font-body);
-    font-weight: 500;
-    background: var(--card-bg);
-    color: var(--text-muted);
-    border: 1px solid rgba(255, 229, 236, 0.7);
-    padding: 10px 22px;
-    border-radius: var(--radius-round);
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.filter-btn:hover, .filter-btn.active {
-    background: var(--light-pink);
-    color: var(--dark-pink);
-    border-color: var(--primary-pink);
-}
-
-/* Menu xổ xuống của Thể loại/Tác giả */
-.dropdown { position: relative; }
-.dropdown-menu {
-    display: none;
-    position: absolute;
-    top: 52px;
-    left: 0;
-    background: var(--card-bg);
-    box-shadow: var(--shadow-hover);
-    border-radius: var(--radius-main);
-    padding: 15px;
-    min-width: 280px;
-    z-index: 100;
-    border: 1px solid var(--light-pink);
-    flex-wrap: wrap;
-    gap: 8px;
-}
-.dropdown:hover .dropdown-menu { display: flex; }
-
-/* Các tag item bên trong menu xổ xuống */
-.tag-item, .dropdown-menu span {
-    background: #fffcfc;
-    border: 1px solid var(--light-pink);
-    padding: 6px 14px;
-    border-radius: var(--radius-round);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: all 0.2s;
-}
-.tag-item:hover, .dropdown-menu span:hover {
-    background: var(--primary-pink);
-    color: white;
-    border-color: var(--primary-pink);
-}
-
-/* ==========================================================================
-   5. LƯỚI DANH SÁCH TRUYỆN (Chuẩn Modern Grid)
-   ========================================================================== */
-.book-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-    gap: 28px;
-    margin-top: 20px;
-}
-
-.story-card, .book-grid > div {
-    background: transparent;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
-
-.story-card:hover, .book-grid > div:hover {
-    transform: translateY(-6px);
-}
-
-/* Khối bọc ảnh bìa truyện */
-.story-card img, .book-grid > div img {
-    width: 100%;
-    height: 250px;
-    object-fit: cover;
-    border-radius: var(--radius-main);
-    box-shadow: var(--shadow-smooth);
-    transition: box-shadow 0.3s;
-}
-.story-card:hover img, .book-grid > div:hover img {
-    box-shadow: var(--shadow-hover);
-}
-
-/* Chữ dưới ảnh bìa */
-.story-card h4, .book-grid > div h4 {
-    font-size: 1rem;
-    font-weight: 600;
-    margin-top: 12px;
-    color: var(--text-main);
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-.story-card p, .book-grid > div p {
-    font-size: 0.85rem;
-    color: var(--text-muted);
-    margin-top: 2px;
-}
-
-/* ==========================================================================
-   6. TOP 5 XEM NHIỀU (Thiết kế thanh lịch đột phá)
-   ========================================================================== */
-.nomination-list {
-    background: var(--card-bg) !important;
-    border-radius: var(--radius-main) !important;
-    box-shadow: var(--shadow-smooth);
-    padding: 20px !important;
-}
-
 .top-story-item {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 14px 20px;
-    background: #fafafa;
-    border-radius: 12px;
-    transition: all 0.2s;
-    border: 1px solid transparent;
+    padding: 10px 0;
+    border-bottom: 1px dashed rgba(255, 183, 178, 0.2);
 }
-.top-story-item:hover {
-    background: #fff8f8;
-    border-color: var(--light-pink);
-    transform: scale(1.01);
+.top-story-item:last-child { border-bottom: none; }
+.top-story-item a {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+.top-story-item a:hover { color: var(--d-pink); }
+
+/* ==========================================================================
+   4. BỘ LỌC TÌM KIẾM TẠP CHÍ BIÊN TẬP
+   ========================================================================== */
+.premium-filter-zone {
+    background: linear-gradient(to right, var(--l-pink), rgba(255,255,255,0));
+    padding: 40px 0;
+    margin: 50px 0;
+}
+.filter-wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
 }
 
-/* Biểu tượng Rank 1, 2, 3 đặc biệt */
-.top-story-item span[style*="font-family"] {
-    font-family: var(--font-heading) !important;
-    font-size: 1.4rem !important;
+/* Ô tìm kiếm tinh tế */
+.search-box-vip {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    padding: 8px 8px 8px 25px;
+    border-radius: 40px;
+    box-shadow: 0 10px 30px rgba(242, 203, 210, 0.15);
+    border: 1px solid rgba(255, 183, 178, 0.2);
+}
+.main-search-icon { color: var(--p-pink); margin-right: 15px; font-size: 1.1rem; }
+.search-box-vip input {
+    flex: 1;
+    border: none;
+    outline: none;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+.btn-search-vip {
+    background: var(--text-dark);
+    color: #fff;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 30px;
+    font-family: var(--font-sans);
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-search-vip:hover { background: var(--d-pink); }
+
+/* Thanh điều hướng tab */
+.filter-navigation { display: flex; gap: 15px; flex-wrap: wrap; }
+.filter-btn-vip {
+    font-family: var(--font-sans);
+    font-weight: 500;
+    background: transparent;
+    color: var(--text-soft);
+    border: none;
+    padding: 10px 24px;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: all 0.25s;
+}
+.filter-btn-vip.active, .filter-btn-vip:hover {
+    background: #ffffff;
+    color: var(--d-pink);
+    box-shadow: 0 5px 15px rgba(255, 183, 178, 0.2);
+}
+
+/* Thả menu phụ xổ ra */
+.dropdown { position: relative; }
+.dropdown-menu-vip {
+    display: none;
+    position: absolute;
+    top: 52px;
+    left: 0;
+    background: #ffffff;
+    box-shadow: 0 15px 40px rgba(0,0,0,0.08);
+    border-radius: 16px;
+    padding: 18px;
+    min-width: 320px;
+    z-index: 100;
+    border: var(--border-smooth);
+    flex-wrap: wrap;
+    gap: 8px;
+}
+.dropdown:hover .dropdown-menu-vip { display: flex; }
+
+/* ==========================================================================
+   5. LƯỚI TRUYỆN MỊN MÀNG SANG TRỌNG
+   ========================================================================== */
+.main-list-header { margin-bottom: 30px; }
+.section-title-vip { font-family: var(--font-serif); font-size: 1.9rem; font-weight: 600; color: var(--text-dark); }
+.sub-title-vip { font-size: 0.85rem; color: var(--text-soft); display: block; margin-top: 4px; letter-spacing: 0.5px; }
+
+.book-grid-vip {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+    gap: 35px;
+}
+
+/* Định dạng thẻ truyện lật đổ khuôn mẫu cũ */
+.book-grid-vip > div, .story-card {
+    background: transparent;
+    cursor: pointer;
+}
+.book-grid-vip > div img, .story-card img {
+    width: 100%;
+    height: 270px;
+    object-fit: cover;
+    border-radius: 16px;
+    box-shadow: 0 8px 25px rgba(255, 183, 178, 0.08);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.book-grid-vip > div:hover img, .story-card:hover img {
+    transform: scale(1.03) translateY(-4px);
+    box-shadow: 0 15px 35px rgba(255, 143, 163, 0.2);
+}
+.book-grid-vip > div h4, .story-card h4 {
+    font-size: 1.05rem;
+    font-weight: 600;
+    margin-top: 14px;
+    color: var(--text-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.book-grid-vip > div p, .story-card p {
+    font-size: 0.85rem;
+    color: var(--text-soft);
+    margin-top: 3px;
 }
 
 /* ==========================================================================
-   7. FOOTER CHÂN TRANG
+   6. FOOTER ĐƯỜNG KẺ CAO CẤP
    ========================================================================== */
 .main-footer {
     text-align: center;
-    padding: 40px 20px;
-    margin-top: 80px;
-    border-top: 1px solid rgba(255, 229, 236, 0.6);
-    color: var(--text-muted);
-    font-size: 0.9rem;
-    background: linear-gradient(to bottom, transparent, #fff5f6);
+    padding: 60px 24px;
+    margin-top: 100px;
 }
-.main-footer i {
-    animation: heartBeat 1.5s infinite;
+.footer-line {
+    max-width: 100px;
+    height: 1px;
+    background: var(--luxury-gold);
+    margin: 0 auto 25px auto;
 }
+.main-footer p { font-size: 0.85rem; letter-spacing: 1px; color: var(--text-soft); text-transform: uppercase; }
 
-@keyframes heartBeat {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-    100% { transform: scale(1); }
-}
-
-/* Ẩn hiện tiện ích ẩn */
-.hidden { display: none !important; }
+/* Panel quản lý & popup ẩn giữ nguyên tính năng cũ, chỉ bọc gọn lại */
+.admin-panel { background: #fff; padding: 25px; border-radius: 20px; box-shadow: 0 15px 50px rgba(0,0,0,0.15); border: var(--border-smooth); }
+.auth-modal { backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); }
