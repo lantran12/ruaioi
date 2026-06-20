@@ -2,44 +2,205 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <title>Đọc Truyện - Động Chăn Rùa</title>
+    <title>Chi tiết truyện - Động Chăn Rùa</title>
     <link rel="stylesheet" href="assets/css/style.css">
+
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Segoe UI', sans-serif;
+            background: #fcf9fa;
+        }
+
+        /* ===== HERO ===== */
+        .hero {
+            position: relative;
+            height: 400px;
+            display: flex;
+            align-items: flex-end;
+            padding: 40px;
+            color: #333;
+        }
+
+        .hero::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to top, #fcf9fa 20%, rgba(255,255,255,0.3));
+        }
+
+        .hero-content {
+            position: relative;
+            display: flex;
+            gap: 30px;
+        }
+
+        .cover {
+            width: 180px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+
+        .info h1 {
+            margin: 0;
+            font-size: 28px;
+        }
+
+        .info p {
+            margin: 6px 0;
+            color: #777;
+        }
+
+        /* ===== BUTTONS ===== */
+        .actions {
+            margin-top: 15px;
+        }
+
+        .btn {
+            padding: 10px 18px;
+            border-radius: 20px;
+            border: none;
+            cursor: pointer;
+            margin-right: 10px;
+            font-weight: 600;
+        }
+
+        .btn-read {
+            background: #ff4d6d;
+            color: white;
+        }
+
+        .btn-save {
+            background: #eee;
+        }
+
+        /* ===== DESCRIPTION ===== */
+        .description {
+            max-width: 900px;
+            margin: 30px auto;
+            padding: 0 20px;
+            line-height: 1.6;
+        }
+
+        /* ===== CHAPTER LIST ===== */
+        .chapters {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 0 20px;
+        }
+
+        .chapter-item {
+            padding: 12px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .chapter-item:hover {
+            background: #fff0f4;
+        }
+    </style>
 </head>
+
 <body>
-    <div id="bookDetailContainer" style="max-width: 800px; margin: 50px auto; padding: 20px;">
-        <h1 id="bookTitle">Đang tải tên truyện...</h1>
-        <img id="bookCover" src="" style="width: 200px; border-radius: 10px;">
-        <p id="bookAuthor"></p>
+
+<!-- HERO -->
+<div class="hero" id="heroSection">
+    <div class="hero-content">
+        <img id="bookCover" class="cover" src="">
         
-        <button id="btnSaveToShelf" style="padding: 10px 20px; background: #ff4d6d; color: white; border: none; border-radius: 20px; cursor: pointer;">
-            ❤️ Lưu vào tủ sách
-        </button>
+        <div class="info">
+            <h1 id="bookTitle">Đang tải...</h1>
+            <p id="bookAuthor"></p>
+            <p id="bookStatus"></p>
+
+            <div class="actions">
+                <button class="btn btn-read" id="btnReadNow">📖 Đọc ngay</button>
+                <button class="btn btn-save" id="btnSaveToShelf">❤️ Lưu</button>
+            </div>
+        </div>
     </div>
+</div>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    
-    <script src="assets/js/firebase.js"></script>
-    <script src="assets/js/index.js"></script>
-    
-    <script>
-        // Sử dụng window.onload để đợi index.js chạy xong hoàn toàn
-        window.onload = () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const storyId = urlParams.get('id');
+<!-- DESCRIPTION -->
+<div class="description">
+    <h3>📜 Giới thiệu</h3>
+    <p id="bookDesc">Đang tải nội dung...</p>
+</div>
 
-            firebase.database().ref('stories/' + storyId).once('value').then(snapshot => {
-                const story = snapshot.val();
-                if (story) {
-                    document.getElementById('bookTitle').innerText = story.title;
-                    document.getElementById('bookCover').src = story.img || story.cover;
-                    
-                    document.getElementById('btnSaveToShelf').onclick = () => {
-                        // Bây giờ hàm này chắc chắn đã tồn tại
-                        addToBookshelf(storyId, story);
-                    };
-                }
-            });
+<!-- CHAPTER LIST -->
+<div class="chapters">
+    <h3>📚 Danh sách chương</h3>
+    <div id="chapterList">Đang tải chương...</div>
+</div>
+
+
+<!-- FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
+
+<script src="assets/js/firebase.js"></script>
+<script src="assets/js/index.js"></script>
+
+<script>
+window.onload = () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const storyId = urlParams.get('id');
+
+    if (!storyId) return;
+
+    const db = firebase.database();
+
+    db.ref('stories/' + storyId).once('value').then(snapshot => {
+        const story = snapshot.val();
+        if (!story) return;
+
+        // ===== INFO =====
+        document.getElementById('bookTitle').innerText = story.title;
+        document.getElementById('bookAuthor').innerText = "✍️ " + (story.author || "Động Chăn Rùa");
+        document.getElementById('bookStatus').innerText = "📌 " + (story.status || "Đang cập nhật");
+        document.getElementById('bookDesc').innerText = story.description || "Chưa có mô tả";
+
+        const img = story.img || story.cover || story.image;
+        document.getElementById('bookCover').src = img;
+
+        // ===== HERO BACKGROUND =====
+        document.getElementById('heroSection').style.background =
+            `linear-gradient(to right, rgba(252,249,250,0.95), rgba(252,249,250,0.6)), url('${img}')`;
+        document.getElementById('heroSection').style.backgroundSize = "cover";
+
+        // ===== BUTTON =====
+        document.getElementById('btnSaveToShelf').onclick = () => {
+            addToBookshelf(storyId, story);
         };
-    </script>
+
+        document.getElementById('btnReadNow').onclick = () => {
+            window.location.href = `reader.html?id=${storyId}`;
+        };
+    });
+
+    // ===== LOAD CHAPTER =====
+    db.ref('chapters/' + storyId).once('value').then(snapshot => {
+        const container = document.getElementById('chapterList');
+        if (!snapshot.exists()) {
+            container.innerHTML = "Chưa có chương nào 🐢";
+            return;
+        }
+
+        container.innerHTML = '';
+        snapshot.forEach(child => {
+            const chap = child.val();
+            const div = document.createElement('div');
+            div.className = 'chapter-item';
+            div.innerText = chap.title || 'Chương';
+            div.onclick = () => {
+                window.location.href = `reader.html?id=${storyId}&chap=${child.key}`;
+            };
+            container.appendChild(div);
+        });
+    });
+};
+</script>
+
+</body>
+</html>
