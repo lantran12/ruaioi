@@ -176,70 +176,56 @@
             panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
         }
     </script>
-<div id="adminModal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 10000; justify-content: center; align-items: center; padding: 20px;">
-    
-    <div style="background: #ffffff; width: 100%; max-width: 800px; max-height: 90vh; overflow-y: auto; padding: 30px; border-radius: 24px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); font-family: sans-serif; position: relative; box-sizing: border-box;">
+
+<!-- POPUP ĐĂNG CHƯƠNG MỚI (ĐÃ CẬP NHẬT THEO ĐÚNG Ý CHỊ TRÂN) -->
+<div id="addChapterModal" class="modal-custom">
+    <div class="modal-content-custom">
+        <span class="close-modal-btn" onclick="closeAddChapterModal()">&times;</span>
         
-        <span onclick="toggleChapterPopup()" style="position: absolute; top: 15px; right: 20px; font-size: 28px; cursor: pointer; color: #aaa; font-weight: bold;">&times;</span>
-        
-        <h2 style="color: #4a4a4a; margin-top: 0; margin-bottom: 25px; font-size: 1.4rem; font-weight: bold;">Đăng Chương Mới ✍️</h2>
+        <h2>Đăng Chương Mới ✍️</h2>
 
-        <!-- 1. Hàng nhập ID Truyện và Tên Chương -->
-        <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px;">
-                <label style="font-weight: bold; color: #7d7d7d; font-size: 0.9rem;">ID Truyện</label>
-                <input type="text" id="chapterStoryId" placeholder="Ví dụ: net-truyen-01" style="width:100%; padding:12px; background:#fcf5f3; border:none; border-radius:14px; margin-top:5px; box-sizing: border-box;">
+        <!-- 1. NÚT CHỌN TRUYỆN XỔ DANH SÁCH (THAY THẾ CHO Ô ID TRUYỆN CŨ) -->
+        <div class="form-group-custom">
+            <label>Chọn Truyện Đang Có Trong Động</label>
+            <select id="selectStoryId" class="input-custom">
+                <option value="">-- Bấm vào đây để chọn truyện --</option>
+            </select>
+        </div>
+
+        <div class="form-group-custom">
+            <label>Tên chương</label>
+            <input type="text" id="chapterTitleInput" class="input-custom" placeholder="Ví dụ: Chương 1: Gặp gỡ">
+        </div>
+
+        <div class="form-group-custom">
+            <label>Số chương</label>
+            <input type="number" id="chapterNumberInput" class="input-custom" placeholder="Ví dụ: 1">
+        </div>
+
+        <div class="form-group-custom">
+            <label>Mật khẩu (nếu có)</label>
+            <input type="text" id="chapterPasswordInput" class="input-custom" placeholder="Bỏ trống nếu công khai">
+        </div>
+
+        <div class="form-group-custom">
+            <label>Trạng thái</label>
+            <div class="radio-group-custom">
+                <label><input type="radio" name="chapterStatus" value="Công khai" checked> Công khai</label>
+                <label style="margin-left: 15px;"><input type="radio" name="chapterStatus" value="Bản nháp"> Bản nháp</label>
             </div>
-            <div style="flex: 1; min-width: 200px;">
-                <label style="font-weight: bold; color: #7d7d7d; font-size: 0.9rem;">Tên chương</label>
-                <input type="text" id="chapterTitle" placeholder="Ví dụ: Chương 1: Gặp gỡ" style="width:100%; padding:12px; background:#fcf5f3; border:none; border-radius:14px; margin-top:5px; box-sizing: border-box;">
-            </div>
         </div>
 
-        <!-- 2. Hàng nhập Số Chương và Mật Khẩu -->
-        <div style="display: flex; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
-            <div style="flex: 1; min-width: 200px;">
-                <label style="font-weight: bold; color: #7d7d7d; font-size: 0.9rem;">Số chương</label>
-                <input type="number" id="chapterNumber" placeholder="Ví dụ: 1" style="width:100%; padding:12px; background:#fcf5f3; border:none; border-radius:14px; margin-top:5px; box-sizing: border-box;">
-            </div>
-            <div style="flex: 1; min-width: 200px;">
-                <label style="font-weight: bold; color: #7d7d7d; font-size: 0.9rem;">Mật khẩu (nếu có)</label>
-                <input type="text" id="chapterPassword" placeholder="Bỏ trống nếu công khai" style="width:100%; padding:12px; background:#fcf5f3; border:none; border-radius:14px; margin-top:5px; box-sizing: border-box;">
-            </div>
+        <!-- 2. NÚT MỞ TRANG QUẢN LÝ ĐƯỢC ĐƯA LÊN TRÊN -->
+        <a href="studio.html" class="btn-link-management">
+            ➡️ Mở trang Quản lý / Đăng hàng loạt (Giao diện sạch) ↗️
+        </a>
+
+        <div class="form-group-custom" style="margin-top: 15px;">
+            <label>Nội dung truyện</label>
+            <textarea id="chapterContentInput" class="textarea-custom" placeholder="Nhập hoặc dán nội dung chương truyện tại đây..."></textarea>
         </div>
 
-        <!-- 3. Hàng chọn Trạng thái -->
-        <div style="margin-bottom: 15px;">
-            <label style="font-weight: bold; color: #7d7d7d; font-size: 0.9rem; display: block; margin-bottom: 5px;">Trạng thái</label>
-            <label style="margin-right: 15px; cursor: pointer;"><input type="radio" name="chapterStatus" value="Công khai" checked> Công khai</label>
-            <label style="cursor: pointer;"><input type="radio" name="chapterStatus" value="Bản nháp"> Bản nháp</label>
-        </div>
-
-        <!-- 4. Khu vực Tải file văn bản đính kèm -->
-        <div style="border: 2px dashed #b19ffb; background: #f8f6ff; border-radius: 18px; padding: 20px; text-align: center; margin-bottom: 15px; box-sizing: border-box;">
-            <p style="margin: 0 0 10px 0; color: #6246ea; font-weight: bold; font-size: 0.95rem;">📥 Tải nội dung từ file văn bản (.docx hoặc .txt)</p>
-            <input type="file" accept=".txt,.docx" onchange="importChapterFile(this)" style="font-size: 0.85rem; max-width: 100%;">
-        </div>
-
-        <!-- Nút chuyển hướng phụ trợ của chị -->
-        <div style="text-align: center; margin-bottom: 20px;">
-            <button onclick="window.location.href='import.html'" style="background: #f0ecfe; color: #6246ea; border: 1px solid #b19ffb; padding: 10px 15px; border-radius: 12px; font-weight: bold; cursor: pointer; font-size: 0.85rem; width: 100%; box-sizing: border-box;">
-                ➡️ Mở trang Quản lý / Đăng hàng loạt (Giao diện sạch) ↗️
-            </button>
-        </div>
-
-        <!-- 5. KHU VỰC NỘI DUNG TRUYỆN (ĐÃ ĐƯỢC FIX LỖI) -->
-        <div style="margin-bottom: 25px; width: 100%; display: block; clear: both; box-sizing: border-box;">
-            <label style="font-weight: bold; color: #7d7d7d; font-size: 0.9rem; display: block; margin-bottom: 8px;">Nội dung truyện</label>
-            <textarea id="chapterContent" placeholder="Nhập hoặc dán nội dung chương truyện tại đây..." 
-                      style="width: 100%; min-height: 280px; padding: 15px; border: 1px solid #e2e8f0; border-radius: 16px; box-sizing: border-box; resize: vertical; display: block; font-size: 0.95rem; line-height: 1.6; background: #fafafa; font-family: sans-serif;"></textarea>
-        </div>
-
-        <!-- 6. Nút bấm Đăng chương chính thức -->
-        <button onclick="submitChapter()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #a78bfa, #7c3aed); color: white; border: none; border-radius: 16px; font-size: 1rem; font-weight: bold; cursor: pointer; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);">
-            Đăng chương truyện 🚀
-        </button>
-
+        <button class="btn-submit-custom" onclick="submitNewChapter()">XÁC NHẬN ĐĂNG CHƯƠNG 🚀</button>
     </div>
 </div>
 </body>
