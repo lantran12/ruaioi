@@ -387,9 +387,13 @@ function logout() {
 }
 
 // ================= GLOBAL =================
+// EXPOSE GLOBAL
 window.openAuthModal = openAuthModal;
+window.closeAuthModal = closeAuthModal;
+window.toggleAuthMode = toggleAuthMode;
+window.submitAuthForm = submitAuthForm;
 window.triggerSearch = triggerSearch;
+window.closeSearch = closeSearch;
 window.showHome = showHome;
-window.logoutFromProfile = logout;
-window.selectAvatar = selectAvatar;
-window.saveProfile = saveProfile;
+window.logoutFromProfile = logoutFromProfile;
+window.updateUserProfileData = updateUserProfileData;
