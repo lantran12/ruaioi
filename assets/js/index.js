@@ -298,6 +298,7 @@ function triggerSearch() {
         }
     });
 }
+
 /* ==========================================================================
    10. QUẢN LÝ ĐĂNG NHẬP, ĐIỀU KHIỂN VƯƠNG MIỆN ADMIN VÀ HỒ SƠ / AVATAR
    ========================================================================== */
@@ -308,9 +309,8 @@ let tuSachListenerRef = null; // Quản lý lắng nghe tủ sách realtime
 // --- A. THEO DÕI TRẠNG THÁI TÀI KHOẢN REALTIME ---
 auth.onAuthStateChanged((user) => {
     const btnHeaderAuth = document.getElementById('btnHeaderAuth'); 
-    const btnNotification = document.getElementById('btnNotification'); // 👈 THÊM DÒNG 
+    const btnNotification = document.getElementById('btnNotification'); 
     
-
     // Tự động tạo nút Vương Miện màu xanh Admin nằm CẠNH NHAU (ngang hàng)
     let btnAdminCrown = document.getElementById('btnOpenAdminPanel');
     if (!btnAdminCrown && btnHeaderAuth) {
@@ -330,9 +330,9 @@ auth.onAuthStateChanged((user) => {
     }
 
     if (user) {
-    console.log("Đăng nhập thành công với UID:", user.uid);
+        console.log("Đăng nhập thành công với UID:", user.uid);
 
-    if (btnNotification) btnNotification.style.display = 'inline-flex'; // 👈 HIỆN CHUÔNG
+        if (btnNotification) btnNotification.style.display = 'inline-flex'; // HIỆN CHUÔNG
         // Gắn dữ liệu Email và Tên vào form profile ẩn phía dưới
         if (document.getElementById('userProfileEmail')) document.getElementById('userProfileEmail').textContent = user.email;
         if (document.getElementById('userProfileName')) document.getElementById('userProfileName').textContent = user.displayName || "Thành viên Động Rùa";
@@ -363,8 +363,8 @@ auth.onAuthStateChanged((user) => {
             }
             if (btnAdminCrown) btnAdminCrown.style.display = 'none';
         }
-  } else {
-    if (btnNotification) btnNotification.style.display = 'none'; // 👈 ẨN CHUÔNG
+    } else {
+        if (btnNotification) btnNotification.style.display = 'none'; // ẨN CHUÔNG
         // TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP / ĐĂNG XUẤT
         if (btnHeaderAuth) {
             btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i>`;
@@ -399,13 +399,13 @@ function renderUserProfileData(user) {
 
         let avatar = 'https://via.placeholder.com/100';
 
-if (data?.avatarType === "custom") {
-    avatar = data.avatar;
-} else if (data?.avatarType === "google") {
-    avatar = user.photoURL;
-} else {
-    avatar = user.photoURL || data?.avatar;
-}
+        if (data?.avatarType === "custom") {
+            avatar = data.avatar;
+        } else if (data?.avatarType === "google") {
+            avatar = user.photoURL;
+        } else {
+            avatar = user.photoURL || data?.avatar;
+        }
 
         if (currentAvatarImg) {
             currentAvatarImg.src = avatar;
@@ -418,12 +418,12 @@ if (data?.avatarType === "custom") {
     if (!container) return;
 
     if (tuSachListenerRef) {
-    tuSachListenerRef.off();
-}
+        tuSachListenerRef.off();
+    }
 
-tuSachListenerRef = db.ref('users/' + user.uid + '/tuSach');
+    tuSachListenerRef = db.ref('users/' + user.uid + '/tuSach');
 
-tuSachListenerRef.on('value', (snapshot) => {
+    tuSachListenerRef.on('value', (snapshot) => {
         const data = snapshot.val();
         if (!data) { 
             container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! Chị hãy thêm vào ngay đi ạ! 🐾</div>`; 
@@ -444,32 +444,31 @@ function updateUserProfileData() {
 
     const updates = {};
 
-    // ✅ Đổi tên
+    // Đổi tên
     if (newName) {
         updates.displayName = newName;
         user.updateProfile({ displayName: newName });
         document.getElementById('userProfileName').textContent = newName;
     }
 
-    // ✅ Đổi avatar
+    // Đổi avatar
     if (selectedAvatarUrl) {
         updates.avatar = selectedAvatarUrl;
-        updates.avatarType = "custom"; // 👈 QUAN TRỌNG
+        updates.avatarType = "custom"; // QUAN TRỌNG
         document.getElementById('userCurrentAvatar').src = selectedAvatarUrl;
     }
 
-    // ✅ Nếu không thay đổi gì
+    // Nếu không thay đổi gì
     if (Object.keys(updates).length === 0) {
         alert("Chưa thay đổi gì hết nha chị 😅");
         return;
     }
 
-    // ✅ Lưu DB
+    // Lưu DB
     db.ref('users/' + user.uid + '/profile').update(updates);
 
     alert("Cập nhật hồ sơ thành công ✨");
 }
-
 
 function buildBookshelfHTML(data, container) {
     container.innerHTML = Object.keys(data).map(key => {
@@ -520,7 +519,7 @@ function removeFromBookshelf(key) {
     if (confirm("Chị có muốn xóa truyện này không ạ? 🐢")) {
         firebase.database().ref('users/' + auth.currentUser.uid + '/tuSach/' + key).remove();
     }
-}t
+}
 
 // --- C. ĐIỀU KHIỂN POPUP ĐĂNG NHẬP VÀ FORM SUBMIT ---
 function openAuthModal() { const modal = document.getElementById('authModal'); if (modal) modal.style.display = 'flex'; }
@@ -570,9 +569,8 @@ function logoutFromProfile() {
         auth.signOut();
     }
 }
-// --- D. QUẢN LÝ ẨN/HIỆN POPUP VÀ SUBMIT CHƯƠNG TRUYỆN CHO ADMIN ---
 
-// Hàm xử lý ẩn/hiện hoặc đóng khi bấm dấu X
+// --- D. QUẢN LÝ ẨN/HIỆN POPUP VÀ SUBMIT CHƯƠNG TRUYỆN CHO ADMIN ---
 function toggleChapterPopup() {
     const popup = document.getElementById('adminModal');
     if (popup) {
@@ -584,7 +582,6 @@ function toggleChapterPopup() {
     }
 }
 
-// Hàm xử lý đăng truyện của chị
 function submitChapter() {
     const user = auth.currentUser;
     if (!user) {
@@ -597,7 +594,6 @@ function submitChapter() {
     const number = parseInt(document.getElementById('chapterNumber').value);
     const password = document.getElementById('chapterPassword').value.trim();
     const content = document.getElementById('chapterContent').value.trim();
-
     const status = document.querySelector('input[name="chapterStatus"]:checked').value;
 
     if (!storyId || !title || !number || !content) {
@@ -621,21 +617,15 @@ function submitChapter() {
     db.ref(`chapters/${storyId}/${number}`).set(chapterData)
     .then(() => {
         alert("Đăng chương thành công 🎉");
-
-        // Xóa sạch nội dung vừa nhập để sẵn sàng cho chương sau
         document.getElementById('chapterTitle').value = "";
         document.getElementById('chapterNumber').value = "";
         document.getElementById('chapterPassword').value = "";
         document.getElementById('chapterContent').value = "";
-
-        // Tự động đóng popup sau khi đăng xong
         toggleChapterPopup();
     })
     .catch(err => alert("Lỗi rồi chị ơi: " + err.message));
 }
 
-// Hàm xử lý đọc file văn bản (.docx hoặc .txt) và tự bóc tách tiêu đề chuẩn xác
-// Hàm xử lý đọc file văn bản (.docx hoặc .txt) và tự bóc tách tiêu đề chuẩn xác từ file Word
 function importChapterFile(input) {
     const file = input.files[0];
     if (!file) return;
@@ -645,44 +635,32 @@ function importChapterFile(input) {
     const inputTitle = document.getElementById('chapterTitle');
     const fileName = file.name.toLowerCase();
 
-    // Hàm nội bộ để bóc tách chữ sau khi đã đọc xong file
     function processRawText(rawText) {
-        // Regex quét diện rộng: Tìm chữ "Chương" đứng đầu dòng, theo sau là số, dấu tách và tên chương
         const chapterRegex = /^\s*Chương\s+(\d+)\s*[:\-\s]\s*(.*)$/i;
-        
-        // Cắt văn bản thành một mảng các dòng chữ
         const lines = rawText.split(/\r?\n/);
         
         let foundIndex = -1;
         let chapterNum = "";
         let chapterName = "";
 
-        // Quét qua từng dòng để tìm dòng chứa tiêu đề chương truyện
         for (let i = 0; i < lines.length; i++) {
             const currentLine = lines[i].trim();
             const match = currentLine.match(chapterRegex);
             
             if (match) {
-                foundIndex = i; // Ghi nhớ dòng này nằm ở đâu
-                chapterNum = match[1]; // Lấy số chương (Ví dụ: 93)
-                chapterName = match[2].trim(); // Lấy tên chương (Ví dụ: Gặp gỡ)
-                break; // Tìm thấy rồi thì dừng quét luôn
+                foundIndex = i;
+                chapterNum = match[1];
+                chapterName = match[2].trim();
+                break;
             }
         }
 
-        // Nếu tìm thấy dòng tiêu đề chương trong file
         if (foundIndex !== -1) {
-            // Tự động điền vào các ô Input phía trên form cho chị
             if (inputNumber) inputNumber.value = chapterNum;
             if (inputTitle) inputTitle.value = `Chương ${chapterNum}: ${chapterName}`;
-
-            // Xóa bỏ đúng cái dòng tiêu đề đó ra khỏi mảng nội dung truyện
             lines.splice(foundIndex, 1); 
-            
-            // Đổ toàn bộ phần còn lại vào ô nội dung truyện
             textarea.value = lines.join('\n').trim();
         } else {
-            // Nếu quét cả file mà không có dòng nào đúng dạng "Chương xx: xxx", đổ hết vào ô nội dung
             textarea.value = rawText.trim();
             alert("Em đã đọc được file nhưng không tìm thấy dòng nào có dạng 'Chương xx: Tên chương' nên giữ nguyên hết nội dung nha chị! 🐢");
         }
@@ -710,18 +688,16 @@ function importChapterFile(input) {
                 });
         };
         reader.readAsArrayBuffer(file);
-  } else {
-            // Thay vì dùng alert thông thường, mình dùng một hộp thoại xác nhận (confirm) thông minh hơn
-            const muonImport = confirm(
-                "🐢 Em không tìm thấy định dạng 'Chương xx: Tên chương' ở đầu file này nên không tự tách tự động được!\n\n" +
-                "Chị Trân có muốn chuyển sang trang [Hệ Thống Đăng Chương Hàng Loạt] để vừa xem vừa sửa thủ công cho sạch sẽ, dễ nhìn hơn không ạ?"
-            );
-            
-            // Nếu chị bấm OK (Đồng ý) thì hệ thống tự chuyển trang luôn
-            if (muonImport) {
-                window.location.href = "import.html";
-            } else {
-                // Nếu chị bấm Cancel (Hủy) thì đổ hết vào ô nội dung truyện như cũ ở trang này
-                textarea.value = rawText.trim();
-            }
+    } 
+    // 3. Xử lý định dạng file lạ (Không hỗ trợ)
+    else {
+        const muonImport = confirm(
+            "🐢 File này không đúng định dạng (.txt hoặc .docx) nên em không thể bóc tách tự động được!\n\n" +
+            "Chị Trân có muốn chuyển sang trang [Hệ Thống Đăng Chương Hàng Loạt] để xử lý thủ công không ạ?"
+        );
+        
+        if (muonImport) {
+            window.location.href = "import.html";
         }
+    }
+}
