@@ -299,168 +299,200 @@ function triggerSearch() {
     });
 }
 /* ==========================================================================
-   10. QUẢN LÝ ĐĂNG NHẬP, PHÂN QUYỀN TÁCH BIỆT NÚT VÀ BẢO VỆ TỦ SÁCH CÁ NHÂN
+   10. QUẢN LÝ ĐĂNG NHẬP, ĐIỀU KHIỂN VƯƠNG MIỆN ADMIN VÀ HỒ SƠ / AVATAR
    ========================================================================== */
 let isSignUpMode = true; 
+let selectedAvatarUrl = "";
+let tuSachListenerRef = null; // Quản lý lắng nghe tủ sách realtime
 
-// --- THEO DÕI TRẠNG THÁI TÀI KHOẢN REALTIME ---
+// --- A. THEO DÕI TRẠNG THÁI TÀI KHOẢN REALTIME ---
 auth.onAuthStateChanged((user) => {
-    const btnHeaderAuth = document.getElementById('btnHeaderAuth'); // Nút Account
-    
-    // Tìm hoặc tự tạo nút vương miện đặt CẠNH NHAU mượt mà
+    const btnHeaderAuth = document.getElementById('btnHeaderAuth'); // Nút Account gốc
+
+    // Tự động tạo nút Vương Miện màu xanh Admin nằm CẠNH NHAU (ngang hàng)
     let btnAdminCrown = document.getElementById('btnOpenAdminPanel');
     if (!btnAdminCrown && btnHeaderAuth) {
         btnAdminCrown = document.createElement('button');
         btnAdminCrown.id = 'btnOpenAdminPanel';
-        btnAdminCrown.className = 'btn-admin-badge';
         btnAdminCrown.innerHTML = '👑';
         
-        // Đã sửa CSS: Đổi nền xanh admin, bo viền chuẩn và cố định không cho rớt hàng
+        // CSS ép nút vương miện có nền màu xanh admin, nằm ngang với nút chào
         btnAdminCrown.style.cssText = "background: #2e8b57; color: white; border: none; border-radius: 50%; width: 36px; height: 36px; font-size: 16px; cursor: pointer; display: none; align-items: center; justify-content: center; flex-shrink: 0;";
         
-        // Ép thanh bao bọc bên ngoài hiển thị dạng ngang (Flex) để không bị đẩy xuống dưới
         if (btnHeaderAuth.parentNode) {
             btnHeaderAuth.parentNode.style.display = "flex";
             btnHeaderAuth.parentNode.style.alignItems = "center";
-            btnHeaderAuth.parentNode.style.gap = "8px"; // Khoảng cách giữa 2 nút
+            btnHeaderAuth.parentNode.style.gap = "8px"; // Khoảng cách giữa nút chào và vương miện
             btnHeaderAuth.parentNode.insertBefore(btnAdminCrown, btnHeaderAuth.nextSibling);
         }
     }
 
     if (user) {
-        // --- A. TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP THÀNH CÔNG ---
+        // TRƯỜNG HỢP: ĐÃ ĐĂNG NHẬP
         console.log("Đăng nhập thành công với UID:", user.uid);
         
-        const adminName = user.displayName || "Admin Động Rùa";
+        // Gắn dữ liệu Email và Tên vào form profile ẩn phía dưới
         if (document.getElementById('userProfileEmail')) document.getElementById('userProfileEmail').textContent = user.email;
-        if (document.getElementById('userProfileName')) document.getElementById('userProfileName').textContent = adminName;
+        if (document.getElementById('userProfileName')) document.getElementById('userProfileName').textContent = user.displayName || "Thành viên Động Rùa";
 
-        if (typeof loadUserBookshelf === 'function') {
-            loadUserBookshelf(user.uid); 
-        }
+        // KÍCH HOẠT CHẠY HÀM TẢI TỦ SÁCH THẬT TỪ DATABASE CỦA CHỊ
+        renderUserProfileData(user);
 
-        // KIỂM TRA QUYỀN ADMIN TUYỆT ĐỐI (UID của chị)
+        // PHÂN QUYỀN ADMIN CHO CHỊ ĐỘNG CHĂN RÙA (UID CHUẨN)
         if (user.uid === 'BrZQ9s07ujfIYG1iPtC4vIhGgx33') {
-            
-            // 1. Nút Chào Admin (Giữ kích thước vừa vặn trên mobile)
             if (btnHeaderAuth) {
                 btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i> Chào, Admin`;
-                btnHeaderAuth.style.width = "auto"; 
-                btnHeaderAuth.style.padding = "0 12px";
-                btnHeaderAuth.style.borderRadius = "20px";
-                btnHeaderAuth.style.fontSize = "13px"; // Thu nhỏ chữ một xíu cho vừa màn hình điện thoại
-                btnHeaderAuth.style.flexShrink = "0";
-                btnHeaderAuth.onclick = () => {
-                    if(document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'none';
-                    if(document.getElementById('profileSection')) document.getElementById('profileSection').style.display = 'block';
-                };
+                btnHeaderAuth.style.cssText = "width: auto; padding: 0 12px; border-radius: 20px; font-size: 13px; flex-shrink: 0; background: #ff4d6d; color: white; border: none; height: 36px; cursor: pointer;";
+                btnHeaderAuth.onclick = openProfileZone;
             }
-
-            // 2. HIỆN NÚT VƯƠNG MIỆN MÀU XANH ADMIN NẰM KẾ BÊN
             if (btnAdminCrown) {
-                btnAdminCrown.style.display = 'inline-flex'; 
+                btnAdminCrown.style.display = 'inline-flex'; // Hiện vương miện xanh kế bên
                 btnAdminCrown.onclick = () => {
                     const adminModal = document.getElementById('adminModal');
-                    if (adminModal) adminModal.style.display = 'flex';
+                    if (adminModal) adminModal.style.display = 'flex'; // Hiện popup đăng chương
                 };
             }
-
         } else {
             // Nếu là người đọc bình thường
             if (btnHeaderAuth) {
                 btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i> Chào, ${user.displayName || 'Thành Viên'}`;
-                btnHeaderAuth.style.width = "auto";
-                btnHeaderAuth.style.padding = "0 12px";
-                btnHeaderAuth.style.borderRadius = "20px";
-                btnHeaderAuth.style.fontSize = "13px";
-                btnHeaderAuth.onclick = () => {
-                    if(document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'none';
-                    if(document.getElementById('profileSection')) document.getElementById('profileSection').style.display = 'block';
-                };
+                btnHeaderAuth.style.cssText = "width: auto; padding: 0 12px; border-radius: 20px; font-size: 13px; flex-shrink: 0; background: #ff4d6d; color: white; border: none; height: 36px; cursor: pointer;";
+                btnHeaderAuth.onclick = openProfileZone;
             }
-            if (btnAdminCrown) btnAdminCrown.style.display = 'none'; 
+            if (btnAdminCrown) btnAdminCrown.style.display = 'none';
         }
-
     } else {
-        // --- B. TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP HOẶC ĐĂNG XUẤT ---
+        // TRƯỜNG HỢP: CHƯA ĐĂNG NHẬP / ĐĂNG XUẤT
         if (btnHeaderAuth) {
-            btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i>`; 
-            btnHeaderAuth.style.width = "40px"; 
-            btnHeaderAuth.style.padding = "0";
-            btnHeaderAuth.style.borderRadius = "50%";
+            btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i>`;
+            btnHeaderAuth.style.cssText = "width: 40px; height: 40px; padding: 0; border-radius: 50%; background: #ff4d6d; color: white; border: none; cursor: pointer;";
             btnHeaderAuth.onclick = openAuthModal;
         }
-        
-        const bookshelfGrid = document.getElementById('userBookshelfContainer');
-        if (bookshelfGrid) {
-            bookshelfGrid.innerHTML = `<div class="bookshelf-empty" style="color: #ff4d6d; text-align: center; font-weight: bold; padding: 20px;">⚠️ Chị/Bạn vui lòng Đăng nhập tài khoản để sử dụng Tủ sách truyện yêu thích nhé!</div>`;
-        }
+        if (btnAdminCrown) btnAdminCrown.style.display = 'none';
 
-        if (btnAdminCrown) btnAdminCrown.style.display = 'none'; 
+        // Khóa tủ sách nếu là khách vãng lai chưa đăng nhập
+        const container = document.getElementById('userBookshelfContainer');
+        if (container) {
+            container.innerHTML = `<div class="bookshelf-empty" style="color: #ff4d6d; font-weight: bold; text-align: center; width: 100%; padding: 20px 0;">⚠️ Vui lòng đăng nhập để sử dụng tủ sách cá nhân!</div>`;
+        }
         showHome();
     }
 });
 
-// --- CÁC HÀM ĐIỀU KHIỂN ĐÓNG / MỞ FORM ĐĂNG NHẬP MỚI ---
-function openAuthModal() {
-    const modal = document.getElementById('authModal');
-    if (modal) modal.style.display = 'flex';
-}
-function closeAuthModal() {
-    const modal = document.getElementById('authModal');
-    if (modal) modal.style.display = 'none';
-}
-function closeAuthModalOverlay(event) {
-    if (event.target.id === 'authModal') closeAuthModal();
+function openProfileZone() {
+    if (document.getElementById('homeMainContent')) document.getElementById('homeMainContent').style.display = 'none';
+    if (document.getElementById('profileSection')) document.getElementById('profileSection').style.display = 'block';
 }
 
-// Chuyển đổi qua lại giữa Đăng ký và Đăng nhập
+// --- B. CÁC HÀM XỬ LÝ HỒ SƠ & AVATAR (THU NHỎ ẢNH & LOAD TỦ SÁCH) ---
+function renderUserProfileData(user) {
+    renderAvatarSelectionGrid(); 
+    
+    // Thu nhỏ Avatar hiển thị cho vừa vặn, không bị chiếm hết màn hình
+    const currentAvatarImg = document.getElementById('userCurrentAvatar');
+    if (currentAvatarImg) {
+        currentAvatarImg.style.cssText = "width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 15px auto; border: 3px solid #ff4d6d;";
+    }
+
+    // Kết nối database lấy tủ sách thật (Hỗ trợ cả Realtime Database v8/v9 tùy cấu hình của chị)
+    const container = document.getElementById('userBookshelfContainer');
+    if (!container) return;
+
+    // Chỗ này kiểm tra nếu chị đang xài Firebase database cũ
+    if (typeof db !== 'undefined' && typeof firebase !== 'undefined') {
+        firebase.database().ref('users/' + user.uid + '/tuSach').on('value', (snapshot) => {
+            const data = snapshot.val();
+            if (!data) { container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! 🐾</div>`; return; }
+            buildBookshelfHTML(data, container);
+        });
+    }
+}
+
+function buildBookshelfHTML(data, container) {
+    container.innerHTML = Object.keys(data).map(key => {
+        const b = data[key];
+        return `<div class="bookshelf-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+            <div class="bookshelf-left" style="display: flex; align-items: center; gap: 10px;">
+                <img src="${b.image}" class="bookshelf-thumb" style="width: 45px; height: 60px; object-fit: cover; border-radius: 4px;" alt="Cover">
+                <div>
+                    <p style="margin: 0; font-weight: bold; font-size: 14px;">${b.tenTruyen}</p>
+                    <p style="margin: 3px 0 0 0; font-size: 12px; color: #777;">Đọc đến: ${b.chuongGanNhat}</p>
+                </div>
+            </div>
+            <button class="btn-remove-book" onclick="removeFromBookshelf('${key}')" style="background: none; border: none; cursor: pointer; font-size: 14px;">❌</button>
+        </div>`;
+    }).join('');
+}
+
+function renderAvatarSelectionGrid() {
+    const container = document.getElementById('avatarGridContainer');
+    if (!container) return;
+    const cuteAvatars = [
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Felix",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Lily",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Aneka",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Jack",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Mia",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Bear",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Cookie",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Buster",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Coco",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Lucky",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Milo",
+        "https://api.dicebear.com/7.x/adventurer/svg?seed=Oliver"
+    ];
+    container.innerHTML = cuteAvatars.map(url => `
+        <img src="${url}" class="avatar-option-img" style="width: 50px; height: 50px; cursor: pointer; margin: 5px; border-radius: 50%; border: 2px solid transparent;" onclick="selectAvatarOption(this, '${url}')" alt="Cute Avatar">
+    `).join('');
+}
+
+function selectAvatarOption(imgEl, url) { 
+    selectedAvatarUrl = url; 
+    document.querySelectorAll('.avatar-option-img').forEach(img => img.style.border = '2px solid transparent'); 
+    imgEl.style.border = '2px solid #ff4d6d'; 
+}
+
+function removeFromBookshelf(key) {
+    if (confirm("Chị có muốn xóa truyện này không ạ? 🐢")) {
+        firebase.database().ref('users/' + auth.currentUser.uid + '/tuSach/' + key).remove();
+    }
+}
+
+// --- C. ĐIỀU KHIỂN POPUP ĐĂNG NHẬP VÀ FORM SUBMIT ---
+function openAuthModal() { const modal = document.getElementById('authModal'); if (modal) modal.style.display = 'flex'; }
+function closeAuthModal() { const modal = document.getElementById('authModal'); if (modal) modal.style.display = 'none'; }
+function closeAuthModalOverlay(event) { if (event.target.id === 'authModal') closeAuthModal(); }
+
 function toggleAuthMode() {
     isSignUpMode = !isSignUpMode;
     const authTitle = document.getElementById('authTitle');
     const nickNameGroup = document.getElementById('nickNameGroup');
     const btnAuthSubmit = document.getElementById('btnAuthSubmit');
     const authToggleLink = document.getElementById('authToggleLink');
-
     if (isSignUpMode) {
-        authTitle.textContent = "GIA NHẬP RÙA STREAM";
-        nickNameGroup.style.display = 'block';
-        btnAuthSubmit.textContent = "BẮT ĐẦU TRẢI NGHIỆM";
-        authToggleLink.textContent = "Đã có tài khoản rồi? Bấm vào đây để Đăng nhập";
+        authTitle.textContent = "GIA NHẬP RÙA STREAM"; nickNameGroup.style.display = 'block';
+        btnAuthSubmit.textContent = "BẮT ĐẦU TRẢI NGHIỆM"; authToggleLink.textContent = "Đã có tài khoản rồi? Bấm vào đây để Đăng nhập";
     } else {
-        authTitle.textContent = "ĐĂNG NHẬP THÀNH VIÊN";
-        nickNameGroup.style.display = 'none';
-        btnAuthSubmit.textContent = "ĐĂNG NHẬP VÀO ĐỘNG NGAY";
-        authToggleLink.textContent = "Chưa có tài khoản? Bấm vào đây để Đăng ký";
+        authTitle.textContent = "ĐĂNG NHẬP THÀNH VIÊN"; nickNameGroup.style.display = 'none';
+        btnAuthSubmit.textContent = "ĐĂNG NHẬP VÀO ĐỘNG NGAY"; authToggleLink.textContent = "Chưa có tài khoản? Bấm vào đây để Đăng ký";
     }
 }
 
-// Xử lý gửi Form đăng nhập lên Firebase Auth
 function submitAuthForm() {
     const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value.trim();
     const displayName = document.getElementById('authDisplayName').value.trim();
-
-    if (!email || !password) {
-        alert("Chị vui lòng điền đủ Email và Mật khẩu nha! 🐢");
-        return;
-    }
+    if (!email || !password) { alert("Chị vui lòng điền đủ thông tin nha!"); return; }
 
     if (isSignUpMode) {
-        auth.createUserWithEmailAndPassword(email, password)
-        .then((userCredential) => {
+        auth.createUserWithEmailAndPassword(email, password).then((userCredential) => {
             if (displayName) userCredential.user.updateProfile({ displayName: displayName });
-            alert("🎉 Đăng ký tài khoản thành công!");
-            closeAuthModal();
-        })
-        .catch(err => alert("Lỗi: " + err.message));
+            alert("🎉 Đăng ký thành công!"); closeAuthModal();
+        }).catch(err => alert(err.message));
     } else {
-        auth.signInWithEmailAndPassword(email, password)
-        .then(() => {
-            alert("🎉 Đăng nhập Động Chăn Rùa thành công!");
-            closeAuthModal();
-        })
-        .catch(err => alert("Lỗi: " + err.message));
+        auth.signInWithEmailAndPassword(email, password).then(() => {
+            alert("🎉 Chào mừng chị trở lại!"); closeAuthModal();
+        }).catch(err => alert(err.message));
     }
 }
 
