@@ -213,14 +213,20 @@
             </div>
         </div>
 
-        <div style="margin-bottom: 20px; background: #f3f0ff; padding: 15px; border-radius: 16px; border: 2px dashed #a78bfa;">
+     <div style="margin-bottom: 20px; background: #f3f0ff; padding: 15px; border-radius: 16px; border: 2px dashed #a78bfa;">
             <label style="font-weight: bold; color: #6d28d9; font-size: 0.9rem; display: block; margin-bottom: 5px;">📥 Tải nội dung từ file văn bản (.docx hoặc .txt)</label>
             <input type="file" id="chapterFileImport" accept=".docx, .txt" onchange="importChapterFile(this)" style="font-size: 0.85rem; color: #555;">
         </div>
 
+        <div style="margin-bottom: 20px; text-align: right;">
+            <a href="import.html" target="_blank" style="display: inline-block; padding: 10px 20px; background: #f3f0ff; color: #7c3aed; border: 2px solid #a78bfa; border-radius: 12px; font-weight: bold; text-decoration: none; font-size: 0.9rem; box-shadow: 0 4px 6px rgba(124, 58, 237, 0.05);">
+                <i class="fa-solid fa-file-import"></i> Mở trang Quản lý / Đăng hàng loạt (Giao diện sạch) ↗️
+            </a>
+        </div>
+
         <div style="margin-bottom: 25px;">
             <label style="font-weight: bold; color: #7d7d7d; font-size: 0.9rem;">Nội dung truyện</label>
-            <textarea id="chapterContent" rows="16" placeholder="Nội dung file sau khi import sẽ xuất hiện ở đây, hoặc chị có thể tự viết trực tiếp..." style="width:100%; padding:15px; background:#fcf5f3; border:none; border-radius:14px; margin-top:5px; box-sizing: border-box; font-family: sans-serif; font-size: 1rem; line-height: 1.6; resize: vertical;"></textarea>
+            <textarea id="chapterContent" rows="16" ...></textarea>
         </div>
 
         <button type="button" onclick="submitChapter()" style="width: 100%; padding: 15px; background: linear-gradient(135deg, #a78bfa, #7c3aed); color: white; border: none; border-radius: 14px; font-weight: bold; font-size: 1.05rem; cursor: pointer; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.25);">Đăng chương truyện 🚀</button>
