@@ -570,3 +570,66 @@ function logoutFromProfile() {
         auth.signOut();
     }
 }
+// --- D. QUẢN LÝ ẨN/HIỆN POPUP VÀ SUBMIT CHƯƠNG TRUYỆN CHO ADMIN ---
+
+// Hàm xử lý ẩn/hiện hoặc đóng khi bấm dấu X
+function toggleChapterPopup() {
+    const popup = document.getElementById('adminModal');
+    if (popup) {
+        if (popup.style.display === "none" || popup.style.display === "") {
+            popup.style.display = "flex";
+        } else {
+            popup.style.display = "none";
+        }
+    }
+}
+
+// Hàm xử lý đăng truyện của chị
+function submitChapter() {
+    const user = auth.currentUser;
+    if (!user) {
+        alert("Chưa đăng nhập 🐢");
+        return;
+    }
+
+    const storyId = document.getElementById('chapterStoryId').value.trim();
+    const title = document.getElementById('chapterTitle').value.trim();
+    const number = parseInt(document.getElementById('chapterNumber').value);
+    const password = document.getElementById('chapterPassword').value.trim();
+    const content = document.getElementById('chapterContent').value.trim();
+
+    const status = document.querySelector('input[name="chapterStatus"]:checked').value;
+
+    if (!storyId || !title || !number || !content) {
+        alert("Điền đầy đủ giúp em nha chị 😭");
+        return;
+    }
+
+    const chapterData = {
+        title: title,
+        number: number,
+        content: content,
+        status: status,
+        createdAt: Date.now(),
+        views: 0
+    };
+
+    if (password) {
+        chapterData.password = password;
+    }
+
+    db.ref(`chapters/${storyId}/${number}`).set(chapterData)
+    .then(() => {
+        alert("Đăng chương thành công 🎉");
+
+        // Xóa sạch nội dung vừa nhập để sẵn sàng cho chương sau
+        document.getElementById('chapterTitle').value = "";
+        document.getElementById('chapterNumber').value = "";
+        document.getElementById('chapterPassword').value = "";
+        document.getElementById('chapterContent').value = "";
+
+        // Tự động đóng popup sau khi đăng xong
+        toggleChapterPopup();
+    })
+    .catch(err => alert("Lỗi rồi chị ơi: " + err.message));
+}
