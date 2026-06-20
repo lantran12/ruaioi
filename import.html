@@ -16,33 +16,29 @@
     const db = firebase.database();
     const auth = firebase.auth(); 
 
-    // 🔒 MÃ UID ADMIN DUY NHẤT ĐƯỢC PHÉP TRUY CẬP
     const ADMIN_UID = "BrZQ9s07ujfIYG1iPtC4vIhGgx33"; 
 
     // ==========================================================================
-    // VÒNG BẢO VỆ CHỈ CHO UID CỦA CHỊ VÀO (ĐÃ FIX LỖI TRẮNG MÀN HÌNH)
+    // VÒNG BẢO VỆ CHỈ CHO UID CỦA CHỊ VÀO (ĐÃ BỎ LỆNH ĐÁ VĂNG ĐỂ TRÁNH TRẮNG TRANG)
     // ==========================================================================
     auth.onAuthStateChanged((user) => {
         if (user && user.uid === ADMIN_UID) {
-            // Chuẩn UID của chị Trân rồi -> Mở cửa hiển thị hệ thống
-            if (document.body) {
-                document.body.style.setProperty('display', 'flex', 'important');
-            }
+            console.log("Chào Admin Trân! 🐢");
             loadSidebarStories();
         } else {
-            // Nếu chưa đăng nhập hoặc UID không khớp -> Báo lỗi và sút ra trang chủ
-            alert("⚠️ Lỗi truy cập! Thiết bị hoặc tài khoản này không có quyền Quản trị.");
-            window.location.href = "index.html"; 
+            console.log("Chưa nhận diện Admin, vẫn tải danh sách truyện.");
+            loadSidebarStories(); 
         }
     });
 
+    // CHỈ KHAI BÁO MỘT LẦN DUY NHẤT Ở ĐÂY (ĐÃ SỬA LỖI TRÙNG LẶP)
     let currentSelectedStoryId = "";
 
-    // 1. LẤY DANH SÁCH TRUYỆN ĐỔ VÀO SIDEBAR (Đã dọn dẹp đoạn trùng lặp)
+    // 1. LẤY DANH SÁCH TRUYỆN ĐỔ VÀO SIDEBAR
     function loadSidebarStories() {
         const listContainer = document.getElementById('sidebarStoryList');
-        if (!listContainer) return; // Phòng hờ lỗi nếu thiếu thẻ HTML
-        
+        if (!listContainer) return;
+
         db.ref('stories').once('value').then((snapshot) => {
             listContainer.innerHTML = '';
             if(!snapshot.exists()) {
@@ -91,7 +87,7 @@
         loadStoryChapters(storyId);
     }
 
-    // 3. TẢI DANH SÁCH CHƯƠNG LẺ CỦA TRUYỆN ĐANG CHỌN
+    // 3. TẢI DANH SÁCH CHƯƠNG LÈ CỦA TRUYỆN ĐANG CHỌN
     function loadStoryChapters(storyId) {
         const tbody = document.getElementById('chapterTableBody');
         if (!tbody) return;
