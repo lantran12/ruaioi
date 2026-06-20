@@ -57,8 +57,21 @@ function initNotification() {
 
   onAuthStateChanged(auth, user => {
     const menuWrap = document.querySelector('.menu-noti-wrap');
-    if (!user) { if (menuWrap) menuWrap.style.display = 'none'; return; }
-    if (menuWrap) menuWrap.style.display = 'inline-block';
+    if (!menuWrap) return; 
+
+    if (user) {
+      // Có user -> Hiển thị chuông
+      menuWrap.style.display = 'inline-block';
+      
+      const notiRef = ref(db, `notifications/${user.uid}`);
+      onValue(notiRef, snap => {
+        // ... giữ nguyên logic hiển thị thông báo của chị ...
+      });
+    } else {
+      // Không có user -> Ẩn chuông
+      menuWrap.style.display = 'none';
+    }
+  });
     
     const notiRef = ref(db, `notifications/${user.uid}`);
     onValue(notiRef, snap => {
