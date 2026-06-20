@@ -184,3 +184,44 @@ body {
 .auth-modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.4); justify-content:center; align-items:center; z-index:9999; backdrop-filter: blur(5px); }
 .auth-modal-content { background:#fff; padding:30px; border-radius:16px; width:90%; max-width:380px; position:relative; }
 .profile-container { background: #fff; padding: 30px; border-radius: 12px; }
+
+/* ==========================================================================
+   TỐI ƯU GIAO DIỆN MƯỢT MÀ TRÊN ĐIỆN THOẠI (RESPONSIVE)
+   ========================================================================== */
+@media (max-width: 768px) {
+    /* Cho thanh sub-bar xếp dọc trên điện thoại để không bị dính cục */
+    .netflix-sub-bar {
+        flex-direction: column;
+        gap: 15px;
+        align-items: flex-start; /* Căn lề trái cho gọn gàng */
+        padding: 15px 4%;
+    }
+
+    /* Cụm menu chữ tự động dàn đều nhẹ nhàng */
+    .netflix-nav {
+        width: 100%;
+        justify-content: flex-start;
+        gap: 15px;
+        flex-wrap: wrap; /* Nếu tên thể loại dài quá sẽ tự động xuống dòng mượt mà */
+    }
+
+    .nav-link-btn {
+        font-size: 0.9rem; /* Thu nhỏ chữ một chút trên điện thoại cho tinh tế */
+        padding: 5px 0;
+    }
+
+    /* Ô tìm kiếm chiếm trọn chiều ngang hàng dưới trên điện thoại */
+    .netflix-search-box {
+        width: 100%;
+        justify-content: space-between;
+    }
+    
+    .netflix-search-box input {
+        width: 100%; /* Giúp gõ chữ thoải mái không bị bó hẹp */
+    }
+
+    /* Thu nhỏ nhẹ tiêu đề Banner Hero cho đỡ chiếm diện tích màn hình nhỏ */
+    .hero-title {
+        font-size: 2rem;
+    }
+}
