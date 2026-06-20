@@ -18,148 +18,82 @@
             --text: #334155;
             --border: #cbd5e1;
             --success: #16a34a;
+            --info: #0284c7;
         }
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex !important;
-            justify-content: center;
+            background-color: var(--bg); color: var(--text); margin: 0; padding: 20px;
+            display: flex !important; justify-content: center;
         }
         .container {
-            width: 100%;
-            max-width: 1200px;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            box-sizing: border-box;
+            width: 100%; max-width: 1200px; background: #ffffff; padding: 30px;
+            border-radius: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.05); box-sizing: border-box;
         }
         .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 15px;
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 25px; border-bottom: 2px solid var(--primary-light); padding-bottom: 15px;
         }
         .header h1 { font-size: 1.5rem; color: #1e293b; margin: 0; }
         .btn-back {
             background: var(--primary-light); color: var(--primary); border: none;
             padding: 8px 16px; border-radius: 12px; font-weight: bold; text-decoration: none; font-size: 0.9rem;
         }
-        .layout-studio {
-            display: grid;
-            grid-template-columns: 320px 1fr;
-            gap: 30px;
-        }
-        @media (max-width: 768px) {
-            .layout-studio { grid-template-columns: 1fr; }
-        }
-        /* PROFILE SIDEBAR */
-        .profile-sidebar {
-            background: #fafafa;
-            border: 1px solid var(--border);
-            padding: 20px;
-            border-radius: 16px;
-            height: fit-content;
-        }
-        .profile-card {
-            text-align: center;
-            padding-bottom: 20px;
-            border-bottom: 1px dashed var(--border);
-            margin-bottom: 20px;
-        }
-        .profile-card img {
-            width: 80px; height: 80px; border-radius: 50%;
-            border: 3px solid var(--primary); padding: 3px; background: #fff;
-        }
+        .layout-studio { display: grid; grid-template-columns: 320px 1fr; gap: 30px; }
+        @media (max-width: 768px) { .layout-studio { grid-template-columns: 1fr; } }
+        
+        /* SIDEBAR */
+        .profile-sidebar { background: #fafafa; border: 1px solid var(--border); padding: 20px; border-radius: 16px; height: fit-content; }
+        .profile-card { text-align: center; padding-bottom: 20px; border-bottom: 1px dashed var(--border); margin-bottom: 20px; }
+        .profile-card img { width: 80px; height: 80px; border-radius: 50%; border: 3px solid var(--primary); padding: 3px; background: #fff; }
         .profile-card h2 { font-size: 1.2rem; margin: 10px 0 5px 0; color: #1e293b; }
         .story-item {
             display: flex; align-items: center; gap: 12px; padding: 12px; border-radius: 12px;
-            cursor: pointer; margin-bottom: 10px; transition: all 0.2s;
-            background: #fff; border: 1px solid #e2e8f0;
+            cursor: pointer; margin-bottom: 10px; transition: all 0.2s; background: #fff; border: 1px solid #e2e8f0;
         }
-        .story-item:hover, .story-item.active {
-            background: var(--primary-light); border-color: #c084fc;
-        }
+        .story-item:hover, .story-item.active { background: var(--primary-light); border-color: #c084fc; }
         .story-item img { width: 45px; height: 60px; object-fit: cover; border-radius: 6px; }
         .story-item-title { margin: 0; font-weight: bold; font-size: 0.9rem; color: #1e293b; }
         
-        /* WORKSPACE PANELS */
+        /* WORKSPACE */
         .workspace-panel { display: none; }
-        .tag-box {
-            background: #f1f5f9; padding: 20px; border-radius: 16px; margin-bottom: 25px;
-        }
-        .tag-group {
-            display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px;
-        }
-        .tag-checkbox { display: none; }
-        .tag-label {
-            padding: 6px 14px; background: #fff; border: 1px solid var(--border);
-            border-radius: 20px; font-size: 0.85rem; cursor: pointer; font-weight: 500;
-            transition: all 0.2s; user-select: none;
-        }
-        .tag-checkbox:checked + .tag-label {
-            background: var(--primary); color: white; border-color: var(--primary);
-        }
-        .btn-save-tags {
-            margin-top: 15px; padding: 8px 16px; background: var(--success);
-            color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer;
-        }
+        .edit-info-box { background: #f8fafc; border: 1px solid var(--border); padding: 20px; border-radius: 16px; margin-bottom: 20px; }
+        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-top: 10px; }
+        @media (max-width: 600px) { .form-grid { grid-template-columns: 1fr; } }
+        .form-group { display: flex; flex-direction: column; gap: 5px; }
+        .form-group label { font-weight: bold; font-size: 0.85rem; color: #64748b; }
+        .form-group input { padding: 10px; border: 1px solid var(--border); border-radius: 8px; font-size: 0.9rem; }
         
-        /* TABS MỐT CỦA WATTPAD */
+        .tag-box { background: #f1f5f9; padding: 20px; border-radius: 16px; margin-bottom: 25px; }
+        .tag-group { display: flex; flex-wrap: wrap; gap: 10px; margin-top: 10px; }
+        .tag-checkbox { display: none; }
+        .tag-label { padding: 6px 14px; background: #fff; border: 1px solid var(--border); border-radius: 20px; font-size: 0.85rem; cursor: pointer; font-weight: 500; transition: all 0.2s; }
+        .tag-checkbox:checked + .tag-label { background: var(--primary); color: white; border-color: var(--primary); }
+        
+        .btn-action { padding: 10px 16px; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; display: inline-flex; align-items: center; gap: 8px; font-size: 0.9rem; }
+        .btn-save { background: var(--success); color: white; }
+        .btn-info { background: var(--info); color: white; margin-top: 10px; }
+
         .tab-menu { display: flex; gap: 15px; border-bottom: 2px solid #e2e8f0; margin-bottom: 20px; }
-        .tab-btn {
-            background: none; border: none; padding: 10px 15px; font-size: 1rem;
-            font-weight: bold; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent;
-        }
+        .tab-btn { background: none; border: none; padding: 10px 15px; font-size: 1rem; font-weight: bold; color: #64748b; cursor: pointer; border-bottom: 3px solid transparent; }
         .tab-btn.active { color: var(--primary); border-bottom-color: var(--primary); }
         .tab-content { display: none; }
         .tab-content.active { display: block; }
 
-        /* WATTPAD-LIKE CHAPTER LIST */
-        .chapter-row {
-            background: #fff; border: 1px solid #e2e8f0; padding: 15px;
-            border-radius: 12px; margin-bottom: 12px; display: flex;
-            justify-content: space-between; align-items: center; gap: 15px;
-        }
+        .chapter-row { background: #fff; border: 1px solid #e2e8f0; padding: 15px; border-radius: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 15px; }
         .chapter-info h4 { margin: 0 0 5px 0; color: #1e293b; font-size: 0.95rem; }
         .chapter-info p { margin: 0; font-size: 0.8rem; color: #64748b; }
-        .btn-edit-chapter {
-            background: var(--primary-light); color: var(--primary); border: none;
-            padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer;
-        }
-        .btn-edit-chapter:hover { background: #e0d7fe; }
+        .btn-edit-chapter { background: var(--primary-light); color: var(--primary); border: none; padding: 8px 14px; border-radius: 8px; font-weight: bold; cursor: pointer; }
 
-        /* MODAL SỬA CHƯƠNG */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 999;
-        }
-        .modal-content {
-            background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 800px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.15); display: flex; flex-direction: column; gap: 15px;
-        }
-        .modal-content textarea {
-            width: 100%; min-height: 350px; padding: 15px; border: 1px solid var(--border);
-            border-radius: 12px; font-size: 1rem; line-height: 1.6; box-sizing: border-box;
-        }
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); justify-content: center; align-items: center; z-index: 999; }
+        .modal-content { background: white; padding: 25px; border-radius: 20px; width: 90%; max-width: 800px; display: flex; flex-direction: column; gap: 15px; }
+        .modal-content textarea { width: 100%; min-height: 350px; padding: 15px; border: 1px solid var(--border); border-radius: 12px; font-size: 1rem; line-height: 1.6; box-sizing: border-box; }
         .modal-actions { display: flex; justify-content: flex-end; gap: 10px; }
         .btn-close-modal { background: #e2e8f0; color: #475569; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
         .btn-save-modal { background: var(--primary); color: white; border: none; padding: 10px 20px; border-radius: 10px; font-weight: bold; cursor: pointer; }
 
-        /* KHU VỰC IMPORT HÀNG LOẠT */
-        .file-zone {
-            border: 2px dashed #b19ffb; background: #f8f6ff;
-            border-radius: 16px; padding: 25px; text-align: center; margin-bottom: 15px;
-        }
-        .btn-bulk-upload {
-            width: 100%; padding: 12px; background: linear-gradient(135deg, #a78bfa, var(--primary));
-            color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; display: none;
-        }
+        .file-zone { border: 2px dashed #b19ffb; background: #f8f6ff; border-radius: 16px; padding: 25px; text-align: center; margin-bottom: 15px; }
+        .btn-bulk-upload { width: 100%; padding: 12px; background: linear-gradient(135deg, #a78bfa, var(--primary)); color: white; border: none; border-radius: 12px; font-weight: bold; cursor: pointer; display: none; }
     </style>
 </head>
 <body>
@@ -171,7 +105,6 @@
     </div>
 
     <div class="layout-studio">
-        <!-- 1. PROFILE & KHO TRUYỆN CỦA CHỊ TRÂN -->
         <div class="profile-sidebar">
             <div class="profile-card">
                 <img src="https://via.placeholder.com/150" alt="Avatar">
@@ -182,58 +115,47 @@
             <div id="studioStoryList">Đang tải danh sách...</div>
         </div>
 
-        <!-- 2. KHU VỰC THAO TÁC (CHỈ HIỆN KHI CHỌN TRUYỆN) -->
         <div id="workspacePanel" class="workspace-panel">
             <h2 id="workspaceTitle" style="color: var(--primary); margin-top: 0;"></h2>
 
-            <!-- KHU GẮN TAG / TÌM KIẾM THEO TAG -->
+            <div class="edit-info-box">
+                <h4 style="margin:0;"><i class="fa-solid fa-gear"></i> Cấu Hình Thông Tin Truyện (Đổi tên / Sửa ảnh bìa)</h4>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Tên hiển thị của truyện</label>
+                        <input type="text" id="inputStoryTitle" placeholder="Nhập tên truyện tiếng Việt đầy đủ...">
+                    </div>
+                    <div class="form-group">
+                        <label>Đường dẫn Ảnh bìa (Link Ảnh)</label>
+                        <input type="text" id="inputStoryCover" placeholder="Dán link ảnh bìa mới vào đây...">
+                    </div>
+                </div>
+                <button class="btn-action btn-info" onclick="updateStoryMeta()"><i class="fa-solid fa-pen-to-square"></i> Cập nhật Tên & Ảnh bìa</button>
+            </div>
+
             <div class="tag-box">
                 <h4 style="margin:0;"><i class="fa-solid fa-tags"></i> Gắn Tag Phân Loại Cho Truyện</h4>
                 <div class="tag-group">
-                    <!-- Trạng thái -->
-                    <input type="checkbox" id="tag_tronbo" class="tag-checkbox" value="Trọn bộ">
-                    <label for="tag_tronbo" class="tag-label">📦 Trọn bộ</label>
-
-                    <input type="checkbox" id="tag_dangtienhanh" class="tag-checkbox" value="Đang tiến hành">
-                    <label for="tag_dangtienhanh" class="tag-label">⏳ Đang tiến hành</label>
-
-                    <!-- Thể loại -->
-                    <input type="checkbox" id="tag_ngontinh" class="tag-checkbox" value="Ngôn tình">
-                    <label for="tag_ngontinh" class="tag-label">🌸 Ngôn tình</label>
-
-                    <input type="checkbox" id="tag_dammy" class="tag-checkbox" value="Đam mỹ">
-                    <label for="tag_dammy" class="tag-label">🌈 Đam mỹ</label>
-
-                    <input type="checkbox" id="tag_hiendai" class="tag-checkbox" value="Hiện đại">
-                    <label for="tag_hiendai" class="tag-label">🏙️ Hiện đại</label>
-
-                    <input type="checkbox" id="tag_coandai" class="tag-checkbox" value="Cổ đại">
-                    <label for="tag_coandai" class="tag-label">🏯 Cổ đại</label>
-
-                    <input type="checkbox" id="tag_dienvan" class="tag-checkbox" value="Điền văn">
-                    <label for="tag_dienvan" class="tag-label">🌾 Điền văn</label>
-
-                    <input type="checkbox" id="tag_nguoc" class="tag-checkbox" value="Ngược">
-                    <label for="tag_nguoc" class="tag-label">💧 Ngược</label>
-
-                    <input type="checkbox" id="tag_sung" class="tag-checkbox" value="Sủng">
-                    <label for="tag_sung" class="tag-label">🍬 Sủng</label>
+                    <input type="checkbox" id="tag_tronbo" class="tag-checkbox" value="Trọn bộ"><label for="tag_tronbo" class="tag-label">📦 Trọn bộ</label>
+                    <input type="checkbox" id="tag_dangtienhanh" class="tag-checkbox" value="Đang tiến hành"><label for="tag_dangtienhanh" class="tag-label">⏳ Đang tiến hành</label>
+                    <input type="checkbox" id="tag_ngontinh" class="tag-checkbox" value="Ngôn tình"><label for="tag_ngontinh" class="tag-label">🌸 Ngôn tình</label>
+                    <input type="checkbox" id="tag_dammy" class="tag-checkbox" value="Đam mỹ"><label for="tag_dammy" class="tag-label">🌈 Đam mỹ</label>
+                    <input type="checkbox" id="tag_hiendai" class="tag-checkbox" value="Hiện đại"><label for="tag_hiendai" class="tag-label">🏙️ Hiện đại</label>
+                    <input type="checkbox" id="tag_coandai" class="tag-checkbox" value="Cổ đại"><label for="tag_coandai" class="tag-label">🏯 Cổ đại</label>
+                    <input type="checkbox" id="tag_dienvan" class="tag-checkbox" value="Điền văn"><label for="tag_dienvan" class="tag-label">🌾 Điền văn</label>
                 </div>
-                <button class="btn-save-tags" onclick="saveStoryTags()"><i class="fa-solid fa-floppy-disk"></i> Lưu bộ tag phân loại</button>
+                <button class="btn-action btn-save" style="margin-top:15px;" onclick="saveStoryTags()"><i class="fa-solid fa-floppy-disk"></i> Lưu bộ tag phân loại</button>
             </div>
 
-            <!-- TABS ĐIỀU HƯỚNG KIỂU WATTPAD -->
             <div class="tab-menu">
                 <button class="tab-btn active" onclick="switchTab('tabChapters')"><i class="fa-solid fa-list"></i> Mục lục chương</button>
                 <button class="tab-btn" onclick="switchTab('tabImport')"><i class="fa-solid fa-file-import"></i> Đăng chương hàng loạt</button>
             </div>
 
-            <!-- TAB 1: DANH SÁCH CHƯƠNG VÀ NÚT SỬA NHANH (KIỂU WATTPAD) -->
             <div id="tabChapters" class="tab-content active">
                 <div id="wattpadChapterContainer">Đang tải danh sách...</div>
             </div>
 
-            <!-- TAB 2: IMPORT HÀNG LOẠT -->
             <div id="tabImport" class="tab-content">
                 <div class="file-zone">
                     <p style="margin:0 0 10px 0; color:var(--primary); font-weight:bold;"><i class="fa-solid fa-file-word"></i> Chọn file Word (.docx) hoặc .txt để rải chương</p>
@@ -247,12 +169,11 @@
     </div>
 </div>
 
-<!-- BOX POPUP SỬA NỘI DUNG CHƯƠNG (MODAL WATTPAD) -->
 <div id="editChapterModal" class="modal">
     <div class="modal-content">
         <h3 id="modalChapterHeader" style="margin:0; color:var(--primary);">Sửa nội dung chương</h3>
-        <input type="text" id="modalChapterTitle" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; box-sizing:border-box;" placeholder="Tiêu đề chương">
-        <textarea id="modalChapterContent" placeholder="Nội dung truyện nằm ở đây..."></textarea>
+        <input type="text" id="modalChapterTitle" style="width:100%; padding:10px; border:1px solid var(--border); border-radius:8px; box-sizing:border-box;">
+        <textarea id="modalChapterContent"></textarea>
         <div class="modal-actions">
             <button class="btn-close-modal" onclick="closeEditModal()">Hủy bỏ</button>
             <button class="btn-save-modal" onclick="saveEditedChapterContent()">Lưu thay đổi 🐢</button>
@@ -261,7 +182,6 @@
 </div>
 
 <script>
-    // CẤU HÌNH FIREBASE
     const firebaseConfig = {
         apiKey: "AIzaSyBimiEGQcW9at2pOxfdUaJHjim2fmyjjcc",
         authDomain: "dongchanrua.firebaseapp.com",
@@ -279,54 +199,40 @@
     let currentEditChapterNum = "";
     let temporaryBulkList = [];
 
-    // 1. TẢI TOÀN BỘ TRUYỆN ĐÃ ĐĂNG LÊN PROFILE SIDEBAR
     function loadProfileStories() {
         const listContainer = document.getElementById('studioStoryList');
         db.ref('stories').once('value').then((snapshot) => {
             listContainer.innerHTML = '';
-            if(!snapshot.exists()) {
-                listContainer.innerHTML = '<p style="color:#999; padding:10px;">Chưa có truyện nào chị ơi!</p>';
-                return;
-            }
+            if(!snapshot.exists()) return;
             snapshot.forEach((child) => {
                 const id = child.key; const story = child.val();
                 const cover = story.img || story.cover || 'https://via.placeholder.com/45x60';
-                
                 const div = document.createElement('div');
                 div.className = `story-item story-item-${id}`;
-                div.onclick = () => selectStoryForWorkspace(id, story.title);
-                div.innerHTML = `
-                    <img src="${cover}">
-                    <div style="flex:1;">
-                        <p class="story-item-title">${story.title}</p>
-                        <p style="margin:3px 0 0 0; font-size:0.75rem; color:#94a3b8;">ID: ${id}</p>
-                    </div>
-                `;
+                div.onclick = () => selectStoryForWorkspace(id, story.title, cover);
+                div.innerHTML = `<img src="${cover}"><div style="flex:1;"><p class="story-item-title">${story.title}</p><p style="margin:3px 0 0 0; font-size:0.75rem; color:#94a3b8;">ID: ${id}</p></div>`;
                 listContainer.appendChild(div);
             });
         });
     }
     loadProfileStories();
 
-    // 2. KHI BẤM VÀO MỘT TRUYỆN: MỞ KHÔNG GIAN LÀM VIỆC + ĐỌC TAG CŨ
-    function selectStoryForWorkspace(storyId, storyTitle) {
+    function selectStoryForWorkspace(storyId, storyTitle, storyCover) {
         currentStoryId = storyId;
         document.getElementById('workspaceTitle').innerHTML = `<i class="fa-solid fa-feather-pointed"></i> Đang biên tập: ${storyTitle}`;
         document.querySelectorAll('.story-item').forEach(el => el.classList.remove('active'));
         document.querySelector(`.story-item-${storyId}`).classList.add('active');
         document.getElementById('workspacePanel').style.display = 'block';
         
-        // Reset dữ liệu tab import cũ
-        document.getElementById('fileInput').value = '';
-        document.getElementById('bulkPreviewArea').style.display = 'none';
-        document.getElementById('btnConfirmBulk').style.display = 'none';
-        document.getElementById('bulkStatusBar').style.display = 'none';
+        // Đổ thông tin meta hiện tại vào ô nhập liệu để chị sửa
+        document.getElementById('inputStoryTitle').value = storyTitle;
+        document.getElementById('inputStoryCover').value = (storyCover.includes('placeholder') ? '' : storyCover);
 
-        // Lấy danh sách tag của truyện này đã lưu trên Firebase (nếu có)
+        // Đọc tag cũ
         document.querySelectorAll('.tag-checkbox').forEach(cb => cb.checked = false);
         db.ref(`stories/${storyId}/tags`).once('value').then((snapshot) => {
             if(snapshot.exists()) {
-                const savedTags = snapshot.val(); // Mảng các tag ["Trọn bộ", "Ngôn tình"]
+                const savedTags = snapshot.val();
                 if(Array.isArray(savedTags)) {
                     document.querySelectorAll('.tag-checkbox').forEach(cb => {
                         if(savedTags.includes(cb.value)) cb.checked = true;
@@ -334,75 +240,62 @@
                 }
             }
         });
-
         loadChaptersWattpadStyle();
     }
 
-    // 3. LƯU TAG PHÂN LOẠI LÊN FIREBASE
+    // HÀM ĐỔI TÊN VÀ ĐỔI ẢNH BÌA TRUYỆN MỚI THÊM
+    function updateStoryMeta() {
+        if(!currentStoryId) return;
+        const newTitle = document.getElementById('inputStoryTitle').value.trim();
+        const newCover = document.getElementById('inputStoryCover').value.trim();
+
+        if(!newTitle) return alert("Chị ơi không được bỏ trống tên truyện đâu ạ!");
+
+        // Cập nhật đè lên nút dữ liệu stories/ID_TRUYEN trên Firebase
+        db.ref(`stories/${currentStoryId}`).update({
+            title: newTitle,
+            img: newCover || 'https://via.placeholder.com/45x60'
+        }).then(() => {
+            alert("🎉 Đã cập nhật Tên truyện / Ảnh bìa thành công mĩ mĩ mãn rồi chị Trân!");
+            loadProfileStories(); // Tải lại danh sách bên trái để cập nhật tên mới
+            document.getElementById('workspaceTitle').innerHTML = `<i class="fa-solid fa-feather-pointed"></i> Đang biên tập: ${newTitle}`;
+        });
+    }
+
     function saveStoryTags() {
         if(!currentStoryId) return;
         const selectedTags = [];
-        document.querySelectorAll('.tag-checkbox').forEach(cb => {
-            if(cb.checked) selectedTags.push(cb.value);
-        });
-
-        // Đẩy thẳng mảng tag vào nút dữ liệu của Truyện đó
-        db.ref(`stories/${currentStoryId}/tags`).set(selectedTags).then(() => {
-            alert("🎉 Đã lưu bộ tag phân loại thành công cho truyện này rồi chị Trân!");
-        });
+        document.querySelectorAll('.tag-checkbox').forEach(cb => { if(cb.checked) selectedTags.push(cb.value); });
+        db.ref(`stories/${currentStoryId}/tags`).set(selectedTags).then(() => { alert("🎉 Đã lưu bộ tag phân loại thành công!"); });
     }
 
-    // 4. CHUYỂN ĐỔI TAB GIAO DIỆN
     function switchTab(tabId) {
         document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
-        
         event.currentTarget.classList.add('active');
-        document.getElementById(tabId).add('active'); // Ép hiện tab bằng class
         document.getElementById(tabId).classList.add('active');
     }
 
-    // 5. TẢI DANH SÁCH CHƯƠNG THEO KIỂU GIAO DIỆN WATTPAD
     function loadChaptersWattpadStyle() {
         const container = document.getElementById('wattpadChapterContainer');
         container.innerHTML = '<p style="color:#999; padding:15px;">Đang tải danh mục chương...</p>';
-
         db.ref(`chapters/${currentStoryId}`).once('value').then((snapshot) => {
             container.innerHTML = '';
-            if(!snapshot.exists()) {
-                container.innerHTML = '<p style="color:#999; padding:15px;">Truyện này chưa có chương nào, chị sang Tab Đăng Hàng Loạt để import nhé! 🐢</p>';
-                return;
-            }
-
+            if(!snapshot.exists()) { container.innerHTML = '<p style="color:#999; padding:15px;">Truyện chưa có chương.</p>'; return; }
             const list = [];
-            snapshot.forEach(child => {
-                const val = child.val();
-                list.push({ keyNum: child.key, ...val });
-            });
-            // Xếp chương mới nhất hoặc chương cũ nhất tùy ý (ở đây xếp từ chương 1 đi lên cho dễ kiểm soát)
+            snapshot.forEach(child => { const val = child.val(); list.push({ keyNum: child.key, ...val }); });
             list.sort((a,b) => (a.number || parseInt(a.keyNum)) - (b.number || parseInt(b.keyNum)));
-
             list.forEach(ch => {
-                const row = document.createElement('div');
-                row.className = 'chapter-row';
-                row.innerHTML = `
-                    <div class="chapter-info">
-                        <h4>${ch.title}</h4>
-                        <p><i class="fa-solid fa-eye"></i> Lượt đọc: ${ch.views || 0} | Trạng thái: ${ch.status || 'Công khai'}</p>
-                    </div>
-                    <button class="btn-edit-chapter" onclick="openEditModal('${ch.keyNum}')"><i class="fa-regular fa-pen-to-square"></i> Sửa nhanh</button>
-                `;
+                const row = document.createElement('div'); row.className = 'chapter-row';
+                row.innerHTML = `<div class="chapter-info"><h4>${ch.title}</h4><p><i class="fa-solid fa-eye"></i> Lượt đọc: ${ch.views || 0}</p></div><button class="btn-edit-chapter" onclick="openEditModal('${ch.keyNum}')"><i class="fa-regular fa-pen-to-square"></i> Sửa nhanh</button>`;
                 container.appendChild(row);
             });
         });
     }
 
-    // 6. MỞ KHUNG MODAL SỬA NỘI DUNG CHƯƠNG ĐỘC LẬP
     function openEditModal(chapterNum) {
         currentEditChapterNum = chapterNum;
         document.getElementById('editChapterModal').style.display = 'flex';
-        document.getElementById('modalChapterContent').value = "Đang lấy nội dung từ vệ tinh dữ liệu...";
-        
         db.ref(`chapters/${currentStoryId}/${chapterNum}`).once('value').then((snapshot) => {
             if(snapshot.exists()) {
                 const ch = snapshot.val();
@@ -412,102 +305,54 @@
             }
         });
     }
-
     function closeEditModal() { document.getElementById('editChapterModal').style.display = 'none'; }
 
-    // 7. LƯU NỘI DUNG CHƯƠNG SAU KHI CHỊ TRÂN SỬA XONG
     function saveEditedChapterContent() {
         const newTitle = document.getElementById('modalChapterTitle').value.trim();
         const newContent = document.getElementById('modalChapterContent').value.trim();
-        if(!newTitle || !newContent) return alert("Chị ơi không được bỏ trống tiêu đề hoặc nội dung đâu ạ!");
-
-        db.ref(`chapters/${currentStoryId}/${currentEditChapterNum}`).update({
-            title: newTitle,
-            content: newContent
-        }).then(() => {
-            alert(`🎉 Đã cập nhật xong nội dung Chương ${currentEditChapterNum} thành công!`);
-            closeEditModal();
-            loadChaptersWattpadStyle(); // Tải lại danh sách
+        db.ref(`chapters/${currentStoryId}/${currentEditChapterNum}`).update({ title: newTitle, content: newContent }).then(() => {
+            alert(`🎉 Đã cập nhật xong nội dung Chương ${currentEditChapterNum}!`); closeEditModal(); loadChaptersWattpadStyle();
         });
     }
 
-    // 8. ALGORITHM BÓC TÁCH FILE HÀNG LOẠT Ở TAB 2
     function handleBulkParsing(input) {
-        const file = input.files[0];
-        if (!file) return;
+        const file = input.files[0]; if (!file) return;
         const name = file.name.toLowerCase();
-
         if (name.endsWith('.txt')) {
             const r = new FileReader(); r.onload = function(e) { processRawText(e.target.result); }; r.readAsText(file, 'UTF-8');
         } else if (name.endsWith('.docx')) {
-            const r = new FileReader();
-            r.onload = function(e) {
-                mammoth.extractRawText({ arrayBuffer: e.target.result })
-                    .then(function(res) { processRawText(res.value); });
-            };
-            r.readAsArrayBuffer(file);
+            const r = new FileReader(); r.onload = function(e) { mammoth.extractRawText({ arrayBuffer: e.target.result }).then(function(res) { processRawText(res.value); }); }; r.readAsArrayBuffer(file);
         }
     }
 
     function processRawText(text) {
-        temporaryBulkList = [];
-        const lines = text.split(/\r?\n/);
-        const regex = /^\s*Chương\s+(\d+)\s*[:\-\s]\s*(.*)$/i;
-        let currentCh = null;
-
+        temporaryBulkList = []; const lines = text.split(/\r?\n/); const regex = /^\s*Chương\s+(\d+)\s*[:\-\s]\s*(.*)$/i; let currentCh = null;
         for(let i=0; i<lines.length; i++) {
             const match = lines[i].match(regex);
             if(match) {
                 if(currentCh) temporaryBulkList.push(currentCh);
                 currentCh = { number: parseInt(match[1]), title: lines[i].trim(), bodyLines: [] };
-            } else {
-                if(currentCh) currentCh.bodyLines.push(lines[i]);
-            }
+            } else { if(currentCh) currentCh.bodyLines.push(lines[i]); }
         }
         if(currentCh) temporaryBulkList.push(currentCh);
-
-        // Hiện sơ bộ danh sách bóc được
-        const preview = document.getElementById('bulkPreviewArea');
-        preview.innerHTML = '';
-        if(temporaryBulkList.length === 0) {
-            preview.innerHTML = '❌ Không bóc được chương nào, chị check lại xem đầu dòng có chữ "Chương X:" chưa nhé.';
-            preview.style.display = 'block';
-            return;
-        }
-
+        const preview = document.getElementById('bulkPreviewArea'); preview.innerHTML = '';
+        if(temporaryBulkList.length === 0) { preview.innerHTML = '❌ Không bóc được chương.'; preview.style.display = 'block'; return; }
         temporaryBulkList.forEach(c => {
-            c.content = c.bodyLines.join('\n').trim();
-            delete c.bodyLines;
-            const p = document.createElement('p');
-            p.style.margin = '5px 0'; p.style.fontSize = '0.85rem';
-            p.innerHTML = `✅ <b>${c.title}</b> (${c.content.substring(0, 40)}...)`;
-            preview.appendChild(p);
+            c.content = c.bodyLines.join('\n').trim(); delete c.bodyLines;
+            const p = document.createElement('p'); p.style.margin = '5px 0'; p.style.fontSize = '0.85rem';
+            p.innerHTML = `✅ <b>${c.title}</b> (${c.content.substring(0, 40)}...)`; preview.appendChild(p);
         });
-
-        preview.style.display = 'block';
-        document.getElementById('btnConfirmBulk').innerText = `Xác Nhận Đăng Hàng Loạt (${temporaryBulkList.length} Chương) 🚀`;
-        document.getElementById('btnConfirmBulk').style.display = 'block';
+        preview.style.display = 'block'; document.getElementById('btnConfirmBulk').innerText = `Xác Nhận Đăng Hàng Loạt (${temporaryBulkList.length} Chương) 🚀`; document.getElementById('btnConfirmBulk').style.display = 'block';
     }
 
-    // 9. NÚT ĐỒNG BỘ ĐĂNG BUM MỘT PHÁT LÊN ĐƯỜNG DÂN
     async function uploadBulkChaptersToFirebase() {
-        if(!currentStoryId) return alert("Chị chưa chọn truyện đích ở bên sidebar kìa chị ơi!");
-        const statusBar = document.getElementById('bulkStatusBar');
-        statusBar.style.display = 'block';
-        
-        let count = 0;
+        const statusBar = document.getElementById('bulkStatusBar'); statusBar.style.display = 'block'; let count = 0;
         for(const ch of temporaryBulkList) {
-            await db.ref(`chapters/${currentStoryId}/${ch.number}`).set({
-                title: ch.title, number: ch.number, content: ch.content,
-                status: "Công khai", createdAt: Date.now(), views: 0
-            });
-            count++;
-            statusBar.innerText = `🚚 Đang đẩy luồng dữ liệu: Chương ${count}/${temporaryBulkList.length}...`;
+            await db.ref(`chapters/${currentStoryId}/${ch.number}`).set({ title: ch.title, number: ch.number, content: ch.content, status: "Công khai", createdAt: Date.now(), views: 0 });
+            count++; statusBar.innerText = `🚚 Đang đẩy luồng dữ liệu: Chương ${count}/${temporaryBulkList.length}...`;
         }
-        statusBar.style.background = '#dcfce7'; statusBar.style.color = '#16a34a';
-        statusBar.innerHTML = `🎉 Đã import toàn bộ thành công mĩ mãn <b>${count} chương</b> vào kho truyện!`;
-        document.getElementById('btnConfirmBulk').style.display = 'none';
-        loadChaptersWattpadStyle();
+        statusBar.style.background = '#dcfce7'; statusBar.style.color = '#16a34a'; statusBar.innerHTML = `🎉 Đã import toàn bộ thành công mĩ mãn <b>${count} chương</b> vào kho truyện!`;
+        document.getElementById('btnConfirmBulk').style.display = 'none'; loadChaptersWattpadStyle();
     }
 </script>
 </body>
