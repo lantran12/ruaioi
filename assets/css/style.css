@@ -114,23 +114,44 @@ body {
 .nav-link-btn:hover, .nav-link-btn.active { color: var(--netflix-red); }
 
 /* THẢ MENU THỂ LOẠI */
-.dropdown { position: relative; }
-.dropdown-menu-vip {
-    display: none;
-    position: absolute;
-    top: 40px;
-    left: 0;
-    background: #ffffff;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
-    border-radius: 12px;
-    padding: 15px;
-    min-width: 300px;
-    z-index: 100;
-    border: 1px solid #eee;
-    flex-wrap: wrap;
-    gap: 6px;
+.dropdown {
+    position: relative; /* Giữ nguyên, quan trọng để menu bám theo nút */
 }
-.dropdown:hover .dropdown-menu-vip { display: flex; }
+
+.dropdown-menu-vip {
+    display: none; 
+    position: absolute; 
+    top: 100%; 
+    left: 0;
+    margin-top: 5px; /* Tạo khoảng cách nhỏ giữa nút và menu */
+    background: #ffffff;
+    border: 1px solid #ffccd5; /* Chỉnh màu viền cho xinh */
+    border-radius: 12px;
+    padding: 10px 0; /* Padding trên dưới thôi, để 2 bên cho span tự quyết */
+    min-width: 180px; 
+    max-width: 250px; 
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    z-index: 9999; /* Tăng lên để nó luôn nằm trên các nội dung khác */
+    overflow-y: auto; /* Nếu menu quá dài thì tự có thanh cuộn */
+    max-height: 300px; /* Không cho menu dài vô tận làm vỡ trang */
+}
+
+.dropdown-menu-vip span {
+    display: block;
+    padding: 10px 15px; /* Tăng padding để dễ bấm hơn trên mobile */
+    cursor: pointer;
+    white-space: nowrap; 
+    overflow: hidden; 
+    text-overflow: ellipsis;
+    color: #555;
+    transition: 0.2s;
+}
+
+.dropdown-menu-vip span:hover {
+    background: #fff0f3; /* Hiệu ứng hover cho chuyên nghiệp */
+    color: #ff4d6d;
+    font-weight: 600;
+}
 .dropdown-menu-vip span {
     background: #fdfafb; padding: 6px 12px; border-radius: 20px; font-size: 0.85rem; cursor: pointer;
 }
