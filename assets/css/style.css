@@ -225,86 +225,27 @@ body {
         font-size: 2rem;
     }
 }
-/* --- BỔ SUNG GIAO DIỆN PROFILE CHO ĐẸP NHƯ TRANG CHỦ --- */
-
-#profileSection {
-    background: #fcf9fa;
-    padding-top: 100px;
-    padding-bottom: 50px;
+/* --- SỬA LỖI FONT FORM ĐĂNG NHẬP --- */
+.auth-modal-overlay,
+.auth-modal-box,
+.auth-modal-box * {
+    font-family: var(--font-sans) !important;
 }
 
-.profile-container {
-    max-width: 800px;
-    margin: 0 auto;
-    background: #ffffff;
-    padding: 40px;
-    border-radius: 20px;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+/* Tinh chỉnh label và input trong form cho sang trọng */
+.auth-modal-box label {
+    font-weight: 700 !important;
+    text-transform: uppercase;
+    font-size: 11px !important;
+    color: var(--smoke) !important;
 }
 
-.profile-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 30px;
+.auth-modal-box input {
+    font-size: 14px !important;
+    color: var(--onyx) !important;
 }
 
-.profile-body {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 40px;
-    margin-bottom: 40px;
+.btn-auth-submit {
+    font-weight: 700 !important;
+    letter-spacing: 0.5px;
 }
-
-.profile-avatar-zone {
-    flex: 1;
-    text-align: center;
-    min-width: 200px;
-}
-
-.profile-edit-zone {
-    flex: 2;
-    min-width: 280px;
-}
-
-/* Định dạng các ô nhập liệu và nút trong Profile */
-.auth-group { margin-bottom: 20px; }
-.auth-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #555; }
-.auth-group input { 
-    width: 100%; padding: 12px; border: 1px solid #eee; 
-    border-radius: 8px; font-family: var(--font-sans);
-}
-
-.avatar-selection-grid {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    margin-top: 10px;
-}
-
-.avatar-option-img {
-    transition: transform 0.2s;
-    border: 2px solid transparent;
-}
-
-.avatar-option-img:hover { transform: scale(1.1); }
-
-/* Nút bấm trong Profile */
-.btn-logout { background: #ff4d6d; color: white; border: none; padding: 8px 20px; border-radius: 20px; cursor: pointer; margin-top: 10px; }
-.btn-back { background: #eee; border: none; padding: 8px 16px; border-radius: 20px; cursor: pointer; }
-.btn-auth-submit { 
-    background: var(--netflix-red); color: white; border: none; 
-    padding: 12px 24px; border-radius: 8px; cursor: pointer; width: 100%;
-    font-weight: 700; margin-top: 20px;
-}
-
-/* Kệ sách */
-.bookshelf-item {
-    background: #fff;
-    border: 1px solid #eee;
-    border-radius: 12px;
-    margin-bottom: 10px;
-    transition: 0.3s;
-}
-
-.bookshelf-item:hover { border-color: var(--netflix-red); }
