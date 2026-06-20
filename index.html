@@ -3,48 +3,68 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Động Chăn Rùa - Premium Novel World</title>
-    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap" rel="stylesheet">
+    <title>Động Chăn Rùa - Premium Novel Streaming</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,600;0,700;1,400&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="assets/css/style.css">
 </head>
 <body>
 
-    <!-- HEADER KÍNH MỜ SANG TRỌNG -->
-    <header class="main-header custom-header">
-        <div class="logo">
-            <a href="index.html"><i class="fa-solid fa-feather-pointed"></i> Rùa<span>Novel</span></a>
+    <!-- HEADER TRONG SUỐT TRÀN VIỀN (NETFLIX STYLE) -->
+    <header class="netflix-header">
+        <div class="header-left-zone">
+            <div class="logo">
+                <a href="index.html">Rùa<span>Stream</span></a>
+            </div>
+            <!-- Thanh lọc tinh gọn tích hợp thẳng lên Header như Netflix -->
+            <nav class="netflix-nav">
+                <button class="nav-link-btn active" data-filter="new">Mới Phát Hành</button>
+                <button class="nav-link-btn" data-filter="completed">Đã Trọn Bộ</button>
+                <div class="dropdown">
+                    <button class="nav-link-btn" id="tagDropdownBtn">Thể Loại <i class="fa-solid fa-caret-down"></i></button>
+                    <div class="dropdown-menu-vip" id="tagMenu"></div>
+                </div>
+            </nav>
         </div>
-        <div class="header-right">
+
+        <div class="header-right-zone">
+            <!-- Ô tìm kiếm thu gọn thông minh -->
+            <div class="netflix-search-box">
+                <input type="text" id="searchInput" placeholder="Tìm tác phẩm, tác giả...">
+                <button class="search-icon-btn" onclick="triggerSearch()"><i class="fa-solid fa-magnifying-glass"></i></button>
+            </div>
+
             <button class="noti-btn" id="notiBtn">
                 <i class="fa-regular fa-bell"></i>
                 <span class="badge" id="notiCount">0</span>
             </button>
+
             <div class="auth-buttons" id="authSection">
-                <button class="btn btn-login" id="btnHeaderAuth" onclick="openAuthModal()"><i class="fa-solid fa-user-glass"></i> Thành Viên</button>
-                <button class="btn btn-admin" id="btnOpenAdminPanel" style="display: none; background: #ff9aa2; margin-left: 10px;" onclick="toggleAdminPanel()">👑 Quản lý</button>
+                <button class="btn-avatar-profile" id="btnHeaderAuth" onclick="openAuthModal()"><i class="fa-regular fa-user"></i></button>
+                <button class="btn-admin-badge" id="btnOpenAdminPanel" style="display: none;" onclick="toggleAdminPanel()">👑</button>
             </div>
             
+            <!-- Panel Admin nhỏ gọn -->
             <div id="adminPanel" class="admin-panel" style="display: none;">
-                <h3><i class="fa-solid fa-crown"></i> Biên Tập Truyện</h3>
+                <h3>Editor Studio</h3>
                 <div class="admin-form">
-                    <input type="text" id="adminId" placeholder="ID truyện (ví dụ: tinh-dau-ngot-ngao)">
+                    <input type="text" id="adminId" placeholder="ID (zombie-school)">
                     <input type="text" id="adminTitle" placeholder="Tên tác phẩm">
                     <input type="text" id="adminAuthor" placeholder="Tác giả">
-                    <input type="text" id="adminImg" placeholder="Link ảnh bìa nghệ thuật">
+                    <input type="text" id="adminImg" placeholder="Link ảnh bìa">
                     <textarea id="adminTags" placeholder="Thể loại (cách nhau bằng dấu phẩy)"></textarea>
-                    <button class="btn-submit" onclick="submitNewStory()">Phát Hành Ngay</button>
+                    <button class="btn-submit" onclick="submitNewStory()">Phát Hành</button>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- TRANG HỒ SƠ ĐỘC GIẢ -->
-    <section class="container" id="profileSection" style="display: none;">
+    <!-- TRANG HỒ SƠ ĐỘC GIẢ (GIỮ NGUYÊN TÍNH NĂNG CỦA CHỊ) -->
+    <section class="container" id="profileSection" style="display: none; margin-top: 100px;">
         <div class="profile-container">
             <div class="profile-header">
                 <h2><i class="fa-solid fa-id-card"></i> Khách Quý Của Động</h2>
-                <button class="btn btn-back" onclick="showHome()">Về Trang Chủ</button>
+                <button class="btn-back" onclick="showHome()">Về Trang Chủ</button>
             </div>
             <div class="profile-body">
                 <div class="profile-avatar-zone">
@@ -56,7 +76,7 @@
                 <div class="profile-edit-zone">
                     <div class="auth-group">
                         <label>Đổi Danh Xưng:</label>
-                        <input type="text" id="editDisplayNameInput" placeholder="Biệt danh mới...">
+                        <input type="text" id="editDisplayNameInput">
                     </div>
                     <label class="label-heading">Chọn Diện Mạo Chibi Premium:</label>
                     <div id="avatarGridContainer" class="avatar-selection-grid"></div>
@@ -64,104 +84,83 @@
                 </div>
             </div>
             <h3 class="shelf-title"><i class="fa-solid fa-bookmark"></i> Kệ Sách Sưu Tầm Của Chị</h3>
-            <div id="userBookshelfContainer" class="book-grid"></div>
+            <div id="userBookshelfContainer" class="netflix-row-grid"></div>
         </div>
     </section>
 
-    <!-- KHU VỰC TRANG CHỦ VIP -->
+    <!-- KHU VỰC TRANG CHỦ NETFLIX LIGHT -->
     <div id="homeMainContent">
         
-        <!-- TOP ZONE: BIẾN TẤU GIỮA TRUYỆN ĐỀ CỬ VÀ BẢNG VÀNG TOP VIEW -->
-        <section class="premium-hero-zone">
-            <div class="hero-left">
-                <div class="tag-headline">✨ EDITOR CHOICE / TRUYỆN ĐỀ CỬ ĐỘC QUYỀN</div>
-                <div class="featured-card" id="featuredBook">
-                    <!-- Sẽ được index.js đổ nội dung VIP vào đây -->
-                    <div class="featured-loading">Đang chọn đóa hoa thơm nhất cho bạn...</div>
-                </div>
-            </div>
-            
-            <div class="hero-right">
-                <div class="tag-headline">🏆 BẢNG VÀNG THỊNH HÀNH (TOP VIEW)</div>
-                <div id="nominationListContainer" class="nomination-list">
-                    <!-- Top 5 xếp cực sang chảnh ở đây -->
-                </div>
+        <!-- 1. NETFLIX HERO SPOTLIGHT (Banner cực đại tràn viền) -->
+        <section class="netflix-hero" id="featuredBook">
+            <!-- JS sẽ tự động đổ dữ liệu Vip vào đây, dưới đây là khung nền sẵn -->
+            <div class="hero-cover-blur"></div>
+            <div class="hero-content">
+                <span class="trending-badge"><i class="fa-solid fa-fire"></i> TÁC PHẨM ĐANG ĐƯỢC ĐỀ CỬ NHIỀU NHẤT</span>
+                <h1 class="hero-title">Động Chăn Rùa Premium</h1>
+                <p class="hero-synopsis">Đang chọn lọc những dòng chữ tinh túy nhất dành riêng cho tâm hồn của bạn...</p>
             </div>
         </section>
 
-        <!-- MIDDLE ZONE: THANH TÌM KIẾM & BỘ LỌC TẬP CHÍ -->
-        <section class="premium-filter-zone">
-            <div class="filter-wrapper">
-                <div class="search-box-vip">
-                    <i class="fa-solid fa-magnifying-glass main-search-icon"></i>
-                    <input type="text" id="searchInput" placeholder="Tìm tác phẩm, tác giả đỉnh cao tại Động...">
-                    <button class="btn-search-vip" onclick="triggerSearch()">Tìm Kiếm</button>
-                </div>
-                
-                <div class="filter-navigation">
-                    <div class="dropdown">
-                        <button class="filter-btn-vip" id="tagDropdownBtn">Khám Phá Thể Loại <i class="fa-solid fa-angle-down"></i></button>
-                        <div class="dropdown-menu-vip" id="tagMenu"></div>
-                    </div>
-                    <div class="dropdown">
-                        <button class="filter-btn-vip" id="authorDropdownBtn">Tác Giả <i class="fa-solid fa-angle-down"></i></button>
-                        <div class="dropdown-menu-vip" id="authorMenu"></div>
-                    </div>
-                    <button class="filter-btn-vip active" data-filter="new">Mới Cập Nhật</button>
-                    <button class="filter-btn-vip" data-filter="completed">Đã Trọn Bộ</button>
-                </div>
+        <!-- DÀNH RIÊNG CHO KẾT QUẢ TÌM KIẾM / LỌC -->
+        <section class="netflix-section" id="searchResultsSection" style="display: none;">
+            <div class="row-header">
+                <h2 class="row-title">🍿 Kết Quả Tìm Kiếm Chuyên Sâu</h2>
+                <button onclick="closeSearch()" class="btn-close-row">Đóng bộ lọc ❌</button>
+            </div>
+            <div id="resultsGrid" class="netflix-row-grid"></div>
+        </section>
+
+        <!-- 2. HÀNG 1: BẢNG VÀNG THỊNH HÀNH (TOP VIEW XẾP NGANG CHUẨN ĐIỆN ẢNH) -->
+        <section class="netflix-section">
+            <div class="row-header">
+                <h2 class="row-title">🏆 Top 5 Đột Phá Lượt Xem</h2>
+            </div>
+            <div id="nominationListContainer" class="netflix-row-grid top-rank-style">
+                <!-- Top 5 dạng card ngang Netflix đổ tại đây -->
             </div>
         </section>
 
-        <!-- DÀNH RIÊNG CHO KẾT QUẢ LỌC -->
-        <section class="container" id="searchResultsSection" style="display: none;">
-            <div class="result-header-vip">
-                <h3><i class="fa-solid fa-wand-magic-sparkles"></i> Sách Tìm Thấy Theo Yêu Cầu:</h3>
-                <button onclick="closeSearch()" class="btn-close-result">❌ Đóng Trình Lọc</button>
+        <!-- 3. HÀNG 2: THƯ VIỆN CHÍNH (XẾP LƯỚI KHÔNG GIỚI HẠN) -->
+        <section class="netflix-section">
+            <div class="row-header">
+                <h2 class="row-title">✨ Mới Cập Nhật Trên Hệ Thống</h2>
             </div>
-            <div id="resultsGrid" class="book-grid-vip"></div>
+            <div class="netflix-row-grid" id="bookGrid">
+                <!-- Danh sách truyện toàn động -->
+            </div>
         </section>
-
-        <!-- MAIN ZONE: THƯ VIỆN TRUYỆN CHÍNH -->
-        <main class="container">
-            <div class="main-list-header">
-                <h2 class="section-title-vip">📚 Thư Viện Tác Phẩm Toàn Động</h2>
-                <span class="sub-title-vip">Cập nhật thời gian thực từ phòng gõ chữ của Gùa</span>
-            </div>
-            <div class="book-grid-vip" id="bookGrid"></div>
-        </main>
     </div>
 
     <!-- POPUP ĐĂNG KÝ / ĐĂNG NHẬP -->
     <div id="authModal" class="auth-modal" onclick="closeAuthModalOverlay(event)">
         <div class="auth-modal-content">
             <span class="close-modal-btn" onclick="closeAuthModal()">&times;</span>
-            <h3 id="authTitle">GIA NHẬP ĐỘNG CHĂN RÙA</h3>
+            <h3 id="authTitle">GIA NHẬP RÙA STREAM</h3>
             <div class="auth-group" id="nickNameGroup">
-                <label>Biệt danh quý cô / quý ngài:</label>
-                <input type="text" id="authDisplayName" placeholder="Tên xuất hiện trên diễn đàn...">
+                <label>Biệt danh tài khoản:</label>
+                <input type="text" id="authDisplayName" placeholder="Tên hiển thị...">
             </div>
             <div class="auth-group">
                 <label>Địa chỉ Email:</label>
-                <input type="email" id="authEmail" placeholder="yourname@gmail.com">
+                <input type="email" id="authEmail" placeholder="name@domain.com">
             </div>
             <div class="auth-group">
-                <label>Mật mã bảo mật:</label>
-                <input type="password" id="authPassword" placeholder="Mật khẩu trên 6 ký tự...">
+                <label>Mật mã:</label>
+                <input type="password" id="authPassword" placeholder="Tối thiểu 6 ký tự...">
             </div>
             <p id="authForgotLink" onclick="handleForgotPassword()">Quên mật khẩu?</p>
-            <button class="btn-auth-submit" id="btnAuthSubmit" onclick="submitAuthForm()">BẮT ĐẦU TRẢI NGHIỆM VIP</button>
-            <p class="auth-toggle-text" id="authToggleLink" onclick="toggleAuthMode()">Đã có tài khoản danh dự? Đăng nhập tại đây</p>
+            <button class="btn-auth-submit" id="btnAuthSubmit" onclick="submitAuthForm()">BẮT ĐẦU TRẢI NGHIỆM</button>
+            <p class="auth-toggle-text" id="authToggleLink" onclick="toggleAuthMode()">Đã có tài khoản? Đăng nhập ngay</p>
         </div>
     </div>
 
-    <!-- FOOTER SANG CHẢNH -->
-    <footer class="main-footer">
-        <div class="footer-line"></div>
-        <p>&copy; 2026 ĐỘNG CHĂN RÙA. Crafted with absolute elegance for Gùa's inner world.</p>
+    <!-- FOOTER SANG XỊN -->
+    <footer class="netflix-footer">
+        <p>&copy; 2026 RÙA NOVEL STREAMING. ALL RIGHTS RESERVED.</p>
     </footer>
 
-    <!-- Các thư viện kết nối giữ nguyên cho chị -->
+    <!-- Các bộ thư viện Firebase v8 liên thông -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
