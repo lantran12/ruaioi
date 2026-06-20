@@ -1,43 +1,152 @@
-import { db } from "./firebase.js"; // Import từ file cấu hình của chị
-import { ref, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Admin - Động Chăn Rùa</title>
 
-window.publishStory = function() {
-    // 1. Lấy dữ liệu từ form
-    const title = document.getElementById('adminTitle').value;
-    const author = document.getElementById('adminAuthor').value;
-    const img = document.getElementById('adminImg').value;
-    const tags = document.getElementById('adminTags').value;
-    const status = document.getElementById('adminStatus').value;
+<link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
 
-    // Kiểm tra cơ bản
-    if (!title || !author) {
-        alert("Chị ơi, điền tên tác phẩm và tác giả vào đã nhé!");
-        return;
-    }
+<style>
+body {
+    font-family: 'Quicksand', sans-serif;
+    background: #fff0f3;
+    margin: 0;
+    padding: 20px;
+}
 
-    // 2. Tạo ID duy nhất cho truyện (không dấu, cách bằng dấu gạch ngang)
-    const storyId = title.toLowerCase()
-                         .normalize("NFD").replace(/[\u0300-\u036f]/g, "") // Bỏ dấu tiếng Việt
-                         .replace(/[^a-z0-9]+/g, '-');
+.admin-box {
+    max-width: 900px;
+    margin: auto;
+    background: white;
+    padding: 25px;
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
 
-    // 3. Đẩy dữ liệu lên Firebase
-    const storyRef = ref(db, 'stories/' + storyId);
-    
-    set(storyRef, {
-        title: title,
-        author: author,
-        img: img,
-        tags: tags.split(',').map(tag => tag.trim()), // Tách chuỗi thành mảng
-        status: status,
-        createdAt: Date.now()
-    })
-    .then(() => {
-        alert("Phát hành thành công bộ truyện: " + title + " ✨");
-        // Xóa sạch form sau khi đăng
-        document.querySelector('.admin-form').reset();
-    })
-    .catch((error) => {
-        console.error("Lỗi đăng truyện: ", error);
-        alert("Có lỗi xảy ra, chị kiểm tra lại nhé!");
-    });
+h2 {
+    color: #ff4d6d;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: 1px solid #ffd6dd;
+}
+
+button {
+    background: #ff4d6d;
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.preview-img {
+    width: 120px;
+    border-radius: 10px;
+    margin-top: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div class="admin-box">
+
+<h2>📚 Đăng Truyện</h2>
+
+<input id="storyId" placeholder="ID truyện (vd: zombie-school)">
+<input id="storyTitle" placeholder="Tên truyện">
+<input id="storyAuthor" placeholder="Tác giả">
+<input id="storyImg" placeholder="Link ảnh" oninput="previewImg()">
+<img id="imgPreview" class="preview-img">
+
+<textarea id="storyDesc" placeholder="Mô tả"></textarea>
+
+<button onclick="addStory()">Đăng truyện</button>
+
+<hr>
+
+<h2>✍️ Đăng Chương</h2>
+
+<input id="chapStoryId" placeholder="ID truyện">
+<input id="chapTitle" placeholder="Tên chương">
+<textarea id="chapContent" placeholder="Nội dung chương..."></textarea>
+
+<label>
+<input type="checkbox" id="chapLock"> 🔒 Khóa chương
+</label>
+
+<input id="chapPass" placeholder="Mật khẩu chương">
+
+<button onclick="addChapter()">Đăng chương</button>
+
+<hr>
+
+<h2>📥 Import DOCX (auto tách chương)</h2>
+<input type="file" id="docxFile">
+
+<button onclick="importDocx()">Import</button>
+
+</div>
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<script>
+const firebaseConfig = {
+    apiKey: "AIzaSy...",
+    databaseURL: "https://..."
 };
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
+// ================== PREVIEW ẢNH ==================
+function previewImg() {
+    document.getElementById('imgPreview').src = document.getElementById('storyImg').value;
+}
+
+// ================== ĐĂNG TRUYỆN ==================
+function addStory() {
+    const id = storyId.value;
+
+    db.ref('stories/' + id).set({
+        title: storyTitle.value,
+        author: storyAuthor.value,
+        img: storyImg.value,
+        description: storyDesc.value,
+        updatedAt: Date.now(),
+        views: 0
+    });
+
+    alert("Đăng truyện thành công 👑");
+}
+
+// ================== ĐĂNG CHƯƠNG ==================
+function addChapter() {
+    const storyIdVal = chapStoryId.value;
+
+    const ref = db.ref('chapters/' + storyIdVal).push();
+
+    ref.set({
+        title: chapTitle.value,
+        content: chapContent.value,
+        createdAt: Date.now(),
+        isLocked: chapLock.checked,
+        password: chapLock.checked ? chapPass.value : ""
+    });
+
+    db.ref('stories/' + storyIdVal + '/updatedAt').set(Date.now());
+
+    alert("Đăng chương thành công ✨");
+}
+</script>
+
+</body>
+</html>
