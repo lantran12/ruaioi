@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Quicksand:wght@400;600;700&display=swap');
 :root {
     --netflix-red: #ff4d6d;
     --p-pink: #ffb7b2;
@@ -290,7 +291,7 @@ body {
     border-color: var(--netflix-red);
     transform: translateY(-2px);
 }
-/* style.studio.css */
+/* --- BỔ SUNG STUDIO MƯỢT MÀ --- */
 .studio-grid { 
     display: grid; 
     grid-template-columns: 300px 1fr; 
@@ -324,4 +325,12 @@ body {
     border-radius: 20px; 
     cursor: pointer; 
     font-weight: 700;
+}
+
+/* Đảm bảo Font luôn được áp dụng cho mọi thành phần Studio */
+.studio-grid, .studio-grid * {
+    font-family: var(--font-sans);
+}
+.studio-grid h2, .studio-grid h3 {
+    font-family: var(--font-serif);
 }
