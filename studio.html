@@ -21,12 +21,13 @@
         .form-control { width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
         .btn-action { padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; flex: 1; }
         .btn-primary { background: #7c3aed; color: white; }
-        .dropdown-check-list { display: inline-block; width: 100%; position: relative; }
-        .anchor { background: #fff; cursor: pointer; display: inline-block; padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; }
-        .items { display: none; border: 1px solid #ddd; border-top: none; position: absolute; background: #fff; width: 100%; z-index: 100; max-height: 200px; overflow-y: auto; border-radius: 0 0 8px 8px; }
-        .items label { display: block; padding: 8px 12px; cursor: pointer; }
-        .items label:hover { background: #f3f4f6; }
-        
+        /* Style cho Dropdown */
+.dropdown-check-list { display: inline-block; width: 100%; position: relative; }
+.anchor { background: #fff; cursor: pointer; display: flex; align-items: center; justify-content: space-between; padding: 12px; border: 1px solid #ddd; border-radius: 8px; width: 100%; box-sizing: border-box; font-family: 'Quicksand', sans-serif; color: #333; }
+.items { display: none; border: 1px solid #ddd; position: absolute; background: #fff; width: 100%; z-index: 100; max-height: 200px; overflow-y: auto; border-radius: 8px; margin-top: 5px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+.items li { list-style: none; }
+.items label { display: flex; align-items: center; padding: 10px 15px; cursor: pointer; font-family: 'Quicksand', sans-serif; font-size: 14px; gap: 10px; }
+.items label:hover { background: #f3f4f6; }
     </style>
 </head>
 <body>
@@ -74,7 +75,9 @@
                 <div class="form-group">
     <label>Thể loại (Chọn nhiều)</label>
     <div class="dropdown-check-list" id="list1">
-        <span class="anchor" onclick="toggleDropdown()">Chọn thể loại ▼</span>
+     <span class="anchor" onclick="toggleDropdown(event)">
+    <span>Chọn thể loại</span>
+    <i class="fa-solid fa-chevron-down" style="font-size: 0.8rem; color: #666;"></i></span>
         <ul class="items" id="genreContainer" style="list-style: none; padding: 0; margin: 0;">
             </ul>
     </div>
@@ -112,9 +115,10 @@
     </main>
 
     <script src="assets/js/config.js"></script>
-    <script>
+  <script>
     // Đóng/mở dropdown
-    function toggleDropdown() {
+    function toggleDropdown(e) {
+        if(e) e.stopPropagation();
         var checkList = document.getElementById('genreContainer');
         checkList.style.display = (checkList.style.display === 'block') ? 'none' : 'block';
     }
@@ -129,6 +133,8 @@
             checkbox.type = "checkbox";
             checkbox.value = item.id;
             checkbox.name = "genres";
+            // Tạo thêm khoảng cách nhỏ cho checkbox
+            checkbox.style.cursor = "pointer";
             
             label.appendChild(checkbox);
             label.appendChild(document.createTextNode(" " + item.name));
@@ -139,8 +145,10 @@
 
     // Đóng dropdown khi bấm ra ngoài
     document.addEventListener('click', function(e) {
-        if (!document.getElementById('list1').contains(e.target)) {
-            document.getElementById('genreContainer').style.display = 'none';
+        const list = document.getElementById('list1');
+        const container = document.getElementById('genreContainer');
+        if (!list.contains(e.target)) {
+            container.style.display = 'none';
         }
     });
 </script>
