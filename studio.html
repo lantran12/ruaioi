@@ -37,7 +37,20 @@
         </section>
     </div>
 </main>
-
-    <script src="assets/js/studio.js" type="module"></script>
+<div id="createStoryModal" class="modal-overlay">
+    <div class="modal-content">
+        <span class="close-btn" onclick="hideCreateForm()">&times;</span>
+        <h2>Tạo truyện mới</h2>
+        <div class="form-group">
+            <label>Tên truyện</label>
+            <input type="text" id="storyTitle" placeholder="Nhập tên truyện...">
+        </div>
+        <div class="form-group">
+            <label>Tác giả</label>
+            <input type="text" id="storyAuthor" placeholder="Nhập tên tác giả...">
+        </div>
+        <button class="btn-main" onclick="saveStory()">Lưu truyện lên Động</button>
+    </div>
+</div>
 </body>
 </html>
