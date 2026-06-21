@@ -11,28 +11,36 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// 2. Hàm Đăng truyện mới (Đã sửa để dùng ID tự chọn)
+// 2. Hàm Đăng truyện mới (Đã thêm phần lấy thể loại)
 async function handleCreateStory() {
-    // 1. Lấy thêm cái ID viết liền không dấu do chị tự đặt
     const customId = document.getElementById('idInput').value.trim().toLowerCase(); 
-    
     const title = document.getElementById('titleInput').value;
     const author = document.getElementById('authorInput').value;
     const status = document.getElementById('statusSelect').value;
-    const cover = document.getElementById('coverInput').value; // URL ảnh
+    const cover = document.getElementById('coverInput').value;
     const description = document.getElementById('descInput').value;
 
-    // Kiểm tra xem chị đã nhập ID chưa
+    // Lấy danh sách thể loại đã chọn từ Modal
+    const selectedGenres = [];
+    document.querySelectorAll('#genreModalContainer input:checked').forEach(cb => {
+        selectedGenres.push(cb.value);
+    });
+
     if (!customId) {
         alert("Chị Trân ơi, chị chưa nhập ID viết liền không dấu kìa (ví dụ: zombie, kiss)!");
         return;
     }
 
-    // THAY ĐỔI QUAN TRỌNG: Dùng ref thẳng đến tên ID đó, bỏ hàm push() đi
     const newStoryRef = ref(db, `stories/${customId}`);
     
+    // Gửi dữ liệu lên Firebase, bao gồm cả mảng genres
     await set(newStoryRef, {
-        title, author, status, cover, description,
+        title, 
+        author, 
+        status, 
+        cover, 
+        description,
+        genres: selectedGenres, // Dòng này sẽ đẩy thể loại lên Firebase
         createdAt: Date.now(),
         updatedAt: Date.now(),
         views: 0
@@ -40,10 +48,16 @@ async function handleCreateStory() {
 
     alert(`🎉 Đăng truyện thành công với ID là: ${customId}`);
     
-    // Xóa chữ trong ô nhập ID sau khi đăng xong
+    // Xóa trắng các ô nhập sau khi đăng thành công
     document.getElementById('idInput').value = "";
+    document.getElementById('titleInput').value = "";
+    document.getElementById('authorInput').value = "";
+    document.getElementById('coverInput').value = "";
+    document.getElementById('descInput').value = "";
+    document.getElementById('selectedGenresText').innerText = "Chọn thể loại...";
+    // Bỏ tích các checkbox sau khi đăng
+    document.querySelectorAll('#genreModalContainer input:checked').forEach(cb => cb.checked = false);
 }
-
 // 3. Hiển thị danh sách truyện
 function loadAdminStoryList() {
     const listContainer = document.getElementById('adminStoryList');
