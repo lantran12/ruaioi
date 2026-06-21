@@ -83,5 +83,21 @@ function loadAdminStoryList() {
     });
 }
 
-// Gán hàm vào window để HTML gọi được
+// Hàm làm mới form
+function resetForm() {
+    document.getElementById('idInput').value = "";
+    document.getElementById('titleInput').value = "";
+    document.getElementById('authorInput').value = "";
+    document.getElementById('coverInput').value = "";
+    document.getElementById('descInput').value = "";
+    document.getElementById('editorNote').value = "";
+    document.getElementById('selectedGenresText').innerText = "Chọn thể loại...";
+    
+    // Bỏ tích tất cả các checkbox
+    document.querySelectorAll('#genreModalContainer input:checked').forEach(cb => cb.checked = false);
+}
+
+// Gán vào window để HTML gọi được
 window.handleCreateStory = handleCreateStory;
+window.resetForm = resetForm;
+
