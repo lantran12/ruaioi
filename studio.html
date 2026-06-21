@@ -13,37 +13,42 @@
     </header>
 
     <main class="studio-grid" style="margin-top: 100px;">
-        
         <aside class="story-list-sidebar">
-            <h3 style="font-family: var(--font-serif); margin-bottom: 20px;">Chọn truyện để chỉnh sửa</h3>
-            
-            <div class="studio-story-card" style="border: 2px dashed #ff4d6d; text-align: center; margin-bottom: 20px;">
-                <strong>+ Tạo truyện mới</strong>
-            </div>
-
-            <div id="storyListContainer">
-                <div class="studio-story-card">
-                    <h4>Bạo Long</h4>
-                    <p>Đam Mỹ • Hoàn thành</p>
-                </div>
-            </div>
+            <h3 style="margin-bottom: 20px;">Truyện của Chị</h3>
+            <div class="studio-story-card" style="border: 2px dashed #ff4d6d;">+ Tạo truyện mới</div>
+            <div id="storyListContainer"></div>
         </aside>
 
         <section class="work-area">
-            <h2 id="currentStoryTitle" style="font-family: var(--font-serif); margin-bottom: 20px;">Bạo Long</h2>
+            <h2 style="font-family: var(--font-serif); margin-bottom: 20px;">Thông tin truyện mới</h2>
             
-            <input type="text" id="chapterTitle" placeholder="Tên chương mới..." style="padding: 15px; border-radius: var(--radius-card);">
-            
-            <div id="editor" style="margin-top: 20px; border: 1px solid #ddd; border-radius: var(--radius-card);">
-                <p>Nội dung chương...</p>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Tên truyện *</label>
+                <input type="text" placeholder="Nhập tên truyện..." style="width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 8px;">
             </div>
 
-            <button class="btn-main" onclick="saveChapter()" style="margin-top: 20px; width: 100%;">Lưu chương lên Động</button>
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Tên tác giả *</label>
+                <input type="text" placeholder="Nhập tên tác giả..." style="width: 100%; padding: 12px; border: 1px solid #eee; border-radius: 8px;">
+            </div>
+
+            <div class="form-group" style="margin-bottom: 20px;">
+                <label>Phân loại & Tiến độ</label>
+                <select style="width: 100%; padding: 12px; margin-bottom: 10px; border-radius: 8px;">
+                    <option>Đam Mỹ</option>
+                    <option>Ngôn Tình</option>
+                </select>
+                <select style="width: 100%; padding: 12px; border-radius: 8px;">
+                    <option>Đang cập nhật</option>
+                    <option>Hoàn thành</option>
+                </select>
+            </div>
+
+            <div id="editor"></div>
+            <button class="btn-main" style="margin-top: 20px; width: 100%;">Lưu chương lên Động</button>
         </section>
     </main>
 
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <script src="assets/js/studio.js" type="module"></script>
 </body>
 </html>
