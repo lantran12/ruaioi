@@ -1,5 +1,5 @@
 // ==========================================================================
-// 1. CẤU HÌNH FIREBASE (Giữ nguyên cấu hình cũ của chị)
+// 1. CẤU HÌNH FIREBASE 
 // ==========================================================================
 const firebaseConfig = {
     apiKey: "AIzaSyBimiEGQcW9at2pOxfdUaJHjim2fmyjjcc",
@@ -11,12 +11,14 @@ const firebaseConfig = {
     appId: "1:640115424540:web:c9713b7921c09283150ed9"
 };
 
+// Khởi tạo Firebase
 if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 const db = firebase.database();
 const auth = firebase.auth();
 
+// Chạy các hàm chức năng khi trang tải xong
 document.addEventListener('DOMContentLoaded', () => {
     initSubBarFilters();
     loadGenresDropdown();
@@ -25,33 +27,38 @@ document.addEventListener('DOMContentLoaded', () => {
     listenToNotifications();
 });
 
-// ==========================================================================
-// 2. CÁC HÀM XỬ LÝ DỮ LIỆU & GIAO DIỆN (Giữ nguyên code của chị)
-// ==========================================================================
+/* ==========================================================================
+   2. XỬ LÝ BỘ LỌC TẠI SUB-BAR (Mới phát hành / Đã trọn bộ)
+   ========================================================================== */
+function initSubBarFilters() {
+    const filterButtons = document.querySelectorAll('.nav-link-btn');
+    
+    filterButtons.forEach(btn => {
+        if (btn.id === 'tagDropdownBtn') return;
 
-function createNetflixCard(id, story) {
-    const div = document.createElement('div');
-    div.className = 'story-card';
-    div.style.cssText = "min-width: 150px; max-width: 150px; flex: 0 0 auto; cursor: pointer; margin-right: 10px;";
-    div.onclick = () => window.location.href = `book.html?id=${id}`;
-    
-    const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
-    
-    div.innerHTML = `
-        <img src="${currentImg}" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px;">
-        <h4 style="margin: 8px 0 2px 0; font-size: 13px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${story.title}</h4>
-        <p style="margin: 0; font-size: 11px; color: #777;">${story.author || 'Động Chăn Rùa'}</p>
-    `;
-    return div;
+        btn.addEventListener('click', () => {
+            filterButtons.forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+
+            const filterType = btn.getAttribute('data-filter');
+            if (filterType === 'new') {
+                closeSearch();
+                loadMainStories();
+            } else if (filterType === 'completed') {
+                loadStoriesByCondition('status', 'Hoàn thành', '📜 Danh Sách Truyện Đã Hoàn Thành');
+            }
+        });
+    });
 }
 
 /* ==========================================================================
-   3. TRUYỆN ĐỀ CỬ NGẪU NHIÊN (Giữ nguyên code của chị)
+   3. TRUYỆN ĐỀ CỬ NGẪU NHIÊN (Đọc trường 'img' chị tạo)
    ========================================================================== */
 function handleFeaturedRandomBook(storiesData) {
     const keys = Object.keys(storiesData);
     if (keys.length === 0) return;
 
+    // Bốc ngẫu nhiên 1 Key (ID) truyện từ Firebase
     const randomKey = keys[Math.floor(Math.random() * keys.length)];
     const story = storiesData[randomKey];
 
@@ -63,9 +70,11 @@ function handleFeaturedRandomBook(storiesData) {
     if (heroTitle) heroTitle.innerText = story.title || "Tác phẩm độc quyền";
     if (heroSynopsis) heroSynopsis.innerText = story.description || story.synopsis || "Bấm vào để khám phá thế giới nội tâm đầy cảm xúc của tác phẩm này...";
 
+    // Tạo link dẫn tới trang chi tiết truyện của chị
     const storyReadUrl = `book.html?id=${randomKey}`;
     if (heroLink) heroLink.setAttribute('href', storyReadUrl);
 
+    // Ưu tiên đọc trường 'img' từ Form Admin của chị, nếu không có mới tìm trường 'cover' hoặc 'image'
     const storyImg = story.img || story.cover || story.image;
 
     if (storyImg && featuredBookSection) {
@@ -84,7 +93,7 @@ function handleFeaturedRandomBook(storiesData) {
 }
 
 /* ==========================================================================
-   4. THẢ MENU THỂ LOẠI TẠI DROP-DOWN (Giữ nguyên code của chị)
+   4. THẢ MENU THỂ LOẠI TẠI DROP-DOWN
    ========================================================================== */
 function loadGenresDropdown() {
     const tagMenu = document.getElementById('tagMenu');
@@ -108,7 +117,7 @@ function loadGenresDropdown() {
 }
 
 /* ==========================================================================
-   5. BỘ LỌC ĐIỀU KIỆN (Giữ nguyên code của chị)
+   5. BỘ LỌC ĐIỀU KIỆN (Xổ dữ liệu ra vùng Tìm kiếm chuyên sâu)
    ========================================================================== */
 function loadStoriesByCondition(field, value, titleText) {
     const searchSection = document.getElementById('searchResultsSection');
@@ -147,7 +156,7 @@ function closeSearch() {
 }
 
 /* ==========================================================================
-   6. THƯ VIỆN CHÍNH (Giữ nguyên code của chị)
+   6. THƯ VIỆN CHÍNH (Mới Cập Nhật Trên Hệ Thống)
    ========================================================================== */
 function loadMainStories() {
     const bookGrid = document.getElementById('bookGrid');
@@ -162,6 +171,7 @@ function loadMainStories() {
 
         const storiesData = snapshot.val();
         
+        // Gọi hàm Random Banner Hero ngay tại đây
         handleFeaturedRandomBook(storiesData);
 
         const storiesArray = [];
@@ -180,7 +190,7 @@ function loadMainStories() {
 }
 
 /* ==========================================================================
-   7. TOP 5 ĐỘT PHÁ LƯỢT XEM (Giữ nguyên code của chị)
+   7. TOP 5 ĐỘT PHÁ LƯỢT XEM (Hàng Ngang Kiểu Dáng Xịn)
    ========================================================================== */
 function loadTopViews() {
     const nominationContainer = document.getElementById('nominationListContainer');
@@ -203,6 +213,7 @@ function loadTopViews() {
             card.className = 'story-card';
             card.onclick = () => window.location.href = `book.html?id=${story.id}`;
             
+            // Tự động kiểm tra trường ảnh mượt mà
             const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
             
             card.innerHTML = `
@@ -218,7 +229,7 @@ function loadTopViews() {
 }
 
 /* ==========================================================================
-   8. LẮNG NGHE THÔNG BÁO REALTIME (Giữ nguyên code của chị)
+   8. LẮNG NGHE THÔNG BÁO REALTIME (Chuông thông báo trên Header)
    ========================================================================== */
 function listenToNotifications() {
     const notiCountBadge = document.getElementById('notiCount');
@@ -289,16 +300,18 @@ function triggerSearch() {
 }
 
 /* ==========================================================================
-   10. QUẢN LÝ ĐĂNG NHẬP, ĐIỀU KHIỂN VƯƠNG MIỆN ADMIN VÀ HỒ SƠ / AVATAR (Giữ nguyên code của chị)
+   10. QUẢN LÝ ĐĂNG NHẬP, ĐIỀU KHIỂN VƯƠNG MIỆN ADMIN VÀ HỒ SƠ / AVATAR
    ========================================================================== */
 let isSignUpMode = true; 
 let selectedAvatarUrl = "";
-let tuSachListenerRef = null;
+let tuSachListenerRef = null; // Quản lý lắng nghe tủ sách realtime
 
+// --- A. THEO DÕI TRẠNG THÁI TÀI KHOẢN REALTIME ---
 auth.onAuthStateChanged((user) => {
     const btnHeaderAuth = document.getElementById('btnHeaderAuth'); 
     const btnNotification = document.getElementById('btnNotification'); 
     
+    // 1. Đảm bảo nút Admin luôn tồn tại trong DOM
     let btnAdminCrown = document.getElementById('btnOpenAdminPanel');
     if (!btnAdminCrown && btnHeaderAuth && btnHeaderAuth.parentNode) {
         btnAdminCrown = document.createElement('button');
@@ -308,20 +321,27 @@ auth.onAuthStateChanged((user) => {
         btnHeaderAuth.parentNode.insertBefore(btnAdminCrown, btnHeaderAuth.nextSibling);
     }
 
+    // 2. Xử lý logic khi ĐÃ ĐĂNG NHẬP
     if (user) {
+        console.log("Đã đăng nhập với UID:", user.uid); // <--- KIỂM TRA DÒNG NÀY TRONG CONSOLE
+        
         if (btnNotification) btnNotification.style.display = 'inline-flex';
         
         if (btnHeaderAuth) {
             btnHeaderAuth.innerHTML = (user.uid === 'BrZQ9s07ujfIYG1iPtC4vIhGgx33') ? "Chào, Chị Trân ạ" : `Chào, ${user.displayName || 'Thành Viên'}`;
             btnHeaderAuth.style.cssText = "width: auto; padding: 0 12px; border-radius: 20px; font-size: 13px; background: #ff4d6d; color: white; border: none; height: 36px; cursor: pointer;";
             
+            // Chỉ gán hàm nếu nó tồn tại
             if (typeof openProfileZone === 'function') {
                 btnHeaderAuth.onclick = openProfileZone;
+            } else {
+                console.error("Hàm openProfileZone chưa được định nghĩa!");
             }
         }
 
         renderUserProfileData(user);
 
+        // PHÂN QUYỀN ADMIN - ĐƯỢC ÉP HIỂN THỊ
         if (user.uid === 'BrZQ9s07ujfIYG1iPtC4vIhGgx33') {
             if (btnAdminCrown) {
                 btnAdminCrown.style.display = 'flex'; 
@@ -331,11 +351,13 @@ auth.onAuthStateChanged((user) => {
             if (btnAdminCrown) btnAdminCrown.style.display = 'none';
         }
     }
+    // 3. Xử lý logic khi CHƯA ĐĂNG NHẬP
     else {
         if (btnNotification) btnNotification.style.display = 'none';
         if (btnHeaderAuth) {
             btnHeaderAuth.innerHTML = `<i class="fa-regular fa-user"></i>`;
             btnHeaderAuth.style.cssText = "width: 40px; height: 40px; border-radius: 50%; background: #ff4d6d; color: white; border: none; cursor: pointer;";
+            btnHeaderAuth.onclick = null;
             btnHeaderAuth.onclick = openAuthModal;
         }
         if (btnAdminCrown) btnAdminCrown.style.display = 'none';
@@ -346,13 +368,16 @@ auth.onAuthStateChanged((user) => {
     }
 });
 
+// --- B. CÁC HÀM XỬ LÝ HỒ SƠ & AVATAR (THU NHỎ ẢNH & LOAD TỦ SÁCH) ---
 function renderUserProfileData(user) {
     renderAvatarSelectionGrid(); 
     
     const currentAvatarImg = document.getElementById('userCurrentAvatar');
 
+    // Lấy avatar từ DB trước, fallback sang Google
     db.ref('users/' + user.uid + '/profile').once('value').then(snapshot => {
         const data = snapshot.val();
+
         let avatar = 'https://via.placeholder.com/100';
 
         if (data?.avatarType === "custom") {
@@ -369,6 +394,7 @@ function renderUserProfileData(user) {
         }
     });
 
+    // ===== TỦ SÁCH =====
     const container = document.getElementById('userBookshelfContainer');
     if (!container) return;
 
@@ -392,24 +418,36 @@ function updateUserProfileData() {
     const user = auth.currentUser;
     const newName = document.getElementById('editDisplayNameInput').value.trim();
 
-    if (!user) { alert("Chưa đăng nhập nha chị 🐢"); return; }
+    if (!user) {
+        alert("Chưa đăng nhập nha chị 🐢");
+        return;
+    }
 
     const updates = {};
+
+    // Đổi tên
     if (newName) {
         updates.displayName = newName;
         user.updateProfile({ displayName: newName });
         document.getElementById('userProfileName').textContent = newName;
     }
 
+    // Đổi avatar
     if (selectedAvatarUrl) {
         updates.avatar = selectedAvatarUrl;
-        updates.avatarType = "custom";
+        updates.avatarType = "custom"; // QUAN TRỌNG
         document.getElementById('userCurrentAvatar').src = selectedAvatarUrl;
     }
 
-    if (Object.keys(updates).length === 0) { alert("Chưa thay đổi gì hết nha chị 😅"); return; }
+    // Nếu không thay đổi gì
+    if (Object.keys(updates).length === 0) {
+        alert("Chưa thay đổi gì hết nha chị 😅");
+        return;
+    }
 
+    // Lưu DB
     db.ref('users/' + user.uid + '/profile').update(updates);
+
     alert("Cập nhật hồ sơ thành công ✨");
 }
 
@@ -464,8 +502,10 @@ function removeFromBookshelf(key) {
     }
 }
 
+// --- C. ĐIỀU KHIỂN POPUP ĐĂNG NHẬP VÀ FORM SUBMIT ---
 function openAuthModal() { const modal = document.getElementById('authModal'); if (modal) modal.style.display = 'flex'; }
 function closeAuthModal() { const modal = document.getElementById('authModal'); if (modal) modal.style.display = 'none'; }
+function closeAuthModalOverlay(event) { if (event.target.id === 'authModal') closeAuthModal(); }
 
 function toggleAuthMode() {
     isSignUpMode = !isSignUpMode;
@@ -491,13 +531,20 @@ function submitAuthForm() {
     if (isSignUpMode) {
         auth.createUserWithEmailAndPassword(email, password).then((userCredential) => {
             if (displayName) {
-                userCredential.user.updateProfile({ displayName: displayName }).then(() => { window.location.reload(); });
-            } else { window.location.reload(); }
+                userCredential.user.updateProfile({ displayName: displayName }).then(() => {
+                    // Cập nhật xong tên thì mới reload để UI refresh
+                    window.location.reload();
+                });
+            } else {
+                window.location.reload();
+            }
             alert("🎉 Đăng ký thành công!"); closeAuthModal();
         }).catch(err => alert(err.message));
     } else {
         auth.signInWithEmailAndPassword(email, password).then(() => {
-            alert("🎉 Chào mừng chị trở lại!"); closeAuthModal(); window.location.reload();
+            alert("🎉 Chào mừng chị trở lại!"); 
+            closeAuthModal();
+            window.location.reload(); // Reload để header cập nhật tên ngay
         }).catch(err => alert(err.message));
     }
 }
@@ -508,13 +555,20 @@ function showHome() {
 }
 
 function logoutFromProfile() {
-    if(confirm("Chị muốn đăng xuất tài khoản đúng không ạ? 🐢")) { auth.signOut(); }
+    if(confirm("Chị muốn đăng xuất tài khoản đúng không ạ? 🐢")) {
+        auth.signOut();
+    }
 }
-
 function openProfileZone() {
     const profileSection = document.getElementById('profileSection');
     const homeMainContent = document.getElementById('homeMainContent');
-    if (profileSection) profileSection.style.display = 'block';
-    if (homeMainContent) homeMainContent.style.display = 'none';
+    
+    if (profileSection) {
+        profileSection.style.display = 'block';
+    }
+    if (homeMainContent) {
+        homeMainContent.style.display = 'none';
+    }
+    // Chắc chắn cuộn lên đầu trang
     window.scrollTo({ top: 0, behavior: 'smooth' });
 }
