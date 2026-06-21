@@ -157,12 +157,27 @@
     <script src="assets/js/firebase.js"></script>
     <script src="assets/js/index.js"></script>
     <script src="assets/js/notification.js"></script>
+    <script src="assets/js/config.js"></script>
 
     <script>
         function toggleAdminPanel() {
             var panel = document.getElementById('adminPanel');
             panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
         }
+
+        // Tự động load thể loại vào menu từ config.js
+        document.addEventListener('DOMContentLoaded', () => {
+            const tagMenu = document.getElementById('tagMenu');
+            if (typeof GENDERS !== 'undefined' && tagMenu) {
+                GENDERS.forEach(item => {
+                    let btn = document.createElement('button');
+                    btn.className = 'dropdown-item';
+                    btn.textContent = item.name;
+                    btn.onclick = () => filterBy(item.id);
+                    tagMenu.appendChild(btn);
+                });
+            }
+        });
     </script>
 </body>
 </html>
