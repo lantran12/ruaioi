@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="assets/css/style.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.6.0/mammoth.browser.min.js"></script>
     <style>
+        /* Style cho Modal Thể Loại mới */
         .genre-modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 9999; justify-content: center; align-items: center; }
         .genre-modal-box { background: white; padding: 25px; border-radius: 16px; width: 90%; max-width: 400px; max-height: 80vh; overflow-y: auto; font-family: 'Quicksand', sans-serif; box-sizing: border-box; }
         .genre-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 20px 0; }
@@ -35,7 +36,7 @@
 
     <section class="container" id="profileSection" style="display: none; margin-top: 100px; width: 100%; max-width: 1200px; padding: 0 15px; box-sizing: border-box; margin-left: auto; margin-right: auto;">
         <div class="profile-container" style="background: #ffffff; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); font-family: 'Quicksand', sans-serif; width: 100%; box-sizing: border-box;">
-             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px dashed #ffe5ec; padding-bottom: 15px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; border-bottom: 2px dashed #ffe5ec; padding-bottom: 15px;">
                 <h2 style="margin: 0; font-size: 18px; color: #ff4d6d; font-weight: 700; display: flex; align-items: center; gap: 8px;"><i class="fa-solid fa-id-card"></i> PROFILE RÙA CON</h2>
                 <button class="btn-back" onclick="showHome()" style="background: #ffe5ec; color: #ff4d6d; border: none; padding: 8px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; cursor: pointer; transition: 0.2s;">Về Trang Chủ</button>
             </div>
@@ -135,6 +136,7 @@
             </div>
             <button class="btn-auth-submit" id="btnAuthSubmit" onclick="submitAuthForm()" style="width: 100%; padding: 12px; background: #ff4d6d; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: 700; cursor: pointer; box-shadow: 0 4px 12px rgba(255,77,109,0.2); transition: all 0.2s;">BẮT ĐẦU TRẢI NGHIỆM</button>
             <div class="auth-toggle-link" id="authToggleLink" onclick="toggleAuthMode()" style="font-size: 12px; text-align: center; margin-top: 15px; color: #666; cursor: pointer; text-decoration: underline;">Đã có tài khoản? Đăng nhập ngay</div>
+            <div class="auth-forgot-link" id="authForgotLink" onclick="handleForgotPassword()" style="font-size: 12px; text-align: center; margin-top: 8px; color: #999; cursor: pointer; display: none;">Quên mật khẩu?</div>
         </div>
     </div>
 
@@ -146,9 +148,55 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="assets/js/firebase.js"></script>
-    <script src="assets/js/config.js"></script>
-    <script src="assets/js/notification.js"></script>
     <script src="assets/js/index.js"></script>
-    <script src="assets/js/admin.js"></script>
+    <script src="assets/js/notification.js"></script>
+    <script src="assets/js/config.js"></script>
+
+   <script>
+        // 1. Hàm xử lý Modal Thể Loại
+        function openGenreModal() { document.getElementById('genreModal').style.display = 'flex'; }
+        function closeGenreModal() { document.getElementById('genreModal').style.display = 'none'; }
+
+        // 2. Đổ dữ liệu Thể loại từ config.js vào Modal
+        document.addEventListener('DOMContentLoaded', () => {
+            if (typeof GENDERS !== 'undefined') {
+                const container = document.getElementById('genreModalContainer');
+                container.innerHTML = '';
+                GENDERS.forEach(item => {
+                    let label = document.createElement('label');
+                    label.className = 'genre-item';
+                    label.innerHTML = `<input type="checkbox" value="${item.id}" style="margin-right: 8px;"> ${item.name}`;
+                    label.onclick = () => { filterBy(item.id); closeGenreModal(); };
+                    container.appendChild(label);
+                });
+            }
+
+            // 3. TỰ ĐỘNG CẬP NHẬT TÊN VÀ EMAIL TỪ FIREBASE
+            firebase.auth().onAuthStateChanged((user) => {
+                if (user) {
+                    // Nếu user đã đăng nhập, cập nhật giao diện
+                    const displayName = user.displayName || "Rùa Con"; // Lấy tên hoặc mặc định
+                    const email = user.email;
+
+                    // Cập nhật Header
+                    const headerBtn = document.getElementById('btnHeaderAuth');
+                    headerBtn.innerHTML = `<i class="fa-regular fa-user"></i> ${displayName}`;
+
+                    // Cập nhật Profile
+                    document.getElementById('userProfileName').innerText = displayName;
+                    document.getElementById('userProfileEmail').innerText = email;
+                } else {
+                    // Nếu chưa đăng nhập
+                    document.getElementById('btnHeaderAuth').innerHTML = `<i class="fa-regular fa-user"></i>`;
+                }
+            });
+        });
+
+        // Hàm hỗ trợ admin (nếu có)
+        function toggleAdminPanel() {
+            var panel = document.getElementById('adminPanel');
+            if (panel) { panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none'; }
+        }
+    </script>
 </body>
 </html>
