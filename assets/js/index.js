@@ -312,7 +312,7 @@ auth.onAuthStateChanged((user) => {
     const btnNotification = document.getElementById('btnNotification'); 
     
     // Tự động tạo nút Vương Miện màu xanh Admin nằm CẠNH NHAU (ngang hàng)
-    let btnAdminCrown = document.getElementById('btnOpenAdminPanel');
+    let  = document.getElementById('btnOpenAdminPanel');
     if (!btnAdminCrown && btnHeaderAuth) {
         btnAdminCrown = document.createElement('button');
         btnAdminCrown.id = 'btnOpenAdminPanel';
@@ -348,12 +348,11 @@ auth.onAuthStateChanged((user) => {
                 btnHeaderAuth.onclick = openProfileZone;
             }
             if (btnAdminCrown) {
-                btnAdminCrown.style.display = 'inline-flex'; // Hiện vương miện xanh kế bên
-                btnAdminCrown.onclick = () => {
-                    const adminModal = document.getElementById('adminModal');
-                    if (adminModal) adminModal.style.display = 'flex'; // Hiện popup đăng chương
-                };
-            }
+                   btnAdminCrown.style.display = 'inline-flex';
+                   btnAdminCrown.onclick = () => {
+                   window.location.href = "studio.html"; // Chuyển thẳng sang trang Studio chuyên nghiệp
+    };
+}
         } else {
             // Nếu là người đọc bình thường
             if (btnHeaderAuth) {
