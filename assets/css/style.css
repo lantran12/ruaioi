@@ -291,37 +291,32 @@ body {
     border-color: var(--netflix-red);
     transform: translateY(-2px);
 }
-/* --- TỐI ƯU GIAO DIỆN DI ĐỘNG (MOBILE-FIRST) --- */
+/* --- TỐI ƯU GIAO DIỆN XUỐNG HÀNG TRÊN ĐIỆN THOẠI --- */
 @media (max-width: 768px) {
-    /* Đảm bảo toàn bộ lưới studio xếp thành 1 cột */
+    /* Ép 2 cột nằm ngang trở thành 1 cột dọc */
     .studio-grid {
-        grid-template-columns: 1fr !important;
-        margin: 80px 10px 20px 10px !important;
-        padding: 0 !important;
+        grid-template-columns: 1fr !important; 
         gap: 20px !important;
+        margin-top: 80px !important;
     }
 
-    /* Đảm bảo các khung nội dung không bị tràn */
+    /* Đảm bảo các khung trong Studio tràn đầy màn hình */
     .story-list-sidebar, .work-area {
         width: 100% !important;
         padding: 20px !important;
-        border-radius: var(--radius-card) !important;
     }
 
-    /* Làm cho các input to lên, không bị zoom khi nhấn */
+    /* Chỉnh lại các ô input cho dễ nhấn */
     input[type="text"], .input-custom, select {
-        font-size: 16px !important; /* Quan trọng: 16px để iPhone không tự zoom */
-        padding: 14px !important;
+        font-size: 16px !important; /* Tránh việc iPhone tự zoom */
+        padding: 15px !important;
         width: 100% !important;
     }
 
-    /* Đảm bảo tiêu đề không bị quá nhỏ */
-    h2 { font-size: 1.5rem !important; }
-
-    /* Nút lưu chiếm trọn chiều ngang */
+    /* Đảm bảo nút "Lưu" nằm gọn và dễ bấm */
     .btn-main {
         width: 100% !important;
         padding: 16px !important;
-        font-size: 1rem !important;
+        font-size: 16px !important;
     }
 }
