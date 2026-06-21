@@ -160,24 +160,45 @@
     <script src="assets/js/config.js"></script>
 
     <script>
-        function toggleAdminPanel() {
-            var panel = document.getElementById('adminPanel');
+    // 1. Hàm đóng/mở Admin Panel
+    function toggleAdminPanel() {
+        var panel = document.getElementById('adminPanel');
+        if (panel) {
             panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
         }
+    }
 
-        // Tự động load thể loại vào menu từ config.js
-        document.addEventListener('DOMContentLoaded', () => {
-            const tagMenu = document.getElementById('tagMenu');
-            if (typeof GENDERS !== 'undefined' && tagMenu) {
-                GENDERS.forEach(item => {
-                    let btn = document.createElement('button');
-                    btn.className = 'dropdown-item';
-                    btn.textContent = item.name;
-                    btn.onclick = () => filterBy(item.id);
-                    tagMenu.appendChild(btn);
-                });
-            }
+    // 2. Xử lý Dropdown Thể Loại
+    const tagDropdownBtn = document.getElementById('tagDropdownBtn');
+    const tagMenu = document.getElementById('tagMenu');
+
+    if (tagDropdownBtn) {
+        tagDropdownBtn.addEventListener('click', function(e) {
+            tagMenu.style.display = (tagMenu.style.display === 'block') ? 'none' : 'block';
+            e.stopPropagation();
         });
-    </script>
+    }
+
+    // 3. Đóng menu khi click ra ngoài
+    document.addEventListener('click', function() {
+        if (tagMenu) tagMenu.style.display = 'none';
+    });
+
+    // 4. Load thể loại từ config.js (Chỉ chạy 1 lần duy nhất)
+    document.addEventListener('DOMContentLoaded', () => {
+        if (typeof GENDERS !== 'undefined' && tagMenu) {
+            tagMenu.innerHTML = ''; // Làm sạch menu trước khi đổ dữ liệu
+            GENDERS.forEach(item => {
+                let btn = document.createElement('button');
+                btn.className = 'dropdown-item';
+                btn.textContent = item.name;
+                // Áp dụng font Quicksand để đồng bộ với website
+                btn.style.fontFamily = "'Quicksand', sans-serif";
+                btn.onclick = () => filterBy(item.id);
+                tagMenu.appendChild(btn);
+            });
+        }
+    });
+</script>
 </body>
 </html>
