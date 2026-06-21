@@ -182,44 +182,55 @@ function loadMainStories() {
 }
 
 /* ==========================================================================
-   7. TOP 5 ĐỘT PHÁ LƯỢT XEM (Hàng Ngang Kiểu Dáng Xịn)
+   7. TOP 5 ĐỘT PHÁ LƯỢT XEM (Đã sửa để lấy đúng nhánh 'views')
    ========================================================================== */
 function loadTopViews() {
     const nominationContainer = document.getElementById('nominationListContainer');
     if (!nominationContainer) return;
 
-    db.ref('stories').orderByChild('views').limitToLast(5).once('value')
-    .then((snapshot) => {
-        nominationContainer.innerHTML = '';
-        if (!snapshot.exists()) return;
+    // 1. Lấy dữ liệu truyện (stories)
+    db.ref('stories').once('value').then((snapshot) => {
+        const allStories = snapshot.val();
+        if (!allStories) return;
 
-        const topStories = [];
-        snapshot.forEach((childSnapshot) => {
-            topStories.push({ id: childSnapshot.key, ...childSnapshot.val() });
-        });
-
-        topStories.reverse();
-
-        topStories.forEach((story, index) => {
-            const card = document.createElement('div');
-            card.className = 'story-card';
-            card.onclick = () => window.location.href = `book.html?id=${story.id}`;
+        // 2. Lấy dữ liệu lượt xem (views)
+        db.ref('views').once('value').then((viewsSnapshot) => {
+            const viewsData = viewsSnapshot.val();
             
-            // Tự động kiểm tra trường ảnh mượt mà
-            const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
-            
-            card.innerHTML = `
-                <img src="${currentImg}" alt="${story.title}">
-                <div style="flex: 1; min-width: 0;">
-                    <h4 style="margin-top:0; font-size:0.95rem; font-weight:700;">TOP ${index + 1} . ${story.title}</h4>
-                    <p style="margin-bottom:0; font-size:0.8rem; color: var(--netflix-red); font-weight:600;"><i class="fa-regular fa-eye"></i> ${story.views || 0} lượt xem</p>
-                </div>
-            `;
-            nominationContainer.appendChild(card);
+            // 3. Kết hợp 2 dữ liệu
+            const storiesWithViews = Object.keys(allStories).map(id => {
+                return {
+                    id: id,
+                    ...allStories[id],
+                    views: viewsData[id] || 0 // Lấy view từ nhánh 'views' dựa theo ID truyện
+                };
+            });
+
+            // 4. Sắp xếp theo view giảm dần và lấy top 5
+            const topStories = storiesWithViews
+                .sort((a, b) => b.views - a.views)
+                .slice(0, 5);
+
+            nominationContainer.innerHTML = '';
+            topStories.forEach((story, index) => {
+                const card = document.createElement('div');
+                card.className = 'story-card';
+                card.onclick = () => window.location.href = `book.html?id=${story.id}`;
+                
+                const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
+                
+                card.innerHTML = `
+                    <img src="${currentImg}" alt="${story.title}">
+                    <div style="flex: 1; min-width: 0;">
+                        <h4 style="margin-top:0; font-size:0.95rem; font-weight:700;">TOP ${index + 1} . ${story.title}</h4>
+                        <p style="margin-bottom:0; font-size:0.8rem; color: var(--netflix-red); font-weight:600;"><i class="fa-regular fa-eye"></i> ${story.views} lượt xem</p>
+                    </div>
+                `;
+                nominationContainer.appendChild(card);
+            });
         });
     });
 }
-
 /* ==========================================================================
    8. LẮNG NGHE THÔNG BÁO REALTIME (Chuông thông báo trên Header)
    ========================================================================== */
