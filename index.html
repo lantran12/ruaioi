@@ -176,57 +176,5 @@
             panel.style.display = (panel.style.display === 'none' || panel.style.display === '') ? 'block' : 'none';
         }
     </script>
-
-<!-- POPUP ĐĂNG CHƯƠNG MỚI (ĐÃ CẬP NHẬT THEO ĐÚNG Ý CHỊ TRÂN) -->
-<div id="adminModal" class="modal-custom">
-    <div class="modal-content-custom">
-        <span class="close-modal-btn" onclick="closeAddChapterModal()">&times;</span>
-        
-        <h2>Đăng Chương Mới ✍️</h2>
-
-        <!-- 1. NÚT CHỌN TRUYỆN XỔ DANH SÁCH (THAY THẾ CHO Ô ID TRUYỆN CŨ) -->
-        <div class="form-group-custom">
-            <label>Chọn Truyện Đang Có Trong Động</label>
-            <select id="selectStoryId" class="input-custom">
-                <option value="">-- Bấm vào đây để chọn truyện --</option>
-            </select>
-        </div>
-
-        <div class="form-group-custom">
-            <label>Tên chương</label>
-            <input type="text" id="chapterTitleInput" class="input-custom" placeholder="Ví dụ: Chương 1: Gặp gỡ">
-        </div>
-
-        <div class="form-group-custom">
-            <label>Số chương</label>
-            <input type="number" id="chapterNumberInput" class="input-custom" placeholder="Ví dụ: 1">
-        </div>
-
-        <div class="form-group-custom">
-            <label>Mật khẩu (nếu có)</label>
-            <input type="text" id="chapterPasswordInput" class="input-custom" placeholder="Bỏ trống nếu công khai">
-        </div>
-
-        <div class="form-group-custom">
-            <label>Trạng thái</label>
-            <div class="radio-group-custom">
-                <label><input type="radio" name="chapterStatus" value="Công khai" checked> Công khai</label>
-                <label style="margin-left: 15px;"><input type="radio" name="chapterStatus" value="Bản nháp"> Bản nháp</label>
-            </div>
-        </div>
-
-        <!-- 2. NÚT MỞ TRANG QUẢN LÝ ĐƯỢC ĐƯA LÊN TRÊN -->
-        <a href="studio.html" class="btn-link-management">
-            ➡️ Mở trang Quản lý / Đăng hàng loạt (Giao diện sạch) ↗️
-        </a>
-
-        <div class="form-group-custom" style="margin-top: 15px;">
-            <label>Nội dung truyện</label>
-            <textarea id="chapterContentInput" class="textarea-custom" placeholder="Nhập hoặc dán nội dung chương truyện tại đây..."></textarea>
-        </div>
-
-        <button class="btn-submit-custom" onclick="submitNewChapter()">XÁC NHẬN ĐĂNG CHƯƠNG 🚀</button>
-    </div>
-</div>
 </body>
 </html>
