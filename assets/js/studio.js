@@ -56,3 +56,30 @@ function saveStory() {
         alert("Đã thêm truyện mới thành công!");
     });
 }
+// Hàm hiển thị form
+function showCreateForm() {
+    document.getElementById('createStoryModal').style.display = 'flex';
+}
+
+// Hàm đóng form
+function hideCreateForm() {
+    document.getElementById('createStoryModal').style.display = 'none';
+}
+
+// Cập nhật lại hàm saveStory để sau khi lưu xong tự đóng form
+function saveStory() {
+    const title = document.getElementById('storyTitle').value;
+    const author = document.getElementById('storyAuthor').value;
+    
+    if(!title) return alert("Chị ơi, nhập tên truyện đi ạ!");
+
+    db.ref('stories').push({
+        title: title,
+        author: author,
+        createdAt: Date.now()
+    }).then(() => {
+        alert("Thêm truyện thành công!");
+        hideCreateForm(); // Đóng form sau khi lưu
+        document.getElementById('storyTitle').value = ''; // Xóa sạch ô nhập
+    });
+}
