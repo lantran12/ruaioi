@@ -290,3 +290,38 @@ body {
     border-color: var(--netflix-red);
     transform: translateY(-2px);
 }
+/* style.studio.css */
+.studio-grid { 
+    display: grid; 
+    grid-template-columns: 300px 1fr; 
+    gap: 30px; 
+    max-width: 1200px; 
+    margin: 100px auto 50px auto; 
+    padding: 0 4%;
+}
+
+.story-list-sidebar { 
+    background: #fff; 
+    padding: 25px; 
+    border-radius: var(--radius-card); 
+    border: 1px solid rgba(0,0,0,0.05);
+    height: 80vh; 
+    overflow-y: auto; 
+}
+
+.work-area { 
+    background: #fff; 
+    padding: 30px; 
+    border-radius: var(--radius-card); 
+    border: 1px solid rgba(0,0,0,0.05);
+}
+
+.btn-main { 
+    background: var(--netflix-red); 
+    color: white; 
+    border: none; 
+    padding: 12px 25px; 
+    border-radius: 20px; 
+    cursor: pointer; 
+    font-weight: 700;
+}
