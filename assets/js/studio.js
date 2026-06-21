@@ -11,15 +11,26 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// 2. Hàm Đăng truyện mới
+// 2. Hàm Đăng truyện mới (Đã sửa để dùng ID tự chọn)
 async function handleCreateStory() {
+    // 1. Lấy thêm cái ID viết liền không dấu do chị tự đặt
+    const customId = document.getElementById('idInput').value.trim().toLowerCase(); 
+    
     const title = document.getElementById('titleInput').value;
     const author = document.getElementById('authorInput').value;
     const status = document.getElementById('statusSelect').value;
     const cover = document.getElementById('coverInput').value; // URL ảnh
     const description = document.getElementById('descInput').value;
 
-    const newStoryRef = push(ref(db, 'stories'));
+    // Kiểm tra xem chị đã nhập ID chưa
+    if (!customId) {
+        alert("Chị Trân ơi, chị chưa nhập ID viết liền không dấu kìa (ví dụ: zombie, kiss)!");
+        return;
+    }
+
+    // THAY ĐỔI QUAN TRỌNG: Dùng ref thẳng đến tên ID đó, bỏ hàm push() đi
+    const newStoryRef = ref(db, `stories/${customId}`);
+    
     await set(newStoryRef, {
         title, author, status, cover, description,
         createdAt: Date.now(),
@@ -27,8 +38,10 @@ async function handleCreateStory() {
         views: 0
     });
 
-    alert("Đăng truyện thành công!");
-    // Form sẽ tự cập nhật do có hàm onChildAdded bên dưới
+    alert(`🎉 Đăng truyện thành công với ID là: ${customId}`);
+    
+    // Xóa chữ trong ô nhập ID sau khi đăng xong
+    document.getElementById('idInput').value = "";
 }
 
 // 3. Hiển thị danh sách truyện
