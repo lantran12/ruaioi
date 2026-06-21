@@ -2,457 +2,55 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Động Chăn Rùa - Netflix Studio Của Chị Trân 🐢</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <style>
-        :root {
-            --netflix-black: #141414;
-            --netflix-card: #181818;
-            --mint: #2dd4bf; /* Xanh mint chuẩn chỉnh, xịn sò */
-            --mint-hover: #14b8a6;
-            --mint-light: rgba(45, 212, 191, 0.1);
-            --text-light: #f5f5f5;
-            --text-muted: #808080;
-            --border: #333333;
-        }
-        
-        body {
-            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
-            background-color: var(--netflix-black);
-            color: var(--text-light);
-            margin: 0;
-            padding: 30px;
-            display: flex !important;
-            justify-content: center;
-        }
-
-        .container {
-            width: 100%;
-            max-width: 1300px;
-            box-sizing: border-box;
-        }
-
-        /* HEADER KIỂU NETFLIX */
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 30px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid var(--border);
-        }
-        .header h1 {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: var(--mint);
-            margin: 0;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-shadow: 0 0 10px rgba(45, 212, 191, 0.3);
-        }
-        .btn-back {
-            background: transparent;
-            color: var(--text-light);
-            border: 1px solid var(--text-muted);
-            padding: 8px 18px;
-            border-radius: 4px;
-            font-weight: bold;
-            text-decoration: none;
-            font-size: 0.85rem;
-            transition: all 0.2s;
-        }
-        .btn-back:hover {
-            border-color: var(--mint);
-            color: var(--mint);
-        }
-
-        /* LAYOUT CHÍNH */
-        .layout-studio {
-            display: grid;
-            grid-template-columns: 350px 1fr;
-            gap: 40px;
-        }
-        @media (max-width: 900px) {
-            .layout-studio { grid-template-columns: 1fr; }
-        }
-
-        /* NETFLIX SIDEBAR (KHO TRUYỆN) */
-        .profile-sidebar {
-            background: var(--netflix-card);
-            border: 1px solid var(--border);
-            padding: 25px;
-            border-radius: 8px;
-            height: fit-content;
-        }
-        .profile-card {
-            text-align: center;
-            padding-bottom: 25px;
-            border-bottom: 1px solid var(--border);
-            margin-bottom: 25px;
-        }
-        .profile-card img {
-            width: 90px; height: 90px; border-radius: 50%;
-            border: 3px solid var(--mint); padding: 3px; background: var(--netflix-black);
-            box-shadow: 0 0 15px rgba(45, 212, 191, 0.2);
-        }
-        .profile-card h2 { font-size: 1.3rem; margin: 15px 0 5px 0; color: var(--text-light); }
-        
-        .story-list-title {
-            margin: 0 0 15px 0; font-size: 0.9rem; text-transform: uppercase; letter-spacing: 1px; color: var(--text-muted);
-        }
-        .story-item {
-            display: flex; align-items: center; gap: 15px; padding: 12px; border-radius: 6px;
-            cursor: pointer; margin-bottom: 12px; transition: all 0.3s ease;
-            background: var(--netflix-black); border: 1px solid transparent;
-        }
-        .story-item:hover {
-            transform: scale(1.02);
-            border-color: #555;
-        }
-        .story-item.active {
-            background: var(--mint-light);
-            border-color: var(--mint);
-            box-shadow: 0 0 10px rgba(45, 212, 191, 0.1);
-        }
-        .story-item img { width: 45px; height: 65px; object-fit: cover; border-radius: 4px; background: #222; }
-        .story-item-title { margin: 0; font-weight: bold; font-size: 0.95rem; color: var(--text-light); }
-
-        /* WORKSPACE NETFLIX PANEL */
-        .workspace-panel { display: none; }
-        .workspace-title { color: var(--text-light); font-size: 1.6rem; margin-top: 0; margin-bottom: 25px; font-weight: bold; }
-
-        /* NETFLIX FORM CONTROL BOX */
-        .netflix-box {
-            background: var(--netflix-card);
-            border: 1px solid var(--border);
-            padding: 30px;
-            border-radius: 8px;
-            margin-bottom: 30px;
-        }
-        .box-title {
-            margin: 0 0 20px 0; font-size: 1.1rem; font-weight: bold; color: var(--mint);
-            display: flex; align-items: center; gap: 10px;
-        }
-        
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
-        @media (max-width: 650px) { .form-grid { grid-template-columns: 1fr; } }
-        
-        .form-group { display: flex; flex-direction: column; gap: 8px; }
-        .form-group label { font-size: 0.85rem; font-weight: bold; color: var(--text-muted); text-transform: uppercase; }
-        .form-group input {
-            background: #333; color: var(--text-light); border: 1px solid transparent;
-            padding: 12px; border-radius: 4px; font-size: 0.95rem; transition: all 0.2s;
-        }
-        .form-group input:focus {
-            outline: none; border-color: var(--mint); background: #444;
-        }
-
-        /* NETFLIX TAGS STYLING */
-        .tag-group { display: flex; flex-wrap: wrap; gap: 10px; }
-        .tag-checkbox { display: none; }
-        .tag-label {
-            padding: 8px 16px; background: var(--netflix-black); border: 1px solid var(--border);
-            border-radius: 4px; font-size: 0.85rem; cursor: pointer; font-weight: bold;
-            color: var(--text-light); transition: all 0.2s;
-        }
-        .tag-label:hover { border-color: #666; }
-        .tag-checkbox:checked + .tag-label {
-            background: var(--mint); color: var(--netflix-black); border-color: var(--mint);
-            box-shadow: 0 0 10px rgba(45, 212, 191, 0.3);
-        }
-
-        /* BIG BUTTON MINT */
-        .btn-netflix-submit {
-            width: 100%; padding: 15px; background: var(--mint); color: var(--netflix-black);
-            border: none; border-radius: 4px; font-weight: bold; font-size: 1rem; cursor: pointer;
-            transition: all 0.2s; display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-        }
-        .btn-netflix-submit:hover {
-            background: var(--mint-hover);
-            transform: translateY(-1px);
-        }
-
-        /* CHAPTER LIST AREA */
-        .chapter-section-title {
-            font-size: 1.2rem; color: var(--text-light); border-left: 4px solid var(--mint);
-            padding-left: 10px; margin: 40px 0 20px 0; font-weight: bold;
-        }
-        .chapter-row {
-            background: var(--netflix-card); border: 1px solid var(--border); padding: 18px;
-            border-radius: 6px; margin-bottom: 12px; display: flex;
-            justify-content: space-between; align-items: center; gap: 20px; transition: all 0.2s;
-        }
-        .chapter-row:hover { border-color: #444; background: #1f1f1f; }
-        .chapter-info h4 { margin: 0 0 5px 0; color: var(--text-light); font-size: 1rem; }
-        .chapter-info p { margin: 0; font-size: 0.8rem; color: var(--text-muted); }
-        .btn-edit-chapter {
-            background: transparent; color: var(--mint); border: 1px solid var(--mint);
-            padding: 8px 16px; border-radius: 4px; font-weight: bold; cursor: pointer; transition: all 0.2s;
-        }
-        .btn-edit-chapter:hover {
-            background: var(--mint); color: var(--netflix-black);
-        }
-
-        /* POPUP SỬA CHƯƠNG */
-        .modal {
-            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.85); justify-content: center; align-items: center; z-index: 999;
-            backdrop-filter: blur(5px);
-        }
-        .modal-content {
-            background: var(--netflix-card); padding: 30px; border-radius: 8px; width: 90%; max-width: 850px;
-            border: 1px solid #444; display: flex; flex-direction: column; gap: 20px;
-        }
-        .modal-content input {
-            background: #333; color: white; border: 1px solid transparent; padding: 12px; border-radius: 4px; font-size: 1rem;
-        }
-        .modal-content input:focus { outline: none; border-color: var(--mint); }
-        .modal-content textarea {
-            width: 100%; min-height: 400px; padding: 15px; border: 1px solid transparent; background: #333;
-            color: #fff; border-radius: 4px; font-size: 1rem; line-height: 1.6; box-sizing: border-box; resize: vertical;
-        }
-        .modal-content textarea:focus { outline: none; border-color: var(--mint); }
-        .modal-actions { display: flex; justify-content: flex-end; gap: 15px; }
-        .btn-close-modal { background: #333; color: var(--text-light); border: none; padding: 10px 22px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-        .btn-save-modal { background: var(--mint); color: var(--netflix-black); border: none; padding: 10px 22px; border-radius: 4px; font-weight: bold; cursor: pointer; }
-    </style>
-</head>
+    <title>Studio Động Chăn Rùa</title>
+    <link rel="stylesheet" href="style.css">
+    </head>
 <body>
+    <header class="netflix-header">
+        <div class="logo"><a href="index.html">ĐỘNG<span>CHĂNRÙA</span></a></div>
+        <button onclick="openUploadModal()" class="btn-auth-submit" style="width:auto; padding: 10px 20px;">➕ Đăng truyện mới</button>
+    </header>
 
-<div class="container">
-    <div class="header">
-        <h1>🍿 ĐỘNG CHĂN RÙA • STUDIO CỦA CHỊ TRÂN</h1>
-        <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> VỀ TRANG CHỦ</a>
-    </div>
-
-    <div class="layout-studio">
-        <!-- SIDEBAR DANH SÁCH TRUYỆN -->
-        <div class="profile-sidebar">
-            <div class="profile-card">
-                <img src="https://via.placeholder.com/150" alt="Avatar">
-                <h2>Chị Trân 🐢</h2>
-                <span style="font-size:0.75rem; background: var(--mint-light); color: var(--mint); border: 1px solid var(--mint); padding:4px 12px; border-radius:2px; font-weight:bold; text-transform:uppercase; letter-spacing:1px;">ADMINISTRATOR</span>
+    <main class="netflix-section" style="margin-top: 100px;">
+        <h2>Danh sách tác phẩm</h2>
+        <div id="adminStoryGrid" class="netflix-row-grid">
             </div>
-            <h3 class="story-list-title"><i class="fa-solid fa-film"></i> Danh sách truyện</h3>
-            <div id="studioStoryList">Đang tải danh sách...</div>
-        </div>
+    </main>
 
-        <!-- PANEL ĐIỀU KHIỂN CHÍNH (CHỈ HIỆN KHI BẤM CHỌN TRUYỆN) -->
-        <div id="workspacePanel" class="workspace-panel">
-            <h2 id="workspaceTitle" class="workspace-title"></h2>
-
-            <!-- KHU VỰC CẬP NHẬT TỔNG HỢP: META, TAGS, PASS -->
-            <div class="netflix-box">
-                <div class="box-title"><i class="fa-solid fa-sliders"></i> THÔNG TIN & CẤU HÌNH TRUYỆN</div>
-                
-                <div class="form-grid">
-                    <div class="form-group">
-                        <label>Tên hiển thị truyện</label>
-                        <input type="text" id="inputStoryTitle" placeholder="Tên truyện tiếng Việt đầy đủ...">
-                    </div>
-                    <div class="form-group">
-                        <label>Đường dẫn ảnh bìa (Link URL)</label>
-                        <input type="text" id="inputStoryCover" placeholder="Dán link ảnh bìa mới vào đây...">
-                    </div>
-                </div>
-
-                <div class="form-grid" style="margin-top: 20px; margin-bottom: 25px;">
-                    <div class="form-group" style="grid-column: span 2;">
-                        <label>Mật mã bảo mật truyện (Password)</label>
-                        <input type="text" id="inputStoryPass" placeholder="Đặt pass chung cho truyện (Để trống nếu muốn công khai hoàn toàn)..." style="border: 1px dashed #555;">
-                    </div>
-                </div>
-
-                <div class="form-group" style="margin-bottom: 30px;">
-                    <label style="margin-bottom: 10px;">GẮN TAG THỂ LOẠI / PHÂN LOẠI</label>
-                    <div class="tag-group">
-                        <input type="checkbox" id="tag_tronbo" class="tag-checkbox" value="Trọn bộ"><label for="tag_tronbo" class="tag-label">📦 Trọn bộ</label>
-                        <input type="checkbox" id="tag_dangtienhanh" class="tag-checkbox" value="Đang tiến hành"><label for="tag_dangtienhanh" class="tag-label">⏳ Đang tiến hành</label>
-                        <input type="checkbox" id="tag_ngontinh" class="tag-checkbox" value="Ngôn tình"><label for="tag_ngontinh" class="tag-label">🌸 Ngôn tình</label>
-                        <input type="checkbox" id="tag_dammy" class="tag-checkbox" value="Đam mỹ"><label for="tag_dammy" class="tag-label">🌈 Đam mỹ</label>
-                        <input type="checkbox" id="tag_hiendai" class="tag-checkbox" value="Hiện đại"><label for="tag_hiendai" class="tag-label">🏙️ Hiện đại</label>
-                        <input type="checkbox" id="tag_coandai" class="tag-checkbox" value="Cổ đại"><label for="tag_coandai" class="tag-label">🏯 Cổ đại</label>
-                        <input type="checkbox" id="tag_dienvan" class="tag-checkbox" value="Điền văn"><label for="tag_dienvan" class="tag-label">🌾 Điền văn</label>
-                        <input type="checkbox" id="tag_nguoc" class="tag-checkbox" value="Ngược"><label for="tag_nguoc" class="tag-label">💧 Ngược</label>
-                        <input type="checkbox" id="tag_sung" class="tag-checkbox" value="Sủng"><label for="tag_sung" class="tag-label">🍬 Sủng</label>
-                    </div>
-                </div>
-
-                <button class="btn-netflix-submit" onclick="saveAllStorySettings()"><i class="fa-solid fa-circle-check"></i> XÁC NHẬN CẬP NHẬT HỆ THỐNG</button>
+    <div id="uploadModal" class="modal-custom">
+        <div class="modal-content-custom">
+            <span class="close-modal-btn" onclick="closeModal()">&times;</span>
+            <h3>Đăng tác phẩm mới</h3>
+            <div class="form-group-custom">
+                <label>Tên truyện</label>
+                <input type="text" id="inputTitle" class="input-custom">
             </div>
-
-            <!-- MỤC LỤC CHƯƠNG KIỂU WATTPAD -->
-            <div class="chapter-section-title"><i class="fa-solid fa-list-ol"></i> QUẢN LÝ DANH SÁCH CHƯƠNG</div>
-            <div id="wattpadChapterContainer">Đang tải danh sách chương...</div>
+            <button onclick="saveStory()" class="btn-submit-custom">Xác nhận đăng</button>
         </div>
     </div>
-</div>
 
-<!-- BOX MODAL SỬA CHƯƠNG ĐỘC LẬP -->
-<div id="editChapterModal" class="modal">
-    <div class="modal-content">
-        <h3 id="modalChapterHeader" style="margin:0; color:var(--mint); font-size:1.3rem;">📝 CHỈNH SỬA NỘI DUNG</h3>
-        <input type="text" id="modalChapterTitle" placeholder="Tiêu đề chương">
-        <textarea id="modalChapterContent" placeholder="Nội dung truyện..."></textarea>
-        <div class="modal-actions">
-            <button class="btn-close-modal" onclick="closeEditModal()">HỦY BỎ</button>
-            <button class="btn-save-modal" onclick="saveEditedChapterContent()">LƯU THAY ĐỔI 🐢</button>
-        </div>
-    </div>
-</div>
-
-<script>
-    // CẤU HÌNH FIREBASE
-    const firebaseConfig = {
-        apiKey: "AIzaSyBimiEGQcW9at2pOxfdUaJHjim2fmyjjcc",
-        authDomain: "dongchanrua.firebaseapp.com",
-        databaseURL: "https://dongchanrua-default-rtdb.asia-southeast1.firebasedatabase.app",
-        projectId: "dongchanrua",
-        storageBucket: "dongchanrua.firebasestorage.app",
-        messagingSenderId: "640115424540",
-        appId: "1:640115424540:web:c9713b7921c09283150ed9"
-    };
-
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
-    let currentStoryId = "";
-    let currentEditChapterNum = "";
-
-    // LẤY TRUYỆN ĐỔ VÀO SIDEBAR
-    function loadProfileStories() {
-        const listContainer = document.getElementById('studioStoryList');
-        db.ref('stories').once('value').then((snapshot) => {
-            listContainer.innerHTML = '';
-            if(!snapshot.exists()) {
-                listContainer.innerHTML = '<p style="color:var(--text-muted); padding:10px;">Chưa có truyện nào.</p>';
-                return;
-            }
-            snapshot.forEach((child) => {
-                const id = child.key; const story = child.val();
-                const cover = story.img || story.cover || 'https://via.placeholder.com/45x65';
-                const div = document.createElement('div');
-                div.className = `story-item story-item-${id}`;
-                div.onclick = () => selectStoryForWorkspace(id, story.title, cover);
-                div.innerHTML = `<img src="${cover}"><div style="flex:1;"><p class="story-item-title">${story.title}</p><p style="margin:5px 0 0 0; font-size:0.75rem; color:var(--text-muted);">ID: ${id}</p></div>`;
-                listContainer.appendChild(div);
+    <script>
+        // Khởi tạo Firebase như cũ
+        // Hàm load dữ liệu: 
+        function loadAdminStories() {
+            db.ref('stories').on('value', (snapshot) => {
+                const grid = document.getElementById('adminStoryGrid');
+                grid.innerHTML = '';
+                snapshot.forEach(child => {
+                    const card = createAdminCard(child.key, child.val());
+                    grid.appendChild(card);
+                });
             });
-        });
-    }
-    loadProfileStories();
-
-    // BẤM TRUYỆN -> ĐỔ DỮ LIỆU CŨ LÊN KHU VỰC SỬA
-    function selectStoryForWorkspace(storyId, storyTitle, storyCover) {
-        currentStoryId = storyId;
-        document.getElementById('workspaceTitle').innerText = storyTitle;
-        document.querySelectorAll('.story-item').forEach(el => el.classList.remove('active'));
-        document.querySelector(`.story-item-${storyId}`).classList.add('active');
-        document.getElementById('workspacePanel').style.display = 'block';
+        }
         
-        document.getElementById('inputStoryTitle').value = storyTitle;
-        document.getElementById('inputStoryCover').value = (storyCover.includes('placeholder') ? '' : storyCover);
-
-        // Reset & Đọc lại Tag + Pass cũ từ Firebase
-        document.getElementById('inputStoryPass').value = '';
-        document.querySelectorAll('.tag-checkbox').forEach(cb => cb.checked = false);
-
-        db.ref(`stories/${storyId}`).once('value').then((snapshot) => {
-            if(snapshot.exists()) {
-                const data = snapshot.val();
-                // Điền pass cũ nếu có
-                if(data.password) document.getElementById('inputStoryPass').value = data.password;
-                // Sáng đèn các tag cũ
-                if(Array.isArray(data.tags)) {
-                    document.querySelectorAll('.tag-checkbox').forEach(cb => {
-                        if(data.tags.includes(cb.value)) cb.checked = true;
-                    });
-                }
-            }
-        });
-        loadChaptersWattpadStyle();
-    }
-
-    // GOM TẤT CẢ VÀO 1 NÚT XÁC NHẬN CẬP NHẬT DUY NHẤT
-    function saveAllStorySettings() {
-        if(!currentStoryId) return;
-        const newTitle = document.getElementById('inputStoryTitle').value.trim();
-        const newCover = document.getElementById('inputStoryCover').value.trim();
-        const newPass = document.getElementById('inputStoryPass').value.trim();
-
-        if(!newTitle) return alert("Chị ơi không được để trống Tên truyện đâu nha!");
-
-        const selectedTags = [];
-        document.querySelectorAll('.tag-checkbox').forEach(cb => {
-            if(cb.checked) selectedTags.push(cb.value);
-        });
-
-        // Đẩy gói dữ liệu tổng hợp lên Firebase
-        db.ref(`stories/${currentStoryId}`).update({
-            title: newTitle,
-            img: newCover || 'https://via.placeholder.com/45x65',
-            password: newPass, // Tự động thêm pass hoặc xóa pass nếu ô này trống
-            tags: selectedTags
-        }).then(() => {
-            alert("✨ Netflix Studio Thông Báo: Đã đồng bộ thông tin truyện, bộ tag và pass thành công mĩ mãn!");
-            loadProfileStories(); // Cập nhật lại list sidebar
-        });
-    }
-
-    // TẢI CHƯƠNG ĐỂ SỬA NHANH
-    function loadChaptersWattpadStyle() {
-        const container = document.getElementById('wattpadChapterContainer');
-        container.innerHTML = '<p style="color:var(--text-muted); padding:15px;">Đang tải mục lục...</p>';
-        db.ref(`chapters/${currentStoryId}`).once('value').then((snapshot) => {
-            container.innerHTML = '';
-            if(!snapshot.exists()) {
-                container.innerHTML = '<p style="color:var(--text-muted); padding:15px;">Truyện này hiện tại chưa có chương nào.</p>';
-                return;
-            }
-            const list = [];
-            snapshot.forEach(child => { const val = child.val(); list.push({ keyNum: child.key, ...val }); });
-            list.sort((a,b) => (a.number || parseInt(a.keyNum)) - (b.number || parseInt(b.keyNum)));
-            list.forEach(ch => {
-                const row = document.createElement('div');
-                row.className = 'chapter-row';
-                row.innerHTML = `<div class="chapter-info"><h4>${ch.title}</h4><p><i class="fa-solid fa-eye"></i> Lượt đọc: ${ch.views || 0}</p></div><button class="btn-edit-chapter" onclick="openEditModal('${ch.keyNum}')">SỬA NHANH</button>`;
-                container.appendChild(row);
-            });
-        });
-    }
-
-    // MODAL SỬA CHƯƠNG
-    function openEditModal(chapterNum) {
-        currentEditChapterNum = chapterNum;
-        document.getElementById('editChapterModal').style.display = 'flex';
-        db.ref(`chapters/${currentStoryId}/${chapterNum}`).once('value').then((snapshot) => {
-            if(snapshot.exists()) {
-                const ch = snapshot.val();
-                document.getElementById('modalChapterTitle').value = ch.title || '';
-                document.getElementById('modalChapterContent').value = ch.content || '';
-                document.getElementById('modalChapterHeader').innerText = `📝 ĐANG BIÊN TẬP: CHƯƠNG ${chapterNum}`;
-            }
-        });
-    }
-    function closeEditModal() { document.getElementById('editChapterModal').style.display = 'none'; }
-
-    function saveEditedChapterContent() {
-        const newTitle = document.getElementById('modalChapterTitle').value.trim();
-        const newContent = document.getElementById('modalChapterContent').value.trim();
-        if(!newTitle || !newContent) return alert("Không được bỏ trống tiêu đề hay nội dung truyện nha chị!");
-
-        db.ref(`chapters/${currentStoryId}/${currentEditChapterNum}`).update({
-            title: newTitle,
-            content: newContent
-        }).then(() => {
-            alert(`🎉 Đã sửa xong nội dung Chương ${currentEditChapterNum}!`);
-            closeEditModal();
-            loadChaptersWattpadStyle();
-        });
-    }
-</script>
+        // Hàm đăng truyện:
+        function saveStory() {
+            const title = document.getElementById('inputTitle').value;
+            db.ref('stories').push({ title: title, updatedAt: Date.now() })
+            .then(() => { alert("Đã đăng!"); closeModal(); });
+        }
+        
+        // ... Các hàm đóng mở modal
+    </script>
 </body>
 </html>
