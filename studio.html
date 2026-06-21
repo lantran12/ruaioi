@@ -2,10 +2,35 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="style.css"> <link rel="stylesheet" href="style.studio.css"> <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
+    <title>Studio RùaNovel - Quản Lý Truyện</title>
+    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="style.studio.css">
+    <script src="https://cdn.ckeditor.com/ckeditor5/41.0.0/classic/ckeditor.js"></script>
 </head>
 <body>
+    <header class="netflix-header">
+        <div class="logo"><a href="index.html">Rùa<span>Novel</span></a></div>
+        <div style="color: white; font-weight: bold;">STUDIO ĐỘNG CHĂN RÙA</div>
+    </header>
+
+    <main class="studio-grid" style="margin-top: 100px;">
+        <aside class="story-list-sidebar">
+            <h3 style="margin-bottom: 20px;">Truyện của Chị</h3>
+            <div id="storyListContainer">
+                <p style="color: var(--smoke);">Đang liên kết Động...</p>
+            </div>
+        </aside>
+
+        <section class="work-area">
+            <h2 id="currentStoryTitle" style="font-family: var(--font-serif);">Chọn truyện để sửa</h2>
+            <input type="text" id="chapterTitle" placeholder="Tên chương mới...">
+            <div id="editor"></div>
+            <button class="btn-main" onclick="saveChapter()" style="margin-top: 15px;">Lưu chương lên Động</button>
+        </section>
+    </main>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
-    <script src="studio.js"></script> </body>
+    <script src="studio.js"></script>
+</body>
 </html>
