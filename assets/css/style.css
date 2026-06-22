@@ -362,4 +362,22 @@ body {
 #featuredBook::after {
   background-image: var(--bg-image-url);
 }
+.btn-close-row {
+    background: #ede9fe; /* Tông tím pastel nhạt */
+    color: #7c3aed;      /* Màu tím đậm hơn cho chữ */
+    border: none;
+    padding: 6px 16px;
+    border-radius: 20px; /* Bo tròn góc */
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
 
+.btn-close-row:hover {
+    background: #ddd6fe; /* Màu đậm hơn khi di chuột vào */
+    transform: scale(1.05);
+}
