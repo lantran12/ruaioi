@@ -140,14 +140,7 @@ border-radius:10px;
             <button onclick="closeGenreModal()" class="btn-action btn-primary" style="width: 100%;">Xong</button>
         </div>
     </div>
-<script type="module">
-    import { loadAdminStoryList } from './studio.js';
-    // Đợi 1 chút cho Firebase khởi tạo xong rồi gọi hàm load
-    window.addEventListener('DOMContentLoaded', () => {
-        // Gọi hàm này để danh sách truyện hiện ra ngay khi load trang
-        setTimeout(loadAdminStoryList, 1000); 
-    });
-</script>
+
    
     <script src="https://unpkg.com/mammoth/mammoth.browser.min.js"></script>
     <script src="assets/js/config.js"></script>
