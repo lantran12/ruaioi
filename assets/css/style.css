@@ -362,19 +362,4 @@ body {
 #featuredBook::after {
   background-image: var(--bg-image-url);
 }
-/* Bao bọc ảnh để badge chương nằm đè lên */
-.card-img-wrapper { position: relative; }
-.chapter-count {
-    position: absolute; top: 8px; right: 8px;
-    background: rgba(0,0,0,0.6); color: white;
-    padding: 2px 6px; font-size: 11px; border-radius: 4px;
-}
 
-/* Kiểu dáng cho các thẻ tag */
-.tags-container { display: flex; gap: 4px; margin-top: 5px; flex-wrap: wrap; }
-.tag-badge {
-    background: #f0f0f0; border: 1px solid #ddd;
-    padding: 2px 5px; font-size: 10px; border-radius: 3px;
-    color: #666;
-}
-.author-name { font-size: 12px; color: #888; margin: 2px 0; }
