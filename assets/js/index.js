@@ -637,43 +637,53 @@ function loadStoriesByGenres(ids) {
 
     const resultsGrid = document.getElementById("resultsGrid");
     const section = document.getElementById("searchResultsSection");
+    const rowTitle = section.querySelector(".row-title");
 
     section.style.display = "block";
-
     resultsGrid.innerHTML = "";
 
-    db.ref("stories").once("value").then(snapshot=>{
+    if (rowTitle) {
+        rowTitle.innerText = "📜 Kết quả theo thể loại";
+    }
 
-        let found=false;
+    db.ref("stories").once("value").then(snapshot => {
 
-        snapshot.forEach(child=>{
+        let found = false;
 
-            const story=child.val();
+        // đổi id -> tên thể loại
+        const selectedNames = ids
+            .map(id => GENDERS.find(g => g.id == id)?.name)
+            .filter(Boolean)
+            .map(name => name.trim().toLowerCase());
 
-            const genres=story.genres
-                ? Object.values(story.genres).map(g=>g.toLowerCase())
+        snapshot.forEach(child => {
+
+            const story = child.val();
+
+            const genres = story.genres
+                ? Object.values(story.genres).map(g => String(g).trim().toLowerCase())
                 : [];
 
-            const selectedNames=ids.map(id=>{
-                return GENDERS.find(g=>g.id==id)?.name.toLowerCase();
-            });
+            // Chỉ cần trùng 1 tag là hiện
+            const ok = selectedNames.some(name => genres.includes(name));
 
-            const ok=selectedNames.every(name=>genres.includes(name));
-
-            if(ok){
-
-                resultsGrid.appendChild(
-                    createNetflixCard(child.key,story)
-                );
-
-                found=true;
+            if (ok) {
+                resultsGrid.appendChild(createNetflixCard(child.key, story));
+                found = true;
             }
 
         });
 
-        if(!found){
-            resultsGrid.innerHTML="<p>Không có truyện phù hợp.</p>";
+        if (!found) {
+            resultsGrid.innerHTML = `
+                <p style="grid-column:1/-1;text-align:center">
+                    Không có truyện phù hợp 🐢
+                </p>`;
         }
+
+        section.scrollIntoView({
+            behavior: "smooth"
+        });
 
     });
 
