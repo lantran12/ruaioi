@@ -618,3 +618,63 @@ function closeSearch() {
         behavior: "smooth"
     });
 }
+function applyGenreFilter() {
+
+    const checked = document.querySelectorAll(".genre-checkbox:checked");
+
+    if (checked.length === 0) {
+        closeGenreModal();
+        return;
+    }
+
+    const ids = [...checked].map(cb => cb.value);
+
+    loadStoriesByGenres(ids);
+
+    closeGenreModal();
+}
+function loadStoriesByGenres(ids) {
+
+    const resultsGrid = document.getElementById("resultsGrid");
+    const section = document.getElementById("searchResultsSection");
+
+    section.style.display = "block";
+
+    resultsGrid.innerHTML = "";
+
+    db.ref("stories").once("value").then(snapshot=>{
+
+        let found=false;
+
+        snapshot.forEach(child=>{
+
+            const story=child.val();
+
+            const genres=story.genres
+                ? Object.values(story.genres).map(g=>g.toLowerCase())
+                : [];
+
+            const selectedNames=ids.map(id=>{
+                return GENDERS.find(g=>g.id==id)?.name.toLowerCase();
+            });
+
+            const ok=selectedNames.every(name=>genres.includes(name));
+
+            if(ok){
+
+                resultsGrid.appendChild(
+                    createNetflixCard(child.key,story)
+                );
+
+                found=true;
+            }
+
+        });
+
+        if(!found){
+            resultsGrid.innerHTML="<p>Không có truyện phù hợp.</p>";
+        }
+
+    });
+
+}
