@@ -121,32 +121,47 @@ function loadStoriesByCondition(field, value, titleText) {
     if (rowTitle) rowTitle.innerText = titleText;
     searchSection.style.display = 'block';
     resultsGrid.innerHTML = '<div style="grid-column: 1/-1; color: var(--smoke);">Đang lọc tác phẩm...</div>';
-
     searchSection.scrollIntoView({ behavior: 'smooth' });
 
-    db.ref('stories').orderByChild(field).equalTo(value).once('value')
-    .then((snapshot) => {
+    // LẤY HẾT TRUYỆN VỀ ĐỂ LỌC
+    const storiesRef = ref(db, 'stories');
+    get(storiesRef).then((snapshot) => {
         resultsGrid.innerHTML = '';
         if (!snapshot.exists()) {
-            resultsGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--smoke);">Động chưa tìm thấy truyện nào tương ứng 🐢</p>`;
+            resultsGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--smoke);">Chưa có truyện nào cả 🐢</p>`;
             return;
         }
 
+        let found = false;
         snapshot.forEach((childSnapshot) => {
-            resultsGrid.appendChild(createNetflixCard(childSnapshot.key, childSnapshot.val()));
+            const story = childSnapshot.val();
+            const id = childSnapshot.key;
+            let match = false;
+
+            // KIỂM TRA ĐIỀU KIỆN LỌC
+            if (field === 'genres') {
+                // Nếu lọc theo thể loại, kiểm tra mảng genres
+                if (story.genres && Array.isArray(story.genres) && story.genres.includes(value)) {
+                    match = true;
+                }
+            } else {
+                // Lọc theo các trường khác như status, author
+                if (story[field] === value) {
+                    match = true;
+                }
+            }
+
+            if (match) {
+                resultsGrid.appendChild(createNetflixCard(id, story));
+                found = true;
+            }
         });
-    })
-    .catch((err) => {
-        console.error("Lỗi lọc dữ liệu:", err);
-        resultsGrid.innerHTML = '<p style="grid-column: 1/-1;">Đã xảy ra lỗi khi tìm kiếm.</p>';
+
+        if (!found) {
+            resultsGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--smoke);">Không tìm thấy truyện nào có tag "${value}" 🐢</p>`;
+        }
     });
 }
-
-function closeSearch() {
-    const searchSection = document.getElementById('searchResultsSection');
-    if (searchSection) searchSection.style.display = 'none';
-}
-
 /* ==========================================================================
    6. THƯ VIỆN CHÍNH (Mới Cập Nhật Trên Hệ Thống)
    ========================================================================== */
