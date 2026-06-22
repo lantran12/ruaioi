@@ -1,89 +1,55 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js";
-import { getDatabase, ref, push, set, onValue, remove } from "https://www.gstatic.com/firebasejs/9.0.0/firebase-database.js";
+import { db, ref, set, onValue, remove } from "./firebase.js"; // Import từ file của chị
 
-// 1. Cấu hình Firebase (Chị thay bằng thông tin từ file config.js của chị)
-const firebaseConfig = {
-    // Copy đoạn config trong file config.js của chị vào đây
-};
-const app = initializeApp(firebaseConfig);
-const db = getDatabase(app);
+const storyId = new URLSearchParams(window.location.search).get('id');
 
-// 2. Lấy ID truyện từ URL (Ví dụ: post-chapter.html?id=zombie)
-const urlParams = new URLSearchParams(window.location.search);
-const storyId = urlParams.get('id');
-
-// 3. Hàm Đăng chương lẻ
-window.uploadChapter = async () => {
+// 1. Hàm Đăng chương lẻ
+window.submitChapter = async () => {
     const chapNum = document.getElementById('chapterNumber').value;
-    const title = document.getElementById('chapterTitle').value;
-    const content = quill.root.innerHTML;
+    const title = document.getElementById('chapterName').value;
+    const content = document.getElementById('chapterContent').value;
 
-    if (!chapNum || !title) return alert("Vui lòng điền đủ thông tin!");
+    if (!chapNum || !title || !content) return alert("Vui lòng điền đủ thông tin!");
 
-    const chapterRef = ref(db, `stories/${storyId}/chapters/${chapNum}`);
-    await set(chapterRef, {
+    // Đẩy lên Firebase
+    await set(ref(db, `stories/${storyId}/chapters/${chapNum}`), {
         title: title,
         content: content,
         timestamp: Date.now()
     });
     alert("Đăng chương thành công!");
+    document.getElementById('chapterForm').reset();
 };
 
-// 4. Load danh sách chương tự động
-const listRef = ref(db, `stories/${storyId}/chapters`);
-onValue(listRef, (snapshot) => {
-    const listDiv = document.getElementById('chapterList');
-    listDiv.innerHTML = ''; 
+// 2. Load danh sách chương tự động
+onValue(ref(db, `stories/${storyId}/chapters`), (snapshot) => {
     const data = snapshot.val();
+    const tableBody = document.getElementById('previewTableBody');
+    if (!tableBody) return;
     
+    tableBody.innerHTML = '';
     if (data) {
         Object.keys(data).forEach(key => {
-            const chap = data[key];
-            const div = document.createElement('div');
-            div.className = 'chapter-item';
-            div.innerHTML = `
-                <span>Chương ${key}: ${chap.title}</span>
-                <div>
-                    <button onclick="alert('Tính năng sửa chưa viết')">Sửa</button>
-                    <button onclick="deleteChapter('${key}')" style="color:#ff4d6d">Xóa</button>
-                </div>
-            `;
-            listDiv.appendChild(div);
+            tableBody.innerHTML += `
+                <tr>
+                    <td>Chương ${key}</td>
+                    <td>${data[key].title}</td>
+                    <td><button onclick="deleteChapter('${key}')">Xóa</button></td>
+                </tr>`;
         });
     }
 });
 
-// 5. Hàm Xóa
+// 3. Hàm Xóa
 window.deleteChapter = (chapNum) => {
-    if (confirm("Chắc chắn muốn xóa chương này?")) {
+    if (confirm("Chắc chắn xóa chương " + chapNum + "?")) {
         remove(ref(db, `stories/${storyId}/chapters/${chapNum}`));
     }
 };
 
-
-// Xử lý Import hàng loạt (đơn giản cho .txt)
-document.getElementById('fileInput').addEventListener('change', function(e) {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    const reader = new FileReader();
-    reader.onload = function(e) {
-        const text = e.target.result;
-        // Giả sử file của chị chia chương bằng từ "Chương"
-        const lines = text.split(/Chương \d+/i); 
-        const preview = document.getElementById('previewList');
-        preview.innerHTML = '<h3>Dữ liệu đã tách (rà soát lại trước khi đăng):</h3>';
-        
-        lines.forEach((content, index) => {
-            if(content.trim().length > 0) {
-                const item = document.createElement('div');
-                item.style.border = "1px solid #ddd";
-                item.style.padding = "10px";
-                item.style.marginBottom = "5px";
-                item.innerHTML = `<strong>Chương ${index + 1}</strong>: ${content.substring(0, 50)}...`;
-                preview.appendChild(item);
-            }
-        });
-    };
-    reader.readAsText(file);
-});
+// 4. Hàm chuyển tab (Giao diện)
+window.switchTab = (tab) => {
+    document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+    document.getElementById(tab + 'Tab').classList.add('active');
+    document.getElementById('btn' + tab.charAt(0).toUpperCase() + tab.slice(1)).classList.add('active');
+};
