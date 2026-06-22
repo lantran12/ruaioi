@@ -163,19 +163,7 @@ function loadStoriesByCondition(field, selectedTags, titleText) {
         }
     });
 }
-function handleFilterSubmit() {
-    let selectedTags = [];
-    // Giả sử các checkbox của chị có class là 'genre-checkbox'
-    document.querySelectorAll('.genre-checkbox:checked').forEach(cb => {
-        selectedTags.push(cb.value); // Lấy tên thể loại (ví dụ: "Vô Hạn Lưu")
-    });
 
-    if (selectedTags.length > 0) {
-        loadStoriesByCondition('genres', selectedTags, `📜 Thể loại: ${selectedTags.join(', ')}`);
-    } else {
-        alert("Chị chưa chọn thể loại nào cả 🐢");
-    }
-}
 /* ==========================================================================
    6. THƯ VIỆN CHÍNH (Mới Cập Nhật Trên Hệ Thống)
    ========================================================================== */
