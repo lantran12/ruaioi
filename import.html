@@ -2,143 +2,49 @@
 <html lang="vi">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hệ Thống Import Chương Hàng Loạt - Động Chăn Rùa</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Rùa Novel Studio | Đăng Chương</title>
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.4.2/mammoth.browser.min.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-        :root {
-            --primary: #7c3aed;
-            --primary-light: #f0ecfe;
-            --bg: #f8fafc;
-            --text: #334155;
-            --border: #cbd5e1;
-        }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background-color: var(--bg);
-            color: var(--text);
-            margin: 0;
-            padding: 20px;
-            display: flex !important;
-            justify-content: center;
-        }
-        .container {
-            width: 100%;
-            max-width: 1000px;
-            background: #ffffff;
-            padding: 30px;
-            border-radius: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-            box-sizing: border-box;
-        }
-        .header {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 25px;
-            border-bottom: 2px solid var(--primary-light);
-            padding-bottom: 15px;
-        }
-        .header h1 { font-size: 1.4rem; color: #1e293b; margin: 0; }
-        .btn-back {
-            background: var(--primary-light); color: var(--primary); border: none;
-            padding: 8px 16px; border-radius: 12px; font-weight: bold; text-decoration: none; font-size: 0.9rem;
-        }
-        .layout-main { display: flex; gap: 25px; flex-wrap: wrap; }
-        .sidebar { flex: 1; min-width: 250px; border-right: 1px solid var(--border); padding-right: 15px; }
-        .main-content { flex: 2.5; min-width: 350px; }
-        .story-item {
-            display: flex; align-items: center; gap: 10px; padding: 10px; border-radius: 12px;
-            cursor: pointer; margin-bottom: 8px; transition: background 0.2s;
-        }
-        .story-item:hover, .story-item.active { background: var(--primary-light); }
-        .story-item img { width: 40px; height: 55px; object-fit: cover; border-radius: 6px; }
-        .story-item-title { margin: 0; font-weight: bold; font-size: 0.9rem; }
-        .story-item-id { margin: 0; font-size: 0.8rem; color: #64748b; }
-        
-        .file-zone {
-            border: 2px dashed #b19ffb; background: #f8f6ff;
-            border-radius: 16px; padding: 30px; text-align: center; margin-bottom: 20px;
-        }
-        .btn-import {
-            width: 100%; padding: 15px; background: linear-gradient(135deg, #a78bfa, var(--primary));
-            color: white; border: none; border-radius: 16px; font-size: 1rem; font-weight: bold;
-            cursor: pointer; box-shadow: 0 4px 12px rgba(124, 58, 237, 0.2); display: none; margin-top: 15px;
-        }
-        .status-bar {
-            padding: 12px; background: #e0f2fe; color: #0369a1; border-radius: 12px;
-            margin-bottom: 15px; font-weight: bold; display: none; font-size: 0.95rem;
-        }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
-        th, td { border-bottom: 1px solid var(--border); padding: 12px; text-align: left; font-size: 0.9rem; }
-        th { background: #f1f5f9; color: #475569; }
-        .preview-content-cell {
-            max-width: 250px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: #64748b; font-size: 0.85rem;
-        }
-        .badge-count { background: var(--primary); color: white; padding: 2px 8px; border-radius: 20px; font-size: 0.8rem; }
+        body { font-family: 'Quicksand', sans-serif; background: #fafafa; padding: 20px; }
+        .wrapper { max-width: 800px; margin: auto; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .tab { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab button { flex: 1; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; background: #eee; }
+        .tab button.active { background: #ff4d6d; color: white; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .form-control { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        .btn-main { width: 100%; padding: 15px; border: none; border-radius: 8px; background: #ff4d6d; color: white; font-weight: 700; cursor: pointer; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <div class="header">
-        <h1>🚀 Import Chương Hàng Loạt Siêu Tốc</h1>
-        <a href="index.html" class="btn-back"><i class="fa-solid fa-arrow-left"></i> Về Trang Chủ</a>
+<div class="wrapper">
+    <h2 id="storyTitle">Đăng chương cho: ...</h2>
+    <div class="tab">
+        <button class="active" onclick="showTab('single', this)">Đăng lẻ</button>
+        <button onclick="showTab('bulk', this)">Import Hàng Loạt</button>
     </div>
 
-    <div class="layout-main">
-        <div class="sidebar">
-            <h3 style="margin-top:0;"><i class="fa-solid fa-book"></i> 1. Chọn truyện đích</h3>
-            <div id="sidebarStoryList">Đang tải truyện...</div>
-            <input type="hidden" id="selectedStoryId">
-            <h4 id="targetStoryName" style="color: var(--primary); margin-top: 15px;"></h4>
-        </div>
+    <div id="single-section" class="section active">
+        <input type="number" id="chapNum" class="form-control" placeholder="Số chương">
+        <input type="text" id="chapTitle" class="form-control" placeholder="Tên chương">
+        <input type="text" id="chapPass" class="form-control" placeholder="Mật khẩu (nếu có)">
+        <textarea id="chapContent" class="form-control" rows="10" placeholder="Nội dung..."></textarea>
+        <button class="btn-main" onclick="uploadSingle()">Đăng chương ngay</button>
+    </div>
 
-        <div class="main-content">
-            <h3><i class="fa-solid fa-file-import"></i> 2. Chọn File chứa nhiều chương</h3>
-            <div class="file-zone">
-                <p style="margin:0 0 10px 0; color:var(--primary); font-weight:bold;">
-                    Hỗ trợ file .txt hoặc .docx (Cấu trúc đầu dòng: "Chương X: Tên Chương")
-                </p>
-                <input type="file" id="fileInput" onchange="handleBulkImport(this)" accept=".txt,.docx">
-            </div>
-
-            <div id="statusBar" class="status-bar"></div>
-
-            <button id="btnConfirmImport" class="btn-import" onclick="saveAllChaptersToFirebase()">
-                <i class="fa-solid fa-cloud-arrow-up"></i> Xác Nhận Import Toàn Bộ Chương Lên Database 🐢
-            </button>
-
-            <div id="previewSection" style="display:none; margin-top: 25px;">
-                <h3 style="display: flex; justify-content: space-between; align-items: center;">
-                    <span><i class="fa-solid fa-list-check"></i> Danh sách chương bóc tách được</span>
-                    <span id="chapterCountBadge" class="badge-count">0 chương</span>
-                </h3>
-                <div style="overflow-x: auto; max-height: 500px; border: 1px solid var(--border); border-radius: 12px;">
-                    <table>
-                        <thead>
-                            <tr>
-                                <th style="width: 90px;">Số chương</th>
-                                <th>Tên chương đầy đủ</th>
-                                <th>Nội dung xem trước</th>
-                            </tr>
-                        </thead>
-                        <tbody id="previewTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-
-        </div>
+    <div id="bulk-section" class="section">
+        <input type="file" id="fileInput" onchange="handleBulkImport(this)" accept=".txt,.docx" class="form-control">
+        <div id="previewTableBody"></div>
+        <button id="btnConfirmImport" class="btn-main" style="display:none;" onclick="saveAllChaptersToFirebase()">Xác Nhận Import Hàng Loạt</button>
     </div>
 </div>
 
 <script>
-    // CẤU HÌNH FIREBASE
+    // Cấu hình Firebase của chị
     const firebaseConfig = {
         apiKey: "AIzaSyBimiEGQcW9at2pOxfdUaJHjim2fmyjjcc",
         authDomain: "dongchanrua.firebaseapp.com",
@@ -148,173 +54,69 @@
         messagingSenderId: "640115424540",
         appId: "1:640115424540:web:c9713b7921c09283150ed9"
     };
-
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const auth = firebase.auth(); 
-
-    // Mảng toàn cục lưu trữ danh sách chương bóc được để chuẩn bị bấm nút lưu hàng loạt
+    
+    const storyId = new URLSearchParams(window.location.search).get('id');
     let parsedChaptersList = [];
 
-    // TẢI TRUYỆN SIDEBAR
-    function loadSidebarStories() {
-        const listContainer = document.getElementById('sidebarStoryList');
-        db.ref('stories').once('value').then((snapshot) => {
-            listContainer.innerHTML = '';
-            if(!snapshot.exists()) return;
-            snapshot.forEach((child) => {
-                const id = child.key; const story = child.val();
-                const cover = story.img || story.cover || 'https://via.placeholder.com/40x55';
-                const div = document.createElement('div');
-                div.className = `story-item story-item-${id}`;
-                div.onclick = () => {
-                    document.getElementById('selectedStoryId').value = id;
-                    document.getElementById('targetStoryName').innerHTML = `<i class="fa-solid fa-circle-check"></i> Đang chọn: ${story.title}`;
-                    document.querySelectorAll('.story-item').forEach(el => el.classList.remove('active'));
-                    div.classList.add('active');
-                };
-                div.innerHTML = `<img src="${cover}"><div class="story-item-info"><p class="story-item-title">${story.title}</p><p class="story-item-id">ID: ${id}</p></div>`;
-                listContainer.appendChild(div);
-            });
-        });
-    }
-    loadSidebarStories();
+    // Lấy tên truyện
+    db.ref('stories/' + storyId).once('value').then(s => { if(s.exists()) document.getElementById('storyTitle').innerText = "Đăng cho: " + s.val().title; });
 
-    // XỬ LÝ ĐỌC FILE VÀ CHẺ CHƯƠNG HÀNG LOẠT
+    function showTab(type, btn) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.querySelectorAll('.tab button').forEach(b => b.classList.remove('active'));
+        document.getElementById(type + '-section').classList.add('active');
+        btn.classList.add('active');
+    }
+
+    // Đăng lẻ
+    async function uploadSingle() {
+        const num = document.getElementById('chapNum').value;
+        await db.ref(`stories/${storyId}/chapters/chap_${num}`).set({
+            title: document.getElementById('chapTitle').value,
+            content: document.getElementById('chapContent').value,
+            password: document.getElementById('chapPass').value,
+            updatedAt: Date.now()
+        });
+        alert("Đăng thành công!");
+    }
+
+    // Import (Hàm của chị)
     function handleBulkImport(input) {
         const file = input.files[0];
-        if (!file) return;
-        const fileName = file.name.toLowerCase();
+        const reader = new FileReader();
+        reader.onload = function(e) { 
+            const text = e.target.result;
+            // Thuật toán tách chương của chị
+            const lines = text.split(/\r?\n/);
+            const regex = /^\s*Chương\s+(\d+)\s*[:\-\s]\s*(.*)$/i;
+            let current = null;
+            parsedChaptersList = [];
 
-        if (fileName.endsWith('.txt')) {
-            const reader = new FileReader();
-            reader.onload = function(e) { processBulkText(e.target.result); };
-            reader.readAsText(file, 'UTF-8');
-        } else if (fileName.endsWith('.docx')) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                mammoth.extractRawText({ arrayBuffer: e.target.result })
-                    .then(function(result) { processBulkText(result.value); })
-                    .catch(function(err) { alert("Lỗi đọc file Word: " + err.message); });
-            };
-            reader.readAsArrayBuffer(file);
-        }
+            lines.forEach(line => {
+                const match = line.match(regex);
+                if(match) {
+                    if(current) parsedChaptersList.push(current);
+                    current = { number: match[1], title: line, content: "" };
+                } else if(current) current.content += line + "\n";
+            });
+            if(current) parsedChaptersList.push(current);
+            document.getElementById('btnConfirmImport').style.display = 'block';
+            alert("Đã bóc tách xong " + parsedChaptersList.length + " chương!");
+        };
+        reader.readAsText(file);
     }
 
-    // THUẬT TOÁN TỰ ĐỘNG CẮT FILE THÀNH NHIỀU CHƯƠNG BẰNG REGEX
-    function processBulkText(rawText) {
-        parsedChaptersList = [];
-        const lines = rawText.split(/\r?\n/);
-        const chapterRegex = /^\s*Chương\s+(\d+)\s*[:\-\s]\s*(.*)$/i;
-
-        let currentChapter = null;
-
-        for (let i = 0; i < lines.length; i++) {
-            const line = lines[i];
-            const match = line.match(chapterRegex);
-
-            if (match) {
-                // Nếu tìm thấy Chương mới, lưu chương cũ lại trước
-                if (currentChapter) {
-                    parsedChaptersList.push(currentChapter);
-                }
-                // Khởi tạo cụm dữ liệu chương mới
-                currentChapter = {
-                    number: parseInt(match[1]),
-                    title: line.trim(), // Giữ nguyên tiêu đề đầy đủ "Chương X: Tên Chương"
-                    contentLines: []
-                };
-            } else {
-                // Nếu không phải dòng tiêu đề chương, gom dòng này vào nội dung của chương hiện tại
-                if (currentChapter) {
-                    currentChapter.contentLines.push(line);
-                }
-            }
-        }
-        // Thêm chương cuối cùng của file vào danh sách
-        if (currentChapter) {
-            parsedChaptersList.push(currentChapter);
-        }
-
-        // Đổ danh sách ra bảng Preview cho chị kiểm tra trực quan luôn
-        renderPreviewTable();
-    }
-
-    // ĐỔ DỮ LIỆU BẢNG PREVIEW RA MÀN HÌNH
-    function renderPreviewTable() {
-        const tbody = document.getElementById('previewTableBody');
-        tbody.innerHTML = '';
-
-        if (parsedChaptersList.length === 0) {
-            alert("Hệ thống không tìm thấy cú pháp 'Chương X' nào trong file rồi chị ơi! 🐢");
-            document.getElementById('previewSection').style.display = 'none';
-            document.getElementById('btnConfirmImport').style.display = 'none';
-            return;
-        }
-
-        parsedChaptersList.forEach((ch) => {
-            // Gộp các dòng nội dung lại thành văn bản hoàn chỉnh
-            ch.content = ch.contentLines.join('\n').trim();
-            delete ch.contentLines; // Xóa mảng nháp dòng cho sạch dữ liệu
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td style="font-weight:bold; color:var(--primary);">Chương ${ch.number}</td>
-                <td style="font-weight:500;">${ch.title}</td>
-                <td class="preview-content-cell">${ch.content.substring(0, 80)}...</td>
-            `;
-            tbody.appendChild(tr);
-        });
-
-        // Hiển thị giao diện xem trước và nút bấm Lưu hàng loạt
-        document.getElementById('chapterCountBadge').innerText = `${parsedChaptersList.length} chương`;
-        document.getElementById('previewSection').style.display = 'block';
-        document.getElementById('btnConfirmImport').style.display = 'block';
-    }
-
-    // GỬI ĐỒNG LOẠT LÊN FIREBASE KHI BẤM NÚT XÁC NHẬN
     async function saveAllChaptersToFirebase() {
-        const storyId = document.getElementById('selectedStoryId').value;
-        if (!storyId) {
-            return alert("Chị Trân ơi, hãy chọn 1 truyện ở danh sách bên trái trước khi bấm Lưu nha! 🐢");
-        }
-
-        if (parsedChaptersList.length === 0) return;
-
-        const statusBar = document.getElementById('statusBar');
-        statusBar.style.display = 'block';
-        statusBar.innerText = `⏳ Hệ thống đang đẩy luồng dữ liệu... Xin vui lòng đợi trong giây lát!`;
-
-        let successCount = 0;
-
-        // Chạy vòng lặp đẩy bất đồng bộ từng chương lên nhánh chapters/ID_TRUYEN/SỐ_CHƯƠNG
-        for (const ch of parsedChaptersList) {
-            const dataToUpload = {
+        for(let ch of parsedChaptersList) {
+            await db.ref(`stories/${storyId}/chapters/chap_${ch.number}`).set({
                 title: ch.title,
-                number: ch.number,
                 content: ch.content,
-                status: "Công khai",
-                createdAt: Date.now(),
-                views: 0
-            };
-
-            try {
-                await db.ref(`chapters/${storyId}/${ch.number}`).set(dataToUpload);
-                successCount++;
-                statusBar.innerText = `🚀 Tiến trình: Đang tải lên chương (${successCount}/${parsedChaptersList.length})...`;
-            } catch (err) {
-                console.error("Lỗi chương " + ch.number + ": " + err.message);
-            }
+                updatedAt: Date.now()
+            });
         }
-
-        statusBar.style.background = '#dcfce7';
-        statusBar.style.color = '#15803d';
-        statusBar.innerHTML = `🎉 Tuyệt vời ông mặt trời! Đã import thành công vĩnh viễn <b>${successCount} chương</b> vào hệ thống của chị Trân! 🐢`;
-        
-        // Reset dọn dẹp file cũ sau khi xong việc
-        document.getElementById('fileInput').value = '';
-        parsedChaptersList = [];
-        document.getElementById('btnConfirmImport').style.display = 'none';
+        alert("Import hoàn tất!");
     }
 </script>
 </body>
