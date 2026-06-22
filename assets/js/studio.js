@@ -1,4 +1,4 @@
-import { db, auth, ref, push, onChildAdded, onAuthStateChanged } from "./firebase.js";
+import { db, auth, ref, push, onChildAdded, onAuthStateChanged, remove } from "./firebase.js";
 import { set, update, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
 // 1. Kiểm tra đăng nhập (Chỉ Chị Trân mới được vào Studio)
@@ -58,7 +58,7 @@ async function handleCreateStory() {
     // Bỏ tích các checkbox sau khi đăng
     document.querySelectorAll('#genreModalContainer input:checked').forEach(cb => cb.checked = false);
 }
-// 3. Hiển thị danh sách truyện
+// 3. Hiển thị danh sách truyện (Đã bổ sung nút Xóa và Đăng chương)
 function loadAdminStoryList() {
     const listContainer = document.getElementById('adminStoryList');
     const storiesRef = ref(db, 'stories');
@@ -68,19 +68,31 @@ function loadAdminStoryList() {
         const id = snapshot.key;
         
         const item = document.createElement('div');
+        item.id = `story-${id}`; 
         item.style = "padding: 15px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; background: #fff; margin-bottom: 10px; border-radius: 12px;";
+        
         item.innerHTML = `
             <div>
                 <h4 style="margin: 0; font-size: 16px;">${story.title}</h4>
                 <small style="color: #777;">ID: ${id}</small>
             </div>
-            <button onclick="editStory('${id}')" 
-                    style="background: #ff4d6d; color: white; border: none; padding: 8px 15px; border-radius: 20px; font-size: 12px; cursor: pointer;">
-                Sửa
-            </button>
+            <div style="display: flex; gap: 5px;">
+                <button onclick="editStory('${id}')" 
+                        style="background: #fff3bf; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
+                    Sửa
+                </button>
+                <button onclick="deleteStory('${id}')" 
+                        style="background: #ffdede; color: #d90429; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
+                    Xóa
+                </button>
+                <button onclick="alert('Tính năng đăng chương cho truyện: ${story.title}')" 
+                        style="background: #e0f2f1; color: #00796b; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
+                    Đăng chương
+                </button>
+            </div>
         `;
         listContainer.appendChild(item);
-    });
+    }); 
 }
 
 // Hàm làm mới form
@@ -167,4 +179,14 @@ window.editStory = function(id) {
             alert("Đã tải dữ liệu truyện: " + story.title + ". Chị có thể sửa rồi nhấn Đăng tải để cập nhật!");
         }
     });
+};
+// Hàm Xóa truyện
+window.deleteStory = function(id) {
+    if (confirm("Chị Trân ơi, chị có chắc muốn xóa truyện này không? (Không thể hoàn tác đâu ạ!)")) {
+        remove(ref(db, 'stories/' + id)).then(() => {
+            const el = document.getElementById(`story-${id}`);
+            if (el) el.remove();
+            alert("Đã xóa truyện thành công!");
+        });
+    }
 };
