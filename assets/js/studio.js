@@ -14,6 +14,28 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
+// Thêm hàm này vào để code không bị lỗi khi gọi
+function loadAdminStoryList() {
+    const list = document.getElementById("adminStoryList");
+    if (!list) return;
+    list.innerHTML = "";
+    const storiesRef = ref(db, "stories");
+    onChildAdded(storiesRef, (snapshot) => {
+        const id = snapshot.key;
+        const story = snapshot.val();
+        const item = document.createElement("div");
+        item.id = "story-" + id;
+        item.style = "padding:15px;margin-bottom:10px;background:white;border-radius:12px;display:flex;justify-content:space-between;align-items:center;";
+        item.innerHTML = `<div><h4 style="margin:0">${story.title}</h4><div style="font-size:13px;color:#777">ID : ${id}</div></div>
+        <div>
+            <button onclick="editStory('${id}')">Sửa</button>
+            <button onclick="deleteStory('${id}')">Xóa</button>
+            <button onclick="openPostModal('${id}','${story.title}')">Đăng chương</button>
+        </div>`;
+        list.appendChild(item);
+    });
+}
+
 // Xử lý tạo/sửa truyện
 async function handleCreateStory() {
     const customId = document.getElementById("idInput").value.trim().toLowerCase();
