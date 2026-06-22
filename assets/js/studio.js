@@ -97,7 +97,9 @@ item.innerHTML = `
     <div style="display: flex; gap: 8px;">
         <button onclick="editStory('${id}')" style="background: #fff3bf; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer;">Sửa</button>
         <button onclick="deleteStory('${id}')" style="background: #ffdede; color: #d90429; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer;">Xóa</button>
-        <a href="post.html?id=${id}" style="background: #e0f2f1; color: #00796b; padding: 6px 12px; border-radius: 20px; font-size: 12px; text-decoration: none; font-weight: bold;">Đăng chương</a>
+      <button onclick="openPostModal('${id}','${story.title}')" style="background:#e0f2f1;color:#00796b;border:none;padding:6px 12px;border-radius:20px;cursor:pointer;font-weight:bold;">
+Đăng chương
+</button>
     </div>
 `;
         listContainer.appendChild(item);
@@ -145,23 +147,64 @@ window.loadStoryListForSelect = function() {
 };
 
 // --- BỔ SUNG: HÀM XỬ LÝ KHI BẤM ĐĂNG TẢI CHƯƠNG ---
-window.handleUploadContent = function() {
-    const storyId = document.getElementById('storySelect').value;
-    const fileInput = document.getElementById('fileInput');
+window.handleUploadContent = function () {
+    const storyId = document.getElementById("modalStoryId").value;
+    const fileInput = document.getElementById("chapterFileInput");
 
     if (!storyId) {
-        alert("Chị ơi, chị chọn truyện trước nhé! 🐢");
-        return;
-    }
-    if (fileInput.files.length === 0) {
-        alert("Chị chưa chọn file nội dung (.txt, .docx) kìa! 🐢");
+        alert("Không tìm thấy ID truyện!");
         return;
     }
 
-    // Ở đây sau này chị sẽ code xử lý đọc file
-    // Chị có thể dùng FileReader để đọc nội dung file .txt
-    console.log("Đang chuẩn bị đăng chương cho truyện ID:", storyId);
-    alert("Đang xử lý file cho truyện: " + storyId + ". Chị đợi xíu nhé...");
+    if (!fileInput.files.length) {
+        alert("Chị chưa chọn file .txt nha!");
+        return;
+    }
+
+    const file = fileInput.files[0];
+
+    if (!file.name.toLowerCase().endsWith(".txt")) {
+        alert("Hiện tại chỉ hỗ trợ file .txt thôi nha.");
+        return;
+    }
+
+    const reader = new FileReader();
+
+    reader.onload = async function (e) {
+        try {
+            const content = e.target.result;
+
+            // Lấy danh sách chương hiện có
+            const chapterRef = ref(db, `chapters/${storyId}`);
+            const snapshot = await get(chapterRef);
+
+            let chapterNumber = 1;
+
+            if (snapshot.exists()) {
+                chapterNumber = snapshot.size + 1;
+            }
+
+            await set(
+                ref(db, `chapters/${storyId}/${chapterNumber}`),
+                {
+                    title: `Chương ${chapterNumber}`,
+                    content: content,
+                    createdAt: Date.now()
+                }
+            );
+
+            alert(`🎉 Đăng Chương ${chapterNumber} thành công!`);
+
+            fileInput.value = "";
+            closePostModal();
+
+        } catch (err) {
+            console.error(err);
+            alert("Có lỗi khi đăng chương!");
+        }
+    };
+
+    reader.readAsText(file, "utf-8");
 };
 
 window.editStory = function(id) {
@@ -219,3 +262,14 @@ window.deleteStory = function(id) {
         });
     }
 };
+window.openPostModal = function(id, title) {
+    document.getElementById("modalStoryId").value = id;
+    document.getElementById("modalStoryTitle").textContent = title;
+    document.getElementById("postChapterModal").style.display = "flex";
+}
+
+window.closePostModal = function() {
+    document.getElementById("postChapterModal").style.display = "none";
+    document.getElementById("chapterFileInput").value = "";
+}
+
