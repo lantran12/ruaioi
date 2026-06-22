@@ -665,6 +665,10 @@ function loadStoriesByGenres(ids) {
                 : [];
 
             // Chỉ cần trùng 1 tag là hiện
+            console.log("IDs:", ids);
+            console.log("Selected:", selectedNames);
+            console.log("Story:", story.title);
+            console.log("Genres:", genres);
             const ok = selectedNames.some(name => genres.includes(name));
 
             if (ok) {
