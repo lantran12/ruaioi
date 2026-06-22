@@ -131,3 +131,25 @@ window.handleCreateStory = handleCreateStory;
 window.handleImportFile = handleImportFile;
 window.handleUploadContent = handleUploadContent;
 window.resetForm = resetForm;
+
+// Thêm các hàm này vào studio.js
+window.editStory = (id) => { 
+    console.log("Đang sửa truyện:", id); 
+    // Chị viết code gán dữ liệu vào các ô input ở đây
+};
+
+window.deleteStory = (id) => {
+    if (confirm("Chị chắc chắn muốn xóa truyện này không?")) {
+        remove(ref(db, "stories/" + id));
+    }
+};
+
+window.openPostModal = (id, title) => {
+    document.getElementById("modalStoryId").value = id;
+    document.getElementById("modalStoryTitle").innerText = title;
+    document.getElementById("postChapterModal").style.display = "flex";
+};
+
+window.closePostModal = () => {
+    document.getElementById("postChapterModal").style.display = "none";
+};
