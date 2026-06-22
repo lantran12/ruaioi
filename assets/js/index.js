@@ -112,7 +112,7 @@ function loadGenresDropdown() {
    5. BỘ LỌC ĐIỀU KIỆN (Đã tích hợp tra cứu ID và xử lý Object/Array)
    ========================================================================== */
 function loadStoriesByCondition(field, value, titleText) {
-    // 1. TÌM TÊN THẬT TỪ ID (Nếu lọc theo thể loại)
+    // 1. TÌM TÊN THẬT TỪ ID (Nếu lọc theo thể loại, chuyển 'guong-vo' thành 'Gương vỡ lại lành')
     let filterValue = value;
     if (field === 'genres' && typeof GENDERS !== 'undefined') {
         const foundGenre = GENDERS.find(g => g.id === value);
@@ -120,7 +120,7 @@ function loadStoriesByCondition(field, value, titleText) {
     }
 
     const searchSection = document.getElementById('searchResultsSection');
-    const resultsGrid = document.getElementById('searchResultsSection').querySelector('#resultsGrid');
+    const resultsGrid = document.getElementById('resultsGrid');
     const rowTitle = searchSection.querySelector('.row-title');
 
     if (!searchSection || !resultsGrid) return;
@@ -130,6 +130,7 @@ function loadStoriesByCondition(field, value, titleText) {
     resultsGrid.innerHTML = '<div style="grid-column: 1/-1; color: var(--smoke);">Đang lọc tác phẩm...</div>';
     searchSection.scrollIntoView({ behavior: 'smooth' });
 
+    // 2. LẤY DỮ LIỆU TỪ FIREBASE
     const storiesRef = ref(db, 'stories');
     get(storiesRef).then((snapshot) => {
         resultsGrid.innerHTML = '';
@@ -144,15 +145,14 @@ function loadStoriesByCondition(field, value, titleText) {
             const id = childSnapshot.key;
             let match = false;
 
-            // KIỂM TRA ĐIỀU KIỆN LỌC
+            // 3. SO SÁNH ĐIỀU KIỆN
             if (field === 'genres') {
-                // Chuyển Object dữ liệu trong Firebase thành mảng để so sánh
+                // Chuyển Object tags thành mảng để dùng .includes()
                 const genresData = story.genres ? Object.values(story.genres) : [];
                 if (genresData.includes(filterValue)) {
                     match = true;
                 }
             } else {
-                // Lọc theo các trường khác
                 if (story[field] === value) {
                     match = true;
                 }
@@ -165,7 +165,7 @@ function loadStoriesByCondition(field, value, titleText) {
         });
 
         if (!found) {
-            resultsGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--smoke);">Không tìm thấy truyện có tag "${filterValue}" 🐢</p>`;
+            resultsGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--smoke);">Không tìm thấy truyện thuộc thể loại "${filterValue}" 🐢</p>`;
         }
     });
 }
