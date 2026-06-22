@@ -11,7 +11,7 @@ onAuthStateChanged(auth, (user) => {
     }
 });
 
-// 2. Hàm Đăng truyện mới (Đã thêm phần lấy thể loại)
+// 2. Hàm Đăng/Cập nhật truyện (Đã nâng cấp)
 async function handleCreateStory() {
     const customId = document.getElementById('idInput').value.trim().toLowerCase(); 
     const title = document.getElementById('titleInput').value;
@@ -31,31 +31,47 @@ async function handleCreateStory() {
         return;
     }
 
-    const newStoryRef = ref(db, `stories/${customId}`);
+    // Kiểm tra xem đang ở chế độ Sửa (readOnly) hay Đăng mới
+    const isEditing = document.getElementById('idInput').readOnly;
+    const storyRef = ref(db, `stories/${customId}`);
     
-    // Gửi dữ liệu lên Firebase, bao gồm cả mảng genres
-    await set(newStoryRef, {
+    // Dữ liệu sẽ gửi lên
+    const storyData = {
         title, 
         author, 
         status, 
         cover, 
         description,
-        genres: selectedGenres, // Dòng này sẽ đẩy thể loại lên Firebase
-        createdAt: Date.now(),
-        updatedAt: Date.now(),
-        views: 0
-    });
+        genres: selectedGenres,
+        updatedAt: Date.now()
+    };
 
-    alert(`🎉 Đăng truyện thành công với ID là: ${customId}`);
+    if (isEditing) {
+        // NẾU LÀ SỬA: Dùng update để không làm thay đổi các trường quan trọng như createdAt/views
+        await update(storyRef, storyData);
+        alert("✅ Đã cập nhật truyện thành công!");
+        document.getElementById('idInput').readOnly = false; // Mở khóa ID sau khi sửa xong
+    } else {
+        // NẾU LÀ ĐĂNG MỚI: Dùng set để khởi tạo dữ liệu mới
+        await set(storyRef, { 
+            ...storyData, 
+            createdAt: Date.now(), 
+            views: 0 
+        });
+        alert(`🎉 Đăng truyện thành công với ID là: ${customId}`);
+    }
+
+    // Tải lại danh sách để cập nhật giao diện
+    loadAdminStoryList();
     
-    // Xóa trắng các ô nhập sau khi đăng thành công
+    // Xóa trắng các ô nhập sau khi hoàn tất
     document.getElementById('idInput').value = "";
     document.getElementById('titleInput').value = "";
     document.getElementById('authorInput').value = "";
     document.getElementById('coverInput').value = "";
     document.getElementById('descInput').value = "";
+    document.getElementById('editorNote').value = "";
     document.getElementById('selectedGenresText').innerText = "Chọn thể loại...";
-    // Bỏ tích các checkbox sau khi đăng
     document.querySelectorAll('#genreModalContainer input:checked').forEach(cb => cb.checked = false);
 }
 // 3. Hiển thị danh sách truyện (Đã bổ sung nút Xóa và Đăng chương)
