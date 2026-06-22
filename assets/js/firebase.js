@@ -1,6 +1,6 @@
 // Nhập các thư viện Firebase phiên bản mới (v10+) dạng Module
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import { getDatabase, ref, push, onChildAdded, remove, update, get, set } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+import { getDatabase, ref, push, onChildAdded, remove, update } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 // Cấu hình Firebase của Chị
@@ -23,4 +23,4 @@ const auth = getAuth(app);
 const provider = new GoogleAuthProvider();
 
 // Thêm chữ "update" vào danh sách export này
-export { db, auth, provider, ref, push, onChildAdded, get, set, update, remove, signInWithPopup, signOut, onAuthStateChanged };
+export { db, auth, provider, ref, push, onChildAdded, remove, update, signInWithPopup, signOut, onAuthStateChanged };
