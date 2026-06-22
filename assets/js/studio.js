@@ -97,7 +97,7 @@ item.innerHTML = `
     <div style="display: flex; gap: 8px;">
         <button onclick="editStory('${id}')" style="background: #fff3bf; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer;">Sửa</button>
         <button onclick="deleteStory('${id}')" style="background: #ffdede; color: #d90429; border: none; padding: 6px 12px; border-radius: 20px; cursor: pointer;">Xóa</button>
-        <a href="post-chapter.html?id=${id}" style="background: #e0f2f1; color: #00796b; padding: 6px 12px; border-radius: 20px; font-size: 12px; text-decoration: none; font-weight: bold;">Đăng chương</a>
+        <a href="post.html?id=${id}" style="background: #e0f2f1; color: #00796b; padding: 6px 12px; border-radius: 20px; font-size: 12px; text-decoration: none; font-weight: bold;">Đăng chương</a>
     </div>
 `;
         listContainer.appendChild(item);
