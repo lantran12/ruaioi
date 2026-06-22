@@ -103,7 +103,6 @@ function loadAdminStoryList() {
                     Xóa
                 </button>
                 
-            // Sửa dòng <button onclick="..."> thành:
                 <button onclick="window.location.href='post-chapter.html?id=${id}'" 
                 style="background: #e0f2f1; color: #00796b; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
                     Đăng chương
