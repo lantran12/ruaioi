@@ -8,31 +8,33 @@
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
     <style>
-    body { font-family: 'Quicksand', sans-serif; background: #fafafa; padding: 15px; margin: 0; }
-    .wrapper { max-width: 800px; margin: auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-    .tab { display: flex; gap: 5px; margin-bottom: 20px; }
-    .tab button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; background: #eee; font-size: 14px; }
-    .tab button.active { background: #ff4d6d; color: white; }
-    .form-control { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-    .btn-main { width: 100%; padding: 16px; border: none; border-radius: 8px; background: #ff4d6d; color: white; font-weight: 700; cursor: pointer; font-size: 16px; }
-    .section { display: none; }
-    .section.active { display: block; }
-    h2 { font-size: 18px; color: #333; margin-bottom: 20px; }
-    textarea { min-height: 200px; }
-</style>
+        body { font-family: 'Quicksand', sans-serif; background: #fafafa; margin: 0; padding-top: 80px; }
+        /* CSS Header cho giống trang Studio */
+        .netflix-header { position: fixed; top: 0; width: 100%; height: 70px; background: white; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; box-sizing: border-box; border-bottom: 1px solid #eee; z-index: 1000; }
+        .logo a { font-weight: 700; font-size: 20px; color: #333; text-decoration: none; }
+        .logo span { color: #ff4d6d; }
+        /* CSS Nội dung */
+        .wrapper { max-width: 800px; margin: 20px auto; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .tab { display: flex; gap: 5px; margin-bottom: 20px; }
+        .tab button { flex: 1; padding: 10px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700; background: #eee; font-size: 14px; }
+        .tab button.active { background: #ff4d6d; color: white; }
+        .form-control { width: 100%; padding: 12px; margin-bottom: 12px; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        .btn-main { width: 100%; padding: 16px; border: none; border-radius: 8px; background: #ff4d6d; color: white; font-weight: 700; cursor: pointer; font-size: 16px; }
+        .section { display: none; }
+        .section.active { display: block; }
+        h2 { font-size: 18px; color: #333; margin-bottom: 20px; }
+        textarea { min-height: 200px; }
+    </style>
 </head>
-    <header class="netflix-header">
-    <div class="header-left-zone">
-        <div class="logo">
-            <a href="index.html">Rùa<span>Novel</span></a>
-            <span style="font-size: 0.9rem; color: #666; margin-left: 10px;">| Studio</span>
-        </div>
-    </div>
-    <div class="header-right-zone">
-        <button class="btn-back" onclick="window.location.href='studio.html'" style="background:#ffe5ec;color:#ff4d6d;border:none;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;">Về Studio</button>
-    </div>
-</header>
 <body>
+
+<header class="netflix-header">
+    <div class="logo">
+        <a href="index.html">Rùa<span>Novel</span></a>
+        <span style="font-size: 0.9rem; color: #666; margin-left: 10px;">| Studio</span>
+    </div>
+    <button onclick="window.location.href='studio.html'" style="background:#ffe5ec;color:#ff4d6d;border:none;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;">Về Studio</button>
+</header>
 
 <div class="wrapper">
     <h2 id="storyTitle">Đăng chương cho: ...</h2>
@@ -42,18 +44,10 @@
     </div>
 
     <div id="single-section" class="section active">
-        <input type="number" id="chapNum" class="form-control" placeholder="Số chương">
-        <input type="text" id="chapTitle" class="form-control" placeholder="Tên chương">
-        <input type="text" id="chapPass" class="form-control" placeholder="Mật khẩu (nếu có)">
-        <textarea id="chapContent" class="form-control" rows="10" placeholder="Nội dung..."></textarea>
-        <button class="btn-main" onclick="uploadSingle()">Đăng chương ngay</button>
-    </div>
+        </div>
 
     <div id="bulk-section" class="section">
-        <input type="file" id="fileInput" onchange="handleBulkImport(this)" accept=".txt,.docx" class="form-control">
-        <div id="previewTableBody"></div>
-        <button id="btnConfirmImport" class="btn-main" style="display:none;" onclick="saveAllChaptersToFirebase()">Xác Nhận Import Hàng Loạt</button>
-    </div>
+        </div>
 </div>
 
 <script>
