@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đăng chương - RùaNovel</title>
+    <link rel="icon" href="favicon.ico">
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/post-chapter.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.7.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mammoth/1.8.0/mammoth.browser.min.js"></script>
+</head>
+<body>
+<header class="netflix-header">
+    <div class="header-left-zone"><div class="logo"><a href="index.html">Rùa<span>Novel</span></a></div></div>
+    <div class="header-right-zone">
+        <div class="auth-buttons" id="authSection"><button class="btn-avatar-profile" id="btnHeaderAuth" onclick="openAuthModal()"><i class="fa-regular fa-user"></i></button></div>
+        <button class="noti-btn" id="btnNotification"><i class="fa-regular fa-bell"></i><span class="badge" id="notiCount">0</span></button>
+    </div>
+</header>
+<main class="chapter-container">
+<section class="story-card">
+    <div class="story-cover"><img id="storyCover" src="https://placehold.co/180x250" alt="cover"></div>
+    <div class="story-info">
+        <span class="story-badge">Đăng chương</span>
+        <h1 id="storyTitle">Đang tải...</h1>
+        <div class="story-meta">
+            <div><i class="fa-solid fa-hashtag"></i><span id="storyId">...</span></div>
+            <div><i class="fa-solid fa-book-open"></i><span id="chapterTotal">0 chương</span></div>
+            <div><i class="fa-solid fa-eye"></i><span id="storyViews">0 lượt xem</span></div>
+        </div>
+        <p id="storyDescription">Đang tải thông tin truyện...</p>
+    </div>
+</section>
+<section class="editor-wrapper">
+    <div class="editor-tabs">
+        <button class="tab-btn active" id="btnSingle" onclick="switchTab('single')"><i class="fa-solid fa-pen"></i> Đăng lẻ</button>
+        <button class="tab-btn" id="btnBulk" onclick="switchTab('bulk')"><i class="fa-solid fa-file-import"></i> Import hàng loạt</button>
+    </div>
+<div class="tab-content active" id="singleTab">
+<form id="chapterForm">
+    <input type="hidden" id="editingChapter">
+    <div class="form-grid">
+        <div class="form-group"><label><i class="fa-solid fa-list-ol"></i> Số chương</label><input type="number" id="chapterNumber" placeholder="Ví dụ: 25" required></div>
+        <div class="form-group"><label><i class="fa-solid fa-signature"></i> Tên chương</label><input type="text" id="chapterName" placeholder="Ví dụ: Mưa đêm" required></div>
+    </div>
+    <div class="form-group"><label><i class="fa-solid fa-align-left"></i> Nội dung chương</label>
+
+        <textarea id="chapterContent" placeholder="Viết nội dung chương tại đây..." spellcheck="false" required></textarea>
+<div class="editor-toolbar">
+    <div class="editor-info">
+        <span><i class="fa-solid fa-file-lines"></i> <span id="wordCount">0 từ</span></span>
+        <span><i class="fa-solid fa-keyboard"></i> <span id="charCount">0 ký tự</span></span>
+    </div>
+    <div>
+        <button type="button" class="btn-secondary" onclick="resetChapterForm()"><i class="fa-solid fa-rotate-left"></i> Làm mới</button>
+        <button type="submit" class="btn-primary" id="submitChapterBtn"><i class="fa-solid fa-cloud-arrow-up"></i> Đăng chương</button>
+    </div>
+</div>
+</form>
+</div>
+<div class="tab-content" id="bulkTab">
+    <div class="bulk-upload-card">
+        <div class="upload-box">
+            <i class="fa-solid fa-file-arrow-up upload-icon"></i>
+            <h3>Import nhiều chương</h3>
+            <p>Hỗ trợ file TXT và DOCX. Hệ thống sẽ tự nhận dạng theo định dạng <b>Chương X: Tên chương</b></p>
+            <input type="file" id="fileInput" accept=".txt,.docx" onchange="handleBulkImport(this)">
+            <label for="fileInput" class="upload-btn"><i class="fa-solid fa-folder-open"></i> Chọn file</label>
+        </div>
+        <div class="preview-section" id="previewSection" style="display:none;">
+            <div class="preview-header">
+                <div><h3>Danh sách chương</h3><span class="chapter-badge" id="chapterCountBadge">0 chương</span></div>
+            </div>
+            <div class="preview-table-wrapper">
+                <table>
+                    <thead><tr><th width="120">Chương</th><th>Tiêu đề</th><th width="45%">Nội dung xem trước</th></tr></thead>
+                    <tbody id="previewTableBody"></tbody>
+                </table>
+            </div>
+            <div class="status-bar" id="statusBar" style="display:none;"></div>
+            <div class="preview-footer">
+                <button id="btnConfirmImport" style="display:none" class="btn-success" onclick="saveAllChaptersToFirebase()"><i class="fa-solid fa-cloud-arrow-up"></i> Xác nhận Import</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+    <div class="tab-content" id="tabImport">
+        <div class="import-box">
+            <h2>Import từ file TXT</h2>
+            <p class="tip">Mỗi chương bắt đầu bằng:<br>Chương 1<br>Chương 2<br><br>Hoặc:<br>第1章<br>第2章</p>
+            <input type="file" id="txtFile" accept=".txt">
+            <button id="btnImportTxt" class="btn-primary">Import</button>
+            <div id="importResult"></div>
+        </div>
+    </div>
+</main>
+<div class="modal" id="previewModal">
+    <div class="modal-content large">
+        <div class="modal-header"><h2 id="previewTitle">Xem trước</h2><button class="close-btn" id="closePreview">×</button></div>
+        <div id="previewContent" class="reader-preview"></div>
+    </div>
+</div>
+<div id="loadingScreen"><div class="loader"></div><p>Đang xử lý...</p></div>
+<div id="toast"></div>
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+    import { getDatabase, ref, push, set, update, remove, get, child } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+    window.firebaseModules = { initializeApp, getDatabase, ref, push, set, update, remove, get, child };
+</script>
+    <script type="module" src="assets/js/firebase.js"></script>
+    <script type="module" src="assets/js/post-chapter.js"></script>
+
+</body>
+</html>
+
