@@ -272,7 +272,6 @@ function createNetflixCard(id, story) {
     
     // 1. Xử lý ảnh
     const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
-    const chapterCount = story.totalChapters || 0; // <--- Chị dán dòng này ở đây
     // 2. Xử lý Tag (lấy tối đa 2 tag đầu tiên cho gọn)
     const tagsHtml = (story.genres && Array.isArray(story.genres)) 
         ? story.genres.slice(0, 2).map(tag => `<span class="tag-badge">${tag}</span>`).join('') 
