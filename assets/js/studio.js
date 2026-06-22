@@ -77,6 +77,7 @@ async function handleCreateStory() {
 // 3. Hiển thị danh sách truyện (Đã bổ sung nút Xóa và Đăng chương)
 function loadAdminStoryList() {
     const listContainer = document.getElementById('adminStoryList');
+    listContainer.innerHTML = "";
     const storiesRef = ref(db, 'stories');
 
     onChildAdded(storiesRef, (snapshot) => {
