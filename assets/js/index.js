@@ -109,24 +109,28 @@ function loadGenresDropdown() {
 }
 
 /* ==========================================================================
-   5. BỘ LỌC ĐIỀU KIỆN (ĐÃ FIX: Tương thích Firebase V8)
-   ========================================================================== */
-/* ==========================================================================
-   5. BỘ LỌC ĐIỀU KIỆN (Bản sửa lỗi chính xác)
+   5. BỘ LỌC ĐIỀU KIỆN (Bản chuẩn cuối cùng cho chị)
    ========================================================================== */
 function loadStoriesByCondition(field, value, titleText) {
     // 1. TÌM TÊN THẬT TỪ ID
     let filterValue = value;
+    let finalTitle = titleText; // Tiêu đề mặc định
+    
     if (field === 'genres' && typeof GENDERS !== 'undefined') {
         const foundGenre = GENDERS.find(g => g.id === value);
-        if (foundGenre) filterValue = foundGenre.name; 
+        if (foundGenre) {
+            filterValue = foundGenre.name; 
+            finalTitle = `📜 Thể loại: ${foundGenre.name}`; // Cập nhật tiêu đề hiển thị
+        }
     }
 
     const searchSection = document.getElementById('searchResultsSection');
     const resultsGrid = document.getElementById('resultsGrid');
     const rowTitle = searchSection.querySelector('.row-title');
 
-    if (rowTitle) rowTitle.innerText = titleText;
+    // Cập nhật tiêu đề hiển thị bằng finalTitle
+    if (rowTitle) rowTitle.innerText = finalTitle; 
+    
     searchSection.style.display = 'block';
     resultsGrid.innerHTML = '<div style="grid-column: 1/-1; color: var(--smoke);">Đang lọc tác phẩm...</div>';
     searchSection.scrollIntoView({ behavior: 'smooth' });
@@ -146,8 +150,7 @@ function loadStoriesByCondition(field, value, titleText) {
 
             if (field === 'genres') {
                 const genresData = story.genres ? Object.values(story.genres) : [];
-                
-                // ĐOẠN NÀY QUAN TRỌNG: Phải so sánh với filterValue (tên thật)
+                // So sánh bằng tên thật (filterValue)
                 if (genresData.some(g => String(g).trim().toLowerCase() === String(filterValue).trim().toLowerCase())) {
                     match = true;
                 }
@@ -164,7 +167,6 @@ function loadStoriesByCondition(field, value, titleText) {
         });
 
         if (!found) {
-            // Hiển thị filterValue để chị biết nó đang tìm cái gì
             resultsGrid.innerHTML = `<p style="grid-column: 1/-1; color: var(--smoke);">Không tìm thấy truyện nào có tag "${filterValue}" 🐢</p>`;
         }
     });
