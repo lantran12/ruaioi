@@ -96,7 +96,25 @@
                 listDiv.innerHTML = "Chưa có chương nào.";
             }
         }
-        init();
+        // Đoạn này trong book.html của chị
+async function init() {
+    const storyId = new URLSearchParams(window.location.search).get('id'); // Lấy ID từ URL
+    if (!storyId) return;
+
+    // Lấy dữ liệu truyện từ nhánh 'stories/' + storyId
+    const sSnap = await get(ref(db, `stories/${storyId}`));
+    if (sSnap.exists()) {
+        const s = sSnap.val();
+        
+        // Điền dữ liệu vào giao diện (đảm bảo id trong HTML trùng với các id dưới đây)
+        document.getElementById('storyTitle').innerText = s.title;
+        document.getElementById('storyAuthor').innerText = s.author || "Đang cập nhật";
+        document.getElementById('storyEditor').innerText = s.editor || "Chưa có";
+        document.getElementById('storyCover').src = s.cover || "placeholder.jpg";
+    }
+    
+    // ... phần tải danh sách chương bên dưới vẫn giữ nguyên ...
+}
     </script>
 </body>
 </html>
