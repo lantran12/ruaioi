@@ -464,21 +464,28 @@ window.deleteChapter = function(storyId, chapterId) {
     }
 };
 window.editChapter = function(storyId, chapterId) {
-    // 1. Lấy dữ liệu chương từ Firebase
     const chapterRef = ref(db, `chapters/${storyId}/${chapterId}`);
     get(chapterRef).then((snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.val();
             
-            // 2. Mở Modal Đăng chương
+            // 1. Mở Modal
             openPostModal(storyId, "Đang sửa: " + data.title);
             
-            // 3. Đổ dữ liệu vào Modal
-            document.getElementById('singleChapterTitle').value = data.title.replace(/Chương \d+: /, "");
+            // 2. Bóc tách dữ liệu:
+            // Lấy số chương: Tìm các chữ số nằm sau chữ "Chương" (không phân biệt hoa thường)
+            const numMatch = data.title.match(/Chương\s*(\d+)/i);
+            const chapterNum = numMatch ? numMatch[1] : ""; 
+            
+            // Lấy tên chương: Xóa bỏ đoạn "Chương X: " ở đầu đi
+            const chapterTitle = data.title.replace(/Chương\s*\d+[:\s]*/i, "");
+
+            // 3. Đổ dữ liệu vào các ô Input
+            document.getElementById('singleChapterNumber').value = chapterNum; // Cái này hồi nãy thiếu nè chị
+            document.getElementById('singleChapterTitle').value = chapterTitle;
             document.getElementById('singleContent').value = data.content;
             
-            // 4. Đánh dấu đây là chế độ Sửa (để khi bấm nút xác nhận biết đường mà update)
-            // Lưu lại ID chương vào một biến tạm trên modal
+            // 4. Đánh dấu chế độ Sửa
             document.getElementById('modalStoryId').dataset.editingChapter = chapterId;
         }
     });
