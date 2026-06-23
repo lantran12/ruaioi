@@ -284,15 +284,23 @@ function createNetflixCard(id, story) {
     div.className = 'story-card';
     div.onclick = () => window.location.href = `book.html?id=${id}`;
     
-    // Tự động dùng 'img' chị tạo, hoặc các trường cũ dự phòng
     const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
     
-    // Gợi ý nhỏ cho card truyện đẹp hơn
+    // --- PHẦN MỚI: KIỂM TRA CHƯƠNG MỚI NHẤT ---
+    // Kiểm tra xem truyện có trường latestChapterTitle không
+    const latestChapter = story.latestChapterTitle 
+        ? `<div style="margin-top: 5px; font-size: 11px; color: #ff4d6d; font-weight: 600;">
+             <i class="fa-solid fa-feather-pointed"></i> ${story.latestChapterTitle}
+           </div>` 
+        : `<div style="margin-top: 5px; font-size: 11px; color: #aaa;">Chưa có chương mới</div>`;
+    // ------------------------------------------
+
     div.innerHTML = `
-    <img src="${currentImg}" alt="${story.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
-    <h4 style="margin: 10px 0 5px 0; font-size: 14px;">${story.title}</h4>
-    <p style="margin: 0; font-size: 12px; color: #888;">${story.author || 'Động Chăn Rùa'}</p>
-`;
+        <img src="${currentImg}" alt="${story.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
+        <h4 style="margin: 10px 0 5px 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${story.title}</h4>
+        <p style="margin: 0; font-size: 12px; color: #888;">${story.author || 'Động Chăn Rùa'}</p>
+        ${latestChapter}
+    `;
     return div;
 }
 
