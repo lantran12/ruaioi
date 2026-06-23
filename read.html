@@ -1,19 +1,38 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    </head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Đọc truyện | Rùa Novel</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/css/style.css"> 
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background: #fafafa; padding-top: 100px; }
+        .read-container { max-width: 700px; margin: 0 auto; background: white; padding: 40px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+        h1 { font-family: 'Playfair Display', serif; color: #ff4d6d; }
+        .chapter-item { display: flex; justify-content: space-between; align-items: center; padding: 15px; border-bottom: 1px solid #eee; }
+    </style>
+</head>
 <body>
 
-<div class="studio-container">
-    <h2 id="storyTitle" style="color: #ff4d6d; font-family: 'Playfair Display';">Đang tải tên truyện...</h2>
-    
-    <div class="form-section">
-        <h3>Danh sách chương</h3>
-        <div id="chapterListContainer" style="margin-top: 20px;">
+    <header class="netflix-header">
+        <div class="header-left-zone">
+            <div class="logo">
+                <a href="index.html">Rùa<span>Novel</span></a>
             </div>
-    </div>
-</div>
+        </div>
+        <div class="header-right-zone">
+            <button class="btn-back" onclick="window.location.href='index.html'" style="background:#ffe5ec;color:#ff4d6d;border:none;padding:8px 14px;border-radius:20px;font-size:13px;font-weight:600;cursor:pointer;">Về Trang Chủ</button>
+        </div>
+    </header>
 
-<script type="module" src="read.js"></script>
+    <div class="read-container">
+        <h1 id="storyTitle">Đang tải truyện...</h1>
+        <hr>
+        <h3>Danh sách chương</h3>
+        <div id="chapterListContainer"></div>
+    </div>
+
+    <script type="module" src="read.js"></script>
 </body>
 </html>
