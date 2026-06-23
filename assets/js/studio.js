@@ -379,7 +379,7 @@ function saveChapterToFirebase(storyId, chapterNumber, title, content, isBulk = 
     
     const chapterRef = ref(db, `chapters/${storyId}/${chapterKey}`);
     
-    set(chapterRef, {
+    return set(chapterRef, {
         title: title,
         content: content,
         createdAt: Date.now(),
