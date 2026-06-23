@@ -153,26 +153,6 @@ window.loadStoryListForSelect = function() {
     });
 };
 
-// --- BỔ SUNG: HÀM XỬ LÝ KHI BẤM ĐĂNG TẢI CHƯƠNG ---
-window.handleUploadContent = function() {
-    const storyId = document.getElementById('storySelect').value;
-    const fileInput = document.getElementById('fileInput');
-
-    if (!storyId) {
-        alert("Chị ơi, chị chọn truyện trước nhé! 🐢");
-        return;
-    }
-    if (fileInput.files.length === 0) {
-        alert("Chị chưa chọn file nội dung (.txt, .docx) kìa! 🐢");
-        return;
-    }
-
-    // Ở đây sau này chị sẽ code xử lý đọc file
-    // Chị có thể dùng FileReader để đọc nội dung file .txt
-    console.log("Đang chuẩn bị đăng chương cho truyện ID:", storyId);
-    alert("Đang xử lý file cho truyện: " + storyId + ". Chị đợi xíu nhé...");
-};
-
 window.editStory = function(id) {
     const storyRef = ref(db, 'stories/' + id);
     
@@ -251,20 +231,48 @@ window.closePostModal = function() {
 window.handleUploadContent = function() {
     const storyId = document.getElementById('modalStoryId').value;
     const fileInput = document.getElementById('chapterFileInput');
+    const file = fileInput.files[0];
 
-    if (!storyId) {
-        alert("Có lỗi xảy ra, không tìm thấy ID truyện!");
-        return;
-    }
-    if (fileInput.files.length === 0) {
-        alert("Chị ơi, chọn file nội dung đi nè! 🐢");
+    if (!storyId || !file) {
+        alert("Chị ơi, kiểm tra lại ID hoặc File nhé!");
         return;
     }
 
-    // Sau này ở đây chị sẽ đọc file và đẩy lên Firebase
-    console.log("Chuẩn bị đăng file cho ID:", storyId);
-    alert("Đang xử lý file cho truyện ID: " + storyId);
-    
-    // Đóng modal sau khi xong
-    closePostModal();
+    const reader = new FileReader();
+
+    // 1. Nếu là file .txt
+    if (file.name.endsWith('.txt')) {
+        reader.onload = function(e) {
+            saveToFirebase(storyId, e.target.result);
+        };
+        reader.readAsText(file, "UTF-8");
+    } 
+    // 2. Nếu là file .docx
+    else if (file.name.endsWith('.docx')) {
+        reader.onload = function(loadEvent) {
+            const arrayBuffer = loadEvent.target.result;
+            mammoth.extractRawText({arrayBuffer: arrayBuffer})
+                .then(result => {
+                    saveToFirebase(storyId, result.value);
+                })
+                .catch(err => alert("Lỗi đọc file Word: " + err));
+        };
+        reader.readAsArrayBuffer(file);
+    } else {
+        alert("Chỉ hỗ trợ file .txt hoặc .docx thôi chị nha!");
+    }
 };
+
+// Hàm phụ để đẩy lên Firebase
+function saveToFirebase(storyId, content) {
+    // Thay đổi đường dẫn này theo cấu trúc Firebase của chị
+    const newChapterRef = push(ref(db, 'chapters/' + storyId));
+    set(newChapterRef, {
+        content: content,
+        createdAt: Date.now(),
+        // Chị có thể thêm tên chương ở đây nếu muốn
+    }).then(() => {
+        alert("Đăng chương thành công! 🐢");
+        closePostModal();
+    });
+}
