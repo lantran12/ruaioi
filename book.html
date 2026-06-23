@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rùa Novel | Mục lục</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@600;700&family=Quicksand:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <style>
+        body { font-family: 'Quicksand', sans-serif; background: #fafafa; padding-top: 80px; }
+        .book-container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        .chapter-list { background: white; padding: 20px; border-radius: 15px; border: 1px solid #eee; }
+        .chapter-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: block; text-decoration: none; color: #333; transition: 0.3s; }
+        .chapter-item:hover { background: #fff5f7; color: #ff4d6d; }
+    </style>
+</head>
+<body>
+
+    <header class="netflix-header">
+        <div class="header-left-zone">
+            <div class="logo">
+                <a href="index.html">Rùa<span>Novel</span></a>
+            </div>
+        </div>
+        <div class="header-right-zone">
+            <button class="btn-back" onclick="window.location.href='index.html'">Về Trang Chủ</button>
+        </div>
+    </header>
+
+    <div class="book-container">
+        <h2 id="storyTitle" style="font-family: 'Playfair Display', serif;">Đang tải tên truyện...</h2>
+        <div id="chapterList" class="chapter-list">
+            <p>Đang tải danh sách chương...</p>
+        </div>
+    </div>
+
+    <script type="module" src="book.js"></script>
+</body>
+</html>
