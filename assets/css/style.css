@@ -393,3 +393,7 @@ body {
     background: #ff4d6d;
     color: white;
 }
+#btn-single, #btn-bulk {
+    border: 1px solid #ff4d6d;
+    flex: 1; /* Để 2 nút bằng nhau */
+}
