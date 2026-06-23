@@ -320,3 +320,38 @@ function saveChapterToFirebase(storyId, title, content) {
         alert("Có lỗi xảy ra: " + error.message);
     });
 }
+// --- 1. Hàm tách chương tự động (Dành cho Import hàng loạt) ---
+// Giả sử tên chương của Chị có định dạng "Chương 1", "Chương 01", "Chương I"
+window.processBulkFile = function() {
+    const fileInput = document.getElementById('bulkFileInput');
+    const previewContainer = document.getElementById('bulkPreview');
+    const file = fileInput.files[0];
+    
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+        
+        // Regex này sẽ tách nội dung mỗi khi gặp từ "Chương" và một số theo sau
+        // Ví dụ: Chương 1, Chương 01, Chương 123
+        const chapters = text.split(/(?=Chương\s+\d+)/i);
+        
+        previewContainer.innerHTML = ""; // Xóa dữ liệu cũ
+        chapters.forEach((content, index) => {
+            if (content.trim().length > 0) {
+                const div = document.createElement('div');
+                div.style = "padding: 10px; border-bottom: 1px solid #eee; font-size: 13px;";
+                div.innerHTML = `<strong>${content.substring(0, 30)}...</strong> (Độ dài: ${content.length})`;
+                previewContainer.appendChild(div);
+            }
+        });
+        
+        window.bulkData = chapters; // Lưu tạm vào biến toàn cục để xác nhận đăng
+        alert("Đã tách xong " + chapters.length + " chương. Chị kiểm tra xem đúng chưa nhé!");
+    };
+    reader.readAsText(file, "UTF-8");
+};
+
+// --- 2. Kết nối sự kiện chọn file vào hàm trên ---
+document.getElementById('bulkFileInput').addEventListener('change', processBulkFile);
