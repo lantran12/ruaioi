@@ -286,14 +286,23 @@ function createNetflixCard(id, story) {
     
     const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
     
-    // --- PHẦN MỚI: KIỂM TRA CHƯƠNG MỚI NHẤT ---
-    // Kiểm tra xem truyện có trường latestChapterTitle không
+    // --- XỬ LÝ THỜI GIAN ---
+    let timeDisplay = "";
+    if (story.latestChapterAt) {
+        const date = new Date(story.latestChapterAt);
+        const day = String(date.getDate()).padStart(2, '0');
+        const month = String(date.getMonth() + 1).padStart(2, '0'); // Tháng bắt đầu từ 0
+        const year = date.getFullYear().toString().slice(-2); // Lấy 2 số cuối của năm
+        timeDisplay = `${day}/${month}/${year}`;
+    }
+
     const latestChapter = story.latestChapterTitle 
         ? `<div style="margin-top: 5px; font-size: 11px; color: #ff4d6d; font-weight: 600;">
              <i class="fa-solid fa-feather-pointed"></i> ${story.latestChapterTitle}
+             <span style="color: #aaa; font-weight: normal; margin-left: 5px;">(${timeDisplay})</span>
            </div>` 
         : `<div style="margin-top: 5px; font-size: 11px; color: #aaa;">Chưa có chương mới</div>`;
-    // ------------------------------------------
+    // ----------------------
 
     div.innerHTML = `
         <img src="${currentImg}" alt="${story.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
