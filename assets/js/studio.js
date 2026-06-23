@@ -103,10 +103,10 @@ function loadAdminStoryList() {
                     Xóa
                 </button>
                 
-                <button onclick="window.location.href='post-chapter.html?id=${id}'" 
-                style="background: #e0f2f1; color: #00796b; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
-                    Đăng chương
-                </button>
+                <button onclick="openPostModal('${id}', '${story.title}')" 
+                 style="background: #e0f2f1; color: #00796b; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
+             Đăng chương
+         </button>
             </div>
         `;
         listContainer.appendChild(item);
@@ -227,4 +227,44 @@ window.deleteStory = function(id) {
             alert("Đã xóa truyện thành công!");
         });
     }
+};
+// 1. Hàm mở Popup Đăng chương
+window.openPostModal = function(id, title) {
+    const modal = document.getElementById('postChapterModal');
+    const inputId = document.getElementById('modalStoryId');
+    const titleText = document.getElementById('modalStoryTitle');
+
+    // Gán ID và Tên truyện vào Popup
+    inputId.value = id;
+    titleText.innerText = "Đang đăng chương cho: " + title;
+
+    // Hiển thị Popup
+    modal.style.display = 'flex';
+};
+
+// 2. Hàm đóng Popup
+window.closePostModal = function() {
+    document.getElementById('postChapterModal').style.display = 'none';
+};
+
+// 3. Cập nhật lại hàm xử lý đăng (Lưu ý: Em đổi id thành chapterFileInput cho khớp với HTML của chị)
+window.handleUploadContent = function() {
+    const storyId = document.getElementById('modalStoryId').value;
+    const fileInput = document.getElementById('chapterFileInput');
+
+    if (!storyId) {
+        alert("Có lỗi xảy ra, không tìm thấy ID truyện!");
+        return;
+    }
+    if (fileInput.files.length === 0) {
+        alert("Chị ơi, chọn file nội dung đi nè! 🐢");
+        return;
+    }
+
+    // Sau này ở đây chị sẽ đọc file và đẩy lên Firebase
+    console.log("Chuẩn bị đăng file cho ID:", storyId);
+    alert("Đang xử lý file cho truyện ID: " + storyId);
+    
+    // Đóng modal sau khi xong
+    closePostModal();
 };
