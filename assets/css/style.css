@@ -397,3 +397,19 @@ body {
     border: 1px solid #ff4d6d;
     flex: 1; /* Để 2 nút bằng nhau */
 }
+.swiper {
+    width: 100%;
+    padding: 20px 0;
+}
+.swiper-slide {
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    display: flex;
+    padding: 10px;
+    cursor: pointer;
+    transition: transform 0.3s;
+}
+.swiper-slide:hover {
+    transform: scale(1.05);
+}
