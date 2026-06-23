@@ -362,6 +362,7 @@ window.handleConfirmUpload = function() {
 
 // Thêm tham số 'chapterNumber' vào hàm
 // Thêm tham số 'isBulk' (mặc định là false)
+// --- HÀM CẬP NHẬT: THÊM PHẦN ĐỒNG BỘ VỚI TRANG CHỦ ---
 function saveChapterToFirebase(storyId, chapterNumber, title, content, isBulk = false) {
     const formattedNum = String(chapterNumber).padStart(3, '0');
     const chapterKey = `chuong_${formattedNum}`; 
@@ -374,7 +375,15 @@ function saveChapterToFirebase(storyId, chapterNumber, title, content, isBulk = 
         createdAt: Date.now(),
         updatedAt: Date.now()
     }).then(() => {
-        // Chỉ hiện thông báo và đóng modal nếu KHÔNG phải đăng hàng loạt
+        // --- ĐÂY LÀ PHẦN ĐỒNG BỘ QUAN TRỌNG ---
+        // Mỗi khi đăng chương, nó sẽ cập nhật tên chương vào nhánh 'stories'
+        // Trang chủ index.js của chị đang lắng nghe nhánh này, nên nó sẽ tự cập nhật ngay!
+        update(ref(db, `stories/${storyId}`), {
+            latestChapterTitle: title, // Lưu tên chương (Ví dụ: Chương 01: Tên chương)
+            updatedAt: Date.now()      // Cập nhật thời gian để truyện nhảy lên đầu trang chủ
+        });
+        // ------------------------------------
+
         if (!isBulk) {
             alert("Đã đăng xong: " + chapterKey);
             closePostModal();
