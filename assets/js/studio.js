@@ -379,9 +379,10 @@ function saveChapterToFirebase(storyId, chapterNumber, title, content, isBulk = 
         // Mỗi khi đăng chương, nó sẽ cập nhật tên chương vào nhánh 'stories'
         // Trang chủ index.js của chị đang lắng nghe nhánh này, nên nó sẽ tự cập nhật ngay!
         update(ref(db, `stories/${storyId}`), {
-            latestChapterTitle: title, // Lưu tên chương (Ví dụ: Chương 01: Tên chương)
-            updatedAt: Date.now()      // Cập nhật thời gian để truyện nhảy lên đầu trang chủ
-        });
+           latestChapterTitle: title,
+           latestChapterAt: Date.now(), // Thêm dòng này để lưu mốc thời gian
+           updatedAt: Date.now()
+});
         // ------------------------------------
 
         if (!isBulk) {
