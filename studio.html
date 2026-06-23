@@ -102,9 +102,12 @@
         </div>
 
         <div id="tab-single">
-            <input type="text" id="singleChapterName" class="form-control" placeholder="Tên chương: Chương 1: Tên chương">
-            <textarea id="singleContent" class="form-control" rows="10" placeholder="Dán nội dung chương vào đây..."></textarea>
-        </div>
+    <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 10px; margin-bottom: 15px;">
+        <input type="text" id="singleChapterNumber" class="form-control" placeholder="Số chương (VD: 1)">
+        <input type="text" id="singleChapterTitle" class="form-control" placeholder="Tên chương: Tận thế">
+    </div>
+    <textarea id="singleContent" class="form-control" rows="8" placeholder="Dán nội dung vào đây..."></textarea>
+</div>
 
         <div id="tab-bulk" style="display: none;">
             <input type="file" id="bulkFileInput" class="form-control" accept=".txt,.docx">
