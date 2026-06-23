@@ -240,10 +240,11 @@ window.handleUploadContent = function() {
 
     const reader = new FileReader();
 
-    // 1. Nếu là file .txt
+    / 1. Nếu là file .txt
     if (file.name.endsWith('.txt')) {
         reader.onload = function(e) {
-            saveToFirebase(storyId, e.target.result);
+            // SỬA DÒNG NÀY:
+            saveChapterToFirebase(storyId, e.target.result, ""); 
         };
         reader.readAsText(file, "UTF-8");
     } 
@@ -253,7 +254,8 @@ window.handleUploadContent = function() {
             const arrayBuffer = loadEvent.target.result;
             mammoth.extractRawText({arrayBuffer: arrayBuffer})
                 .then(result => {
-                    saveToFirebase(storyId, result.value);
+                    // SỬA DÒNG NÀY:
+                    saveChapterToFirebase(storyId, result.value, "");
                 })
                 .catch(err => alert("Lỗi đọc file Word: " + err));
         };
@@ -293,38 +295,37 @@ window.handleConfirmUpload = function() {
         const num = document.getElementById('singleChapterNumber').value;
         const name = document.getElementById('singleChapterTitle').value;
         const content = document.getElementById('singleContent').value;
-        
-        if (!num || !name || !content) return alert("Chị điền đủ các ô nhé!");
-        
         saveChapterToFirebase(storyId, `Chương ${num}: ${name}`, content);
     } else {
-        // Đăng hàng loạt đã tách sẵn trong window.bulkData
-        if (!window.bulkData) return alert("Chị chưa chọn file hoặc file trống!");
+        if (!window.bulkData || window.bulkData.length === 0) return alert("Chưa chọn file hoặc file trống!");
         
-        window.bulkData.forEach(chapter => {
-            const lines = chapter.split('\n');
-            saveChapterToFirebase(storyId, lines[0], lines.slice(1).join('\n'));
+        // Đẩy từng chương lên
+        window.bulkData.forEach(item => {
+            saveChapterToFirebase(storyId, item.title, item.body);
         });
-        alert("Đã đăng toàn bộ chương lên!");
+        alert("Đang đẩy hàng loạt chương lên... Chị chờ xíu nhé!");
         closePostModal();
     }
 };
 
 function saveChapterToFirebase(storyId, title, content) {
-    // Đẩy lên Firebase
-    push(ref(db, 'chapters/' + storyId), {
+    // 1. Tách số chương từ tiêu đề (VD: "Chương 18: Tên" -> "chuong_18")
+    // Dùng regex tìm số nằm sau chữ "Chương"
+    const match = title.match(/Chương\s+(\d+)/i);
+    const chapterId = match ? `chuong_${parseInt(match[1])}` : `chuong_${Date.now()}`;
+
+    // 2. Dùng 'set' thay vì 'push' để ghi đè hoặc tạo đúng ID 'chuong_x'
+    // Lưu ý: đường dẫn là 'chapters/' + storyId + '/' + chapterId
+    set(ref(db, `chapters/${storyId}/${chapterId}`), {
         title: title,
         content: content,
         createdAt: Date.now(),
-        updatedAt: Date.now() // Thêm thời gian cập nhật
+        updatedAt: Date.now()
     }).then(() => {
-        alert("Đăng chương thành công!");
-        closePostModal();
-        // Xóa trắng form sau khi đăng
-        document.getElementById('singleChapterName').value = "";
-        document.getElementById('singleContent').value = "";
+        console.log("Đã đăng: " + chapterId);
+        // Chị có thể bỏ alert ở đây nếu đăng hàng loạt cho đỡ phiền
     }).catch(error => {
-        alert("Có lỗi xảy ra: " + error.message);
+        alert("Lỗi: " + error.message);
     });
 }
 // --- 1. Hàm tách chương tự động (Dành cho Import hàng loạt) ---
@@ -337,30 +338,30 @@ window.processBulkFile = function() {
 
     const reader = new FileReader();
     reader.onload = function(loadEvent) {
-        const arrayBuffer = loadEvent.target.result;
-        
-        // Dùng Mammoth để đọc .docx sạch đẹp
-        mammoth.extractRawText({arrayBuffer: arrayBuffer})
+        mammoth.extractRawText({arrayBuffer: loadEvent.target.result})
             .then(result => {
                 const text = result.value;
-                // Regex: Tìm các dòng bắt đầu bằng "Chương" và số
-                // Dấu (?=...) là để giữ lại tiêu đề khi split
+                // Cắt theo cụm "Chương X"
                 const chapters = text.split(/(?=Chương\s+\d+[:\s])/i);
                 
                 previewContainer.innerHTML = "";
-                chapters.forEach((content, index) => {
+                window.bulkData = []; // Reset dữ liệu tạm
+
+                chapters.forEach((content) => {
                     if (content.trim().length > 0) {
+                        const lines = content.split('\n');
+                        const title = lines[0].trim();
+                        const body = lines.slice(1).join('\n').trim();
+                        
+                        window.bulkData.push({ title, body });
+                        
                         const div = document.createElement('div');
-                        div.style = "padding: 8px; border-bottom: 1px solid #eee; font-size: 13px;";
-                        // Lấy dòng đầu làm tên chương
-                        const title = content.split('\n')[0]; 
+                        div.style = "padding: 8px; border-bottom: 1px solid #eee;";
                         div.innerHTML = `✅ <b>${title}</b>`;
                         previewContainer.appendChild(div);
                     }
                 });
-                window.bulkData = chapters;
-            })
-            .catch(err => alert("Lỗi đọc file: " + err));
+            });
     };
     reader.readAsArrayBuffer(file);
 };
