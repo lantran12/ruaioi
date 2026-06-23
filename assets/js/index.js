@@ -208,40 +208,31 @@ function loadMainStories() {
 }
 
 /* ==========================================================================
-   7. TOP 5 ĐỘT PHÁ LƯỢT XEM (Đã sửa để lấy đúng nhánh 'views')
+/* ==========================================================================
+   7. TOP 5 ĐỘT PHÁ LƯỢT XEM (Đã tích hợp Swiper)
    ========================================================================== */
+// Khai báo biến global để quản lý Swiper
+let topStoriesSwiper = null; 
+
 function loadTopViews() {
     const nominationContainer = document.getElementById('nominationListContainer');
     if (!nominationContainer) return;
 
-    // Lắng nghe cả 2 nhánh dữ liệu cùng lúc
     db.ref('stories').on('value', (storiesSnapshot) => {
         db.ref('views').on('value', (viewsSnapshot) => {
-            
             const allStories = storiesSnapshot.val();
-            const viewsData = viewsSnapshot.val() || {}; // Phòng trường hợp chưa có dữ liệu views
-            
+            const viewsData = viewsSnapshot.val() || {};
             if (!allStories) return;
 
-            // Kết hợp dữ liệu
-            const storiesWithViews = Object.keys(allStories).map(id => {
-                return {
-                    id: id,
-                    ...allStories[id],
-                    views: viewsData[id] || 0
-                };
-            });
+            const topStories = Object.keys(allStories).map(id => ({
+                id, ...allStories[id], views: viewsData[id] || 0
+            })).sort((a, b) => b.views - a.views).slice(0, 5);
 
-            // Sắp xếp và lấy top 5
-            const topStories = storiesWithViews
-                .sort((a, b) => b.views - a.views)
-                .slice(0, 5);
-
-            // Render lại danh sách
             nominationContainer.innerHTML = '';
             topStories.forEach((story, index) => {
                 const card = document.createElement('div');
-                card.className = 'story-card';
+                // SỬA Ở ĐÂY: Thêm class swiper-slide
+                card.className = 'story-card swiper-slide'; 
                 card.onclick = () => window.location.href = `book.html?id=${story.id}`;
                 
                 const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
@@ -250,13 +241,28 @@ function loadTopViews() {
                     <img src="${currentImg}" alt="${story.title}">
                     <div style="flex: 1; min-width: 0;">
                         <h4 style="margin-top:0; font-size:0.95rem; font-weight:700;">TOP ${index + 1} . ${story.title}</h4>
-                        <p style="margin-bottom:0; font-size:0.8rem; color: var(--netflix-red); font-weight:600;">
+                        <p style="margin-bottom:0; font-size:0.8rem; color: #ff4d6d; font-weight:600;">
                             <i class="fa-regular fa-eye"></i> ${story.views} lượt xem
                         </p>
                     </div>
                 `;
                 nominationContainer.appendChild(card);
             });
+
+            // SỬA Ở ĐÂY: Khởi tạo/Cập nhật Swiper sau khi render xong
+            if (topStoriesSwiper) {
+                topStoriesSwiper.update();
+            } else {
+                topStoriesSwiper = new Swiper(".mySwiper", {
+                    slidesPerView: 1, // Mặc định 1 card trên mobile
+                    spaceBetween: 15,
+                    loop: true,
+                    autoplay: { delay: 2500, disableOnInteraction: false },
+                    breakpoints: {
+                        768: { slidesPerView: 3, spaceBetween: 20 } // Trên máy tính hiện 3 card
+                    }
+                });
+            }
         });
     });
 }
