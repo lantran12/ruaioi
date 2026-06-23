@@ -456,26 +456,6 @@ function renderUserProfileData(user) {
     });
 }
 
-    // ===== TỦ SÁCH =====
-    const container = document.getElementById('userBookshelfContainer');
-    if (!container) return;
-
-    if (tuSachListenerRef) {
-        tuSachListenerRef.off();
-    }
-
-    tuSachListenerRef = db.ref('users/' + user.uid + '/tuSach');
-
-    tuSachListenerRef.on('value', (snapshot) => {
-        const data = snapshot.val();
-        if (!data) { 
-            container.innerHTML = `<div class="bookshelf-empty">Tủ sách trống trơn! Chị hãy thêm vào ngay đi ạ! 🐾</div>`; 
-            return; 
-        }
-        buildBookshelfHTML(data, container);
-    });
-}
-
 function updateUserProfileData() {
     const user = auth.currentUser;
     const newName = document.getElementById('editDisplayNameInput').value.trim();
