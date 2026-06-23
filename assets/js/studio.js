@@ -64,6 +64,7 @@ async function handleCreateStory() {
     alert(`🎉 Đăng truyện thành công với ID là: ${customId}`);
     }
 
+    window.location.href = `book.html?id=${customId}`;
     // Tải lại danh sách để cập nhật giao diện
     loadAdminStoryList();
 
