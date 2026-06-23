@@ -406,19 +406,29 @@ function renderUserProfileData(user) {
     renderAvatarSelectionGrid(); 
     
     const currentAvatarImg = document.getElementById('userCurrentAvatar');
+    const profileNameEl = document.getElementById('userProfileName');
+    const profileEmailEl = document.getElementById('userProfileEmail');
 
-    // Lấy avatar từ DB trước, fallback sang Google
+    // Lấy thông tin từ Database
     db.ref('users/' + user.uid + '/profile').once('value').then(snapshot => {
         const data = snapshot.val();
 
-        let avatar = 'https://via.placeholder.com/100';
+        // 1. XỬ LÝ TÊN HIỂN THỊ (BIỆT DANH)
+        // Ưu tiên lấy từ Database, nếu không có thì lấy từ Auth, cuối cùng là "Thành Viên"
+        const displayName = data?.displayName || user.displayName || "Thành Viên";
+        if (profileNameEl) profileNameEl.textContent = displayName;
+        
+        // Hiển thị Email
+        if (profileEmailEl) profileEmailEl.textContent = user.email;
 
+        // 2. XỬ LÝ AVATAR
+        let avatar = 'https://via.placeholder.com/100';
         if (data?.avatarType === "custom") {
             avatar = data.avatar;
         } else if (data?.avatarType === "google") {
             avatar = user.photoURL;
         } else {
-            avatar = user.photoURL || data?.avatar;
+            avatar = user.photoURL || data?.avatar || 'https://api.dicebear.com/7.x/adventurer/svg?seed=Felix';
         }
 
         if (currentAvatarImg) {
@@ -426,6 +436,25 @@ function renderUserProfileData(user) {
             currentAvatarImg.style.cssText = "width: 100px; height: 100px; border-radius: 50%; object-fit: cover; display: block; margin: 0 auto 15px auto; border: 3px solid #ff4d6d;";
         }
     });
+
+    // ===== TỦ SÁCH (Phần cũ của chị giữ nguyên) =====
+    const container = document.getElementById('userBookshelfContainer');
+    if (!container) return;
+
+    if (tuSachListenerRef) {
+        tuSachListenerRef.off();
+    }
+
+    tuSachListenerRef = db.ref('users/' + user.uid + '/tuSach');
+    tuSachListenerRef.on('value', (snapshot) => {
+        const data = snapshot.val();
+        if (!data) { 
+            container.innerHTML = `<div class="bookshelf-empty" style="text-align: center; color: #aaa; padding: 20px;">Tủ sách trống trơn! Chị hãy thêm vào ngay đi ạ! 🐾</div>`; 
+            return; 
+        }
+        buildBookshelfHTML(data, container);
+    });
+}
 
     // ===== TỦ SÁCH =====
     const container = document.getElementById('userBookshelfContainer');
@@ -487,7 +516,13 @@ function updateUserProfileData() {
 function buildBookshelfHTML(data, container) {
     container.innerHTML = Object.keys(data).map(key => {
         const b = data[key];
-        return `<div class="bookshelf-item" style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee;">
+        
+        // Thêm onclick vào div cha và cursor: pointer để báo cho người dùng biết là bấm được
+        return `
+        <div class="bookshelf-item" 
+             onclick="window.location.href='book.html?id=${key}'" 
+             style="display: flex; align-items: center; justify-content: space-between; padding: 10px; border-bottom: 1px solid #eee; cursor: pointer; transition: background 0.2s;">
+            
             <div class="bookshelf-left" style="display: flex; align-items: center; gap: 10px;">
                 <img src="${b.image}" class="bookshelf-thumb" style="width: 45px; height: 60px; object-fit: cover; border-radius: 4px;" alt="Cover">
                 <div>
@@ -495,7 +530,12 @@ function buildBookshelfHTML(data, container) {
                     <p style="margin: 3px 0 0 0; font-size: 12px; color: #777;">Đọc đến: ${b.chuongGanNhat}</p>
                 </div>
             </div>
-            <button class="btn-remove-book" onclick="removeFromBookshelf('${key}')" style="background: none; border: none; cursor: pointer; font-size: 14px;">❌</button>
+            
+            <button class="btn-remove-book" 
+                    onclick="event.stopPropagation(); removeFromBookshelf('${key}')" 
+                    style="background: none; border: none; cursor: pointer; font-size: 14px; padding: 5px;">
+                ❌
+            </button>
         </div>`;
     }).join('');
 }
@@ -559,25 +599,37 @@ function submitAuthForm() {
     const email = document.getElementById('authEmail').value.trim();
     const password = document.getElementById('authPassword').value.trim();
     const displayName = document.getElementById('authDisplayName').value.trim();
+    
     if (!email || !password) { alert("Chị vui lòng điền đủ thông tin nha!"); return; }
 
     if (isSignUpMode) {
         auth.createUserWithEmailAndPassword(email, password).then((userCredential) => {
-            if (displayName) {
-                userCredential.user.updateProfile({ displayName: displayName }).then(() => {
-                    // Cập nhật xong tên thì mới reload để UI refresh
-                    window.location.reload();
-                });
-            } else {
-                window.location.reload();
-            }
-            alert("🎉 Đăng ký thành công!"); closeAuthModal();
+            const user = userCredential.user;
+            
+            // 1. Cập nhật tên lên Firebase Auth (để dùng chung cho các dịch vụ Google)
+            user.updateProfile({ displayName: displayName || "Thành Viên" });
+
+            // 2. LƯU VÀO DATABASE (Đây là bước quan trọng để load lên Profile)
+            db.ref('users/' + user.uid + '/profile').set({
+                displayName: displayName || "Thành Viên",
+                email: email,
+                avatarType: 'default',
+                avatar: 'https://api.dicebear.com/7.x/adventurer/svg?seed=Felix',
+                createdAt: Date.now()
+            }).then(() => {
+                alert("🎉 Đăng ký thành công!");
+                closeAuthModal();
+                window.location.reload(); // Reload để cập nhật toàn bộ UI
+            });
+
         }).catch(err => alert(err.message));
+
     } else {
+        // Đăng nhập bình thường
         auth.signInWithEmailAndPassword(email, password).then(() => {
             alert("🎉 Chào mừng chị trở lại!"); 
             closeAuthModal();
-            window.location.reload(); // Reload để header cập nhật tên ngay
+            window.location.reload(); 
         }).catch(err => alert(err.message));
     }
 }
