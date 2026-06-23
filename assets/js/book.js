@@ -1,92 +1,57 @@
-import { db, ref, get } from "./firebase.js";
+import { db } from "./firebase.js"; // Chị nhớ import db từ file của chị
+import { ref, get, query, orderByChild } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
-const urlParams = new URLSearchParams(window.location.search);
-const storyId = urlParams.get('id');
-let allChapters = []; 
-const chaptersPerPage = 20; // 20 chương/trang
+const params = new URLSearchParams(window.location.search);
+const storyId = params.get('id');
 
-async function loadBook() {
+async function loadBookData() {
     if (!storyId) return;
 
-    // 1. Lấy thông tin truyện từ Firebase
-    const snap = await get(ref(db, 'stories/' + storyId));
-    if (snap.exists()) {
-        const s = snap.val();
+    // 1. Lấy thông tin truyện từ nhánh 'stories'
+    const storyRef = ref(db, `stories/${storyId}`);
+    const storySnap = await get(storyRef);
+
+    if (storySnap.exists()) {
+        const s = storySnap.val();
         document.getElementById('storyTitle').innerText = s.title;
-        document.getElementById('storyAuthor').innerText = s.author || "Đang cập nhật";
+        document.getElementById('storyAuthor').innerText = s.author || "Chưa có";
         document.getElementById('storyEditor').innerText = s.editor || "Chưa có";
-        document.getElementById('storyCover').src = s.cover || 'https://via.placeholder.com/250x350';
         document.getElementById('storyDesc').innerText = s.description || "Chưa có mô tả.";
-        
-        // Render Tags
-        const tagsDiv = document.getElementById('genreTags');
-        tagsDiv.innerHTML = "";
-        if (s.genres && Array.isArray(s.genres)) {
-            s.genres.forEach(g => {
-                tagsDiv.innerHTML += `<span style="background: #333; padding: 5px 10px; border-radius: 5px; font-size: 12px;">${g}</span>`;
-            });
+        document.getElementById('storyCover').src = s.cover || "placeholder.jpg";
+
+        // Hiển thị thể loại
+        const genreDiv = document.getElementById('storyGenres');
+        if (s.genres) {
+            genreDiv.innerHTML = s.genres.map(g => `<span class="tag">${g}</span>`).join(' ');
         }
     }
 
-    // 2. Lấy danh sách chương và sắp xếp
-    const chaptersSnap = await get(ref(db, 'chapters/' + storyId));
-    if (chaptersSnap.exists()) {
-        // Chuyển dữ liệu thành mảng để xử lý
-        allChapters = Object.entries(chaptersSnap.val()).map(([key, val]) => ({ key, ...val }));
-        
-        // Sắp xếp: chương mới nhất (createdAt cao nhất) lên đầu
-        allChapters.sort((a, b) => b.createdAt - a.createdAt);
-        
-        renderPage(1);
-    } else {
-        document.getElementById('chapterList').innerHTML = "<p>Truyện này chưa có chương nào.</p>";
-    }
-}
-
-// 3. Hàm render danh sách chương theo trang
-function renderPage(page) {
+    // 2. Lấy danh sách chương từ nhánh 'chapters/{storyId}'
+    // Em dùng orderByChild('createdAt') để nó tự sắp xếp theo thứ tự đăng
+    const chaptersRef = ref(db, `chapters/${storyId}`);
+    const chaptersSnap = await get(chaptersRef);
     const listDiv = document.getElementById('chapterList');
     listDiv.innerHTML = "";
-    
-    const start = (page - 1) * chaptersPerPage;
-    const end = start + chaptersPerPage;
-    const pageData = allChapters.slice(start, end);
 
-    pageData.forEach(ch => {
-        listDiv.innerHTML += `
-            <a href="read.html?storyId=${storyId}&chapterId=${ch.key}" class="chapter-item">
-                <span>${ch.title}</span>
-                <i class="fa-solid fa-chevron-right"></i>
-            </a>
-        `;
-    });
-    
-    renderPagination();
-}
+    if (chaptersSnap.exists()) {
+        const chapters = [];
+        chaptersSnap.forEach(child => {
+            chapters.push({ id: child.key, ...child.val() });
+        });
 
-// 4. Hàm hiển thị nút phân trang
-function renderPagination() {
-    const totalPages = Math.ceil(allChapters.length / chaptersPerPage);
-    const pagDiv = document.getElementById('pagination');
-    pagDiv.innerHTML = "";
-    
-    for(let i = 1; i <= totalPages; i++) {
-        const btn = document.createElement('button');
-        btn.innerText = i;
-        btn.style = "margin: 0 5px; padding: 5px 10px; cursor: pointer;";
-        btn.onclick = () => renderPage(i);
-        pagDiv.appendChild(btn);
-    }
-}
+        // Sắp xếp lại cho chắc chắn (theo ID hoặc theo thời gian)
+        chapters.sort((a, b) => a.createdAt - b.createdAt);
 
-// 5. Nút đọc chương mới nhất
-window.goToLatest = () => {
-    if(allChapters.length > 0) {
-        // Lấy chương đầu tiên trong danh sách đã sort (mới nhất)
-        window.location.href = `read.html?storyId=${storyId}&chapterId=${allChapters[0].key}`;
+        chapters.forEach(ch => {
+            listDiv.innerHTML += `
+                <a href="read.html?truyen=${storyId}&id=${ch.id}" class="chapter-link">
+                    ${ch.title}
+                </a>
+            `;
+        });
     } else {
-        alert("Truyện chưa có chương nào!");
+        listDiv.innerHTML = "<p>Chưa có chương nào được đăng.</p>";
     }
-};
+}
 
-loadBook();
+loadBookData();
