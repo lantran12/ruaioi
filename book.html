@@ -13,6 +13,12 @@
         .chapter-list { background: white; padding: 20px; border-radius: 15px; border: 1px solid #eee; }
         .chapter-item { padding: 15px; border-bottom: 1px solid #f0f0f0; display: block; text-decoration: none; color: #333; transition: 0.3s; }
         .chapter-item:hover { background: #fff5f7; color: #ff4d6d; }
+        .book-container { max-width: 900px; margin: 40px auto; padding: 20px; }
+.book-header-card { display: flex; gap: 30px; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+#storyCover { width: 200px; height: 280px; object-fit: cover; border-radius: 8px; }
+.chapter-list-section { background: #fff; padding: 25px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
+.chapter-item { display: flex; justify-content: space-between; padding: 15px 0; border-bottom: 1px solid #f0f0f0; color: #333; text-decoration: none; }
+.chapter-item:hover { color: #ff4d6d; }
     </style>
 </head>
 <body>
@@ -30,21 +36,22 @@
     </header>
 
 <div class="book-container">
-        <div class="book-header">
-            <img id="storyCover" src="" alt="Bìa">
-            <div class="info">
-                <h1 id="storyTitle">Đang tải...</h1>
-                <p><strong>✒️ Tác giả:</strong> <span id="storyAuthor"></span></p>
-                <p><strong>🚀 Editor:</strong> <span id="storyEditor"></span></p>
-                <div id="storyGenres"></div>
-                <p id="storyDesc"></p>
-            </div>
-        </div>
-        <div class="table-of-contents">
-            <h3>🗂️ MỤC LỤC</h3>
-            <div id="chapterList"></div>
+    <!-- Khung thông tin truyện -->
+    <div class="book-header-card">
+        <img id="storyCover" src="placeholder.jpg" alt="Bìa">
+        <div class="story-info">
+            <h1 id="storyTitle">Tên truyện</h1>
+            <p><strong>Tác giả:</strong> <span id="storyAuthor"></span></p>
+            <p><strong>Editor:</strong> <span id="storyEditor"></span></p>
         </div>
     </div>
+
+    <!-- Khung danh sách chương -->
+    <div class="chapter-list-section">
+        <h3>DANH SÁCH CHƯƠNG</h3>
+        <div id="chapterList"></div>
+    </div>
+</div>
 
     <script type="module">
         import { db } from "./firebase.js";
