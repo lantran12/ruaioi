@@ -195,11 +195,12 @@ function toggleAdminPanel() {
     window.onscroll = function() {
         var btn = document.getElementById("scrollToTopBtn");
         if (document.body.scrollTop > 300 || document.documentElement.scrollTop > 300) {
-            btn.style.display = "flex";
+            btn.classList.add("show");
         } else {
-            btn.style.display = "none";
+            btn.classList.remove("show");
         }
     };
+
     document.getElementById("scrollToTopBtn").onclick = function() {
         window.scrollTo({top: 0, behavior: 'smooth'});
     };
