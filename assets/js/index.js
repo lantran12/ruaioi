@@ -292,30 +292,38 @@ function createNetflixCard(id, story) {
     
     const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
     
-    // --- XỬ LÝ THỜI GIAN ---
-let timeDisplay = "";
-if (story.updatedAt) {
-    const date = new Date(story.updatedAt);
-    const day = String(date.getDate()).padStart(2, '0');
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const year = date.getFullYear().toString().slice(-2);
-    timeDisplay = `(${day}/${month}/${year})`; // Đưa ngoặc vào đây
-}
-// Nếu không có thời gian thì timeDisplay vẫn là chuỗi rỗng ""
+    // --- XỬ LÝ 2 CHƯƠNG MỚI & ĐỊNH DẠNG ---
+    // Giả sử dữ liệu chương mới nhất chị lưu trong story.latestChapterTitle
+    // Nếu chưa có, chị cần đảm bảo lúc lưu truyện chị có đẩy trường này lên Firebase
+    let chapterInfo = `<div style="margin-top: 5px; font-size: 11px; color: #aaa;">Chưa có chương mới</div>`;
+    
+    if (story.latestChapterTitle) {
+        // 1. Cắt ngắn tiêu đề (giới hạn khoảng 20-25 ký tự để không tràn)
+        let title = story.latestChapterTitle;
+        if (title.length > 22) title = title.substring(0, 20) + "...";
 
-const latestChapter = story.latestChapterTitle 
-    ? `<div style="margin-top: 5px; font-size: 11px; color: #ff4d6d; font-weight: 600;">
-         <i class="fa-solid fa-feather-pointed"></i> ${story.latestChapterTitle}
-         <span style="color: #aaa; font-weight: normal; margin-left: 5px;">${timeDisplay}</span>
-       </div>` 
-    : `<div style="margin-top: 5px; font-size: 11px; color: #aaa;">Chưa có chương mới</div>`;
-// ----------------------
+        // 2. Định dạng ngày tháng
+        let dateStr = "";
+        if (story.updatedAt) {
+            const d = new Date(story.updatedAt);
+            dateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+        }
+
+        // 3. HTML flex để đẩy ngày sang phải
+        chapterInfo = `
+           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 11px; font-weight: 600;">
+               <span style="color: #ff4d6d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;">
+                   <i class="fa-solid fa-feather-pointed"></i> ${title}
+               </span>
+               <span style="color: #999; flex-shrink: 0; margin-left: 5px;">${dateStr}</span>
+           </div>`;
+    }
 
     div.innerHTML = `
         <img src="${currentImg}" alt="${story.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
         <h4 style="margin: 10px 0 5px 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${story.title}</h4>
         <p style="margin: 0; font-size: 12px; color: #888;">${story.author || 'Động Chăn Rùa'}</p>
-        ${latestChapter}
+        ${chapterInfo}
     `;
     return div;
 }
