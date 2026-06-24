@@ -447,34 +447,36 @@ window.openManageChapterModal = function(storyId, storyTitle) {
         }
 
         snapshot.forEach((child) => {
-            const chapter = child.val();
-            const chapterId = child.key;
+            const chapter = child.val(); // Lấy dữ liệu chương
+            const chapterId = child.key; // Lấy ID chương
             
+            // 1. Tạo một thẻ div mới (đây là biến item đúng)
             const div = document.createElement('div');
             div.style = "display: flex; align-items: center; justify-content: space-between; padding: 12px; border-bottom: 1px solid #eee; gap: 15px;";
-            item.innerHTML = `
-            <div style="flex: 1; min-width: 0;">
-                <h4 style="margin: 0; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${story.title}</h4>
-                <small style="color: #777;">ID: ${id}</small>
-            </div>
-            <div style="display: flex; gap: 8px; flex-shrink: 0;">
-                <button onclick="editStory('${id}')" 
-                        style="background: #fff3bf; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap;">
-                    Sửa
-                </button>
-                <button onclick="deleteStory('${id}')" 
-                        style="background: #ffdede; color: #d90429; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap;">
-                    Xóa
-                </button>
-                <button onclick="openPostModal('${id}', '${story.title}')" 
-                        style="background: #e0f2f1; color: #00796b; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer; white-space: nowrap;">
-                    Đăng chương
-                </button>
-            </div>
-        `;
-        listContainer.appendChild(item);
-    }); 
-}
+            
+            // 2. Điền thông tin chương vào đây
+            div.innerHTML = `
+                <div style="flex: 1; min-width: 0;">
+                    <h4 style="margin: 0; font-size: 16px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">
+                        ${chapter.title || "Chương không tên"}
+                    </h4>
+                </div>
+                <div style="display: flex; gap: 8px; flex-shrink: 0;">
+                    <button onclick="editChapter('${storyId}', '${chapterId}')" 
+                            style="background: #fff3bf; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
+                        Sửa
+                    </button>
+                    <button onclick="deleteChapter('${storyId}', '${chapterId}')" 
+                            style="background: #ffdede; color: #d90429; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
+                        Xóa
+                    </button>
+                </div>
+            `;
+            // 3. Thêm div này vào danh sách
+            listContainer.appendChild(div);
+        });
+    });
+};
 
 // 2. Hàm xóa chương
 window.deleteChapter = function(storyId, chapterId) {
