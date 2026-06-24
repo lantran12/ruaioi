@@ -500,3 +500,10 @@ body {
 .marquee-inner:hover {
     animation-play-state: paused;
 }
+.story-title-limit {
+    white-space: nowrap;      /* Không cho xuống dòng */
+    overflow: hidden;         /* Ẩn phần chữ tràn ra ngoài */
+    text-overflow: ellipsis;  /* Hiển thị dấu ba chấm ... */
+    max-width: 150px;         /* Chị chỉnh số này tùy ý (độ rộng tối đa của tiêu đề) */
+    display: block;
+}
