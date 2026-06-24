@@ -480,24 +480,27 @@ window.editChapter = function(storyId, chapterId) {
         if (snapshot.exists()) {
             const data = snapshot.val();
             
-            // 1. Chuyển sang tab đơn lẻ
+            // 1. ĐÓNG NGAY MODAL QUẢN LÝ CHƯƠNG ĐỂ GỠ BỎ LỚP PHỦ XÁM
+            document.getElementById('manageChapterModal').style.display = 'none';
+            
+            // 2. Chuyển sang tab đơn lẻ
             window.switchModalTab('single');
             
-            // 2. Mở Modal
+            // 3. Mở Modal Đăng bài
             openPostModal(storyId, "Đang sửa: " + (data.title || "Chương mới"));
             
+            // 4. Đợi 150ms để Modal kịp hiện ra rồi mới điền dữ liệu
             setTimeout(() => {
-                // Bóc tách dữ liệu
                 let chapterNum = "";
                 let chapterTitle = data.title || "";
 
-                // Tách số chương: tìm số ngay sau chữ "Chương"
+                // Tách số chương
                 const numMatch = chapterTitle.match(/Chương\s*(\d+)/i);
                 if (numMatch) {
                     chapterNum = numMatch[1];
                 }
 
-                // Tách tên chương: lấy phần sau dấu ":" đầu tiên
+                // Tách tên chương: lấy phần sau dấu ":"
                 const colonIndex = chapterTitle.indexOf(":");
                 if (colonIndex !== -1) {
                     chapterTitle = chapterTitle.substring(colonIndex + 1).trim();
@@ -508,9 +511,9 @@ window.editChapter = function(storyId, chapterId) {
                 document.getElementById('singleChapterTitle').value = chapterTitle;
                 document.getElementById('singleContent').value = data.content || "";
                 
-                // 3. Đánh dấu để biết là đang sửa chương cũ
+                // 5. Đánh dấu để biết là đang sửa chương cũ
                 document.getElementById('modalStoryId').dataset.editingChapter = chapterId;
-            }, 100);
+            }, 150);
         } else {
             alert("Lỗi: Không tìm thấy dữ liệu chương!");
         }
