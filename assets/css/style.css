@@ -474,3 +474,4 @@ body {
     font-size: 12px;
     flex-shrink: 0; /* Không cho ngày bị co lại */
 }
+.marquee-content:hover { animation-play-state: paused; }
