@@ -24,6 +24,11 @@
     .btn-action { padding: 12px; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; flex: 1; transition: 0.3s; }
     .btn-primary { background: #ff4d6d; color: white; }
     .btn-reset { background: #f3f4f6; color: #374151; }
+    .profile-card { background: #fff; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+    #storyCover { width: 180px; height: 240px; object-fit: cover; border-radius: 20px; margin-bottom: 15px; }
+    .tag { background: #ffe5ec; color: #ff4d6d; padding: 5px 12px; border-radius: 15px; font-size: 12px; margin-right: 5px; display: inline-block; }
+    .desc-box { background: #f9f9f9; padding: 20px; border-radius: 15px; white-space: pre-wrap; line-height: 1.6; color: #555; }
+    .btn-nav { padding: 5px 15px; border-radius: 10px; border: none; background: #ffe5ec; color: #ff4d6d; cursor: pointer; }
 
     /* Thêm media query để trên điện thoại giao diện tự co giãn cho đẹp */
     @media (max-width: 600px) {
@@ -46,20 +51,23 @@
     </header>
     
     <div class="book-container">
-        <div class="profile-card">
-            <img id="storyCover" src="https://via.placeholder.com/150" alt="Bìa">
-            <h1 id="storyTitle" class="story-title">Đang tải thông tin...</h1>
-            <p>✒️ <span id="storyAuthor">...</span> | 🚀 Editor: <span id="storyEditor">...</span></p>
-            <div id="tagList"></div>
-            <div id="storyDesc" class="desc-box">Đang tải mô tả...</div>
-        </div>
-
-        <div class="chapter-section" style="background:#fff; padding:20px; border-radius:20px; margin-top:20px;">
-            <h3>DANH SÁCH CHƯƠNG</h3>
-            <div id="chapterList">Đang tải chương...</div>
-            <div id="pagination" style="margin-top:20px; text-align:center;"></div>
-        </div>
+    <div class="profile-card">
+        <img id="storyCover" src="" alt="Bìa">
+        <h1 id="storyTitle" style="font-size: 24px;">Đang tải...</h1>
+        <p>✒️ <span id="storyAuthor"></span> | 🚀 Editor: <span id="storyEditor"></span></p>
+        <div id="tagList" style="margin-bottom: 15px;"></div>
+        <div id="storyDesc" class="desc-box"></div>
     </div>
+
+    <div class="chapter-section" style="background:#fff; padding:20px; border-radius:20px; margin-top:20px;">
+        <div style="display:flex; justify-content:space-between; align-items:center;">
+            <h3>DANH SÁCH CHƯƠNG</h3>
+            <button id="btnNew" class="btn-nav" onclick="toggleSort()">New ↑</button>
+        </div>
+        <div id="chapterList">Đang tải...</div>
+        <div id="pagination" style="margin-top:20px; text-align:center;"></div>
+    </div>
+</div>
 
     <!-- Nạp thư viện Firebase v8 -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
