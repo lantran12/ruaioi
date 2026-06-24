@@ -475,28 +475,34 @@ window.deleteChapter = function(storyId, chapterId) {
 };
 window.editChapter = function(storyId, chapterId) {
     const chapterRef = ref(db, `chapters/${storyId}/${chapterId}`);
+    
     get(chapterRef).then((snapshot) => {
         if (snapshot.exists()) {
             const data = snapshot.val();
             
-            // 1. Mở Modal
-            openPostModal(storyId, "Đang sửa: " + data.title);
+            // 1. Chuyển sang tab đơn lẻ để chắc chắn ô nhập liệu đang hiện ra
+            window.switchModalTab('single');
             
-            // 2. Bóc tách dữ liệu:
-            // Lấy số chương: Tìm các chữ số nằm sau chữ "Chương" (không phân biệt hoa thường)
-            const numMatch = data.title.match(/Chương\s*(\d+)/i);
-            const chapterNum = numMatch ? numMatch[1] : ""; 
+            // 2. Mở Modal
+            openPostModal(storyId, "Đang sửa: " + (data.title || ""));
             
-            // Lấy tên chương: Xóa bỏ đoạn "Chương X: " ở đầu đi
-            const chapterTitle = data.title.replace(/Chương\s*\d+[:\s]*/i, "");
+            // 3. THÊM DÒNG NÀY: Đợi 100ms để Modal hiển thị xong rồi mới điền dữ liệu
+            setTimeout(() => {
+                // Bóc tách dữ liệu
+                const numMatch = data.title ? data.title.match(/Chương\s*(\d+)/i) : null;
+                const chapterNum = numMatch ? numMatch[1] : ""; 
+                
+                // Cách cắt tên an toàn hơn
+                const chapterTitle = data.title ? data.title.replace(/Chương\s*\d+[:\s]*/i, "").trim() : "";
 
-            // 3. Đổ dữ liệu vào các ô Input
-            document.getElementById('singleChapterNumber').value = chapterNum; // Cái này hồi nãy thiếu nè chị
-            document.getElementById('singleChapterTitle').value = chapterTitle;
-            document.getElementById('singleContent').value = data.content;
-            
-            // 4. Đánh dấu chế độ Sửa
-            document.getElementById('modalStoryId').dataset.editingChapter = chapterId;
+                // Đổ dữ liệu
+                document.getElementById('singleChapterNumber').value = chapterNum;
+                document.getElementById('singleChapterTitle').value = chapterTitle;
+                document.getElementById('singleContent').value = data.content || "";
+                
+                // 4. Đánh dấu chế độ Sửa
+                document.getElementById('modalStoryId').dataset.editingChapter = chapterId;
+            }, 100); 
         }
     });
 };
