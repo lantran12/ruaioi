@@ -415,3 +415,9 @@ body {
 }
 .btn-netflix { background: #ff4d6d; color: white; padding: 10px 20px; border: none; border-radius: 5px; font-weight: bold; cursor: pointer; }
 .btn-netflix:hover { background: #e63946; }
+/* Thêm vào thẻ <style> của Chị */
+.genre-item input {
+    margin-right: 10px;
+    accent-color: #ff4d6d; /* Màu hồng chủ đạo của RùaNovel */
+    transform: scale(1.2);
+}
