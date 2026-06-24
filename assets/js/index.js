@@ -277,7 +277,7 @@ function listenToNotifications() {
 }
 
 /* ==========================================================================
-   9. HÀM BỔ TRỢ: TẠO CARD TRUYỆN PHONG CÁCH NETFLIX (Kiểm tra trường 'img')
+   9. HÀM BỔ TRỢ: TẠO CARD TRUYỆN PHONG CÁCH NETFLIX (Đã sửa lỗi)
    ========================================================================== */
 function createNetflixCard(id, story) {
     const div = document.createElement('div');
@@ -286,22 +286,23 @@ function createNetflixCard(id, story) {
     
     const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
     
-    // 1. Tạo khung trước
+    // Tạo khung trước
     div.innerHTML = `
         <img src="${currentImg}" alt="${story.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
         <h4 style="margin: 10px 0 5px 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${story.title}</h4>
         <p style="margin: 0; font-size: 12px; color: #888;">${story.author || 'Động Chăn Rùa'}</p>
-        <div id="chapters-${id}" style="margin-top: 6px; min-height: 30px;">
-            <div style="font-size: 11px; color: #aaa;">Đang tải...</div>
+        <div id="chapter-container-${id}" style="margin-top: 6px;">
+            <div style="font-size: 11px; color: #aaa;">Đang tải chương...</div>
         </div>
     `;
 
-    // 2. Tải chương sau (dùng cách truyền thống không async để tránh lỗi)
-    const chaptersRef = ref(db, `chapters/${id}`);
-    get(chaptersRef).then((snapshot) => {
-        const container = div.querySelector(`#chapters-${id}`);
+    // Dùng cách cũ: db.ref().once() thay vì get() để tránh lỗi không tìm thấy hàm
+    db.ref(`chapters/${id}`).once('value').then((snapshot) => {
+        const container = div.querySelector(`#chapter-container-${id}`);
+        if (!container) return; // Nếu div bị mất thì dừng
+
         if (!snapshot.exists()) {
-            container.innerHTML = `<div style="font-size: 11px; color: #aaa;">Chưa có chương</div>`;
+            container.innerHTML = `<div style="font-size: 11px; color: #aaa;">Chưa có chương mới</div>`;
             return;
         }
 
@@ -312,8 +313,9 @@ function createNetflixCard(id, story) {
 
         // Sắp xếp lấy 2 chương mới nhất
         chapters.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
-        
-        container.innerHTML = chapters.slice(0, 2).map(ch => {
+        const latestTwo = chapters.slice(0, 2);
+
+        container.innerHTML = latestTwo.map(ch => {
             let title = ch.title.length > 20 ? ch.title.substring(0, 18) + "..." : ch.title;
             const d = new Date(ch.updatedAt || ch.createdAt);
             const dateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear().toString().slice(-2)}`;
@@ -326,13 +328,12 @@ function createNetflixCard(id, story) {
                    <span style="color: #999; flex-shrink: 0; margin-left: 5px;">${dateStr}</span>
                </div>`;
         }).join('');
-    }).catch((error) => {
-        console.error("Lỗi tải chương:", error);
+    }).catch(err => {
+        console.error("Lỗi tải chương:", err);
     });
 
     return div;
 }
-
 // Hàm Tìm kiếm thủ công khi bấm kính lúp
 function triggerSearch() {
     const searchInput = document.getElementById('searchInput');
