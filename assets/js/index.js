@@ -306,7 +306,10 @@ function createNetflixCard(id, story) {
         let dateStr = "";
         if (story.updatedAt) {
             const d = new Date(story.updatedAt);
-            dateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}`;
+            const day = String(d.getDate()).padStart(2, '0');
+            const month = String(d.getMonth() + 1).padStart(2, '0');
+            const year = d.getFullYear().toString().slice(-2); // Lấy 2 số cuối của năm (ví dụ: 26)
+            dateStr = `${day}/${month}/${year}`;
         }
 
         // 3. HTML flex để đẩy ngày sang phải
