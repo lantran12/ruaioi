@@ -3,50 +3,53 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Rùa Novel | Mục lục</title>
+    <title>Rùa Novel | Profile Truyện</title>
     <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Quicksand', sans-serif; background: #fafafa; margin: 0; padding-top: 80px; }
         .netflix-header { position: fixed; top: 0; width: 100%; height: 70px; background: #fff; display: flex; align-items: center; justify-content: space-between; padding: 0 5%; box-sizing: border-box; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 1000; }
         .logo a { font-size: 24px; font-weight: 700; color: #ff4d6d; text-decoration: none; }
-        .logo span { color: #333; }
-        .btn-back { background:#ffe5ec; color:#ff4d6d; border:none; padding:8px 14px; border-radius:20px; font-size:13px; font-weight:600; cursor:pointer; }
+        .book-container { max-width: 800px; margin: 20px auto; padding: 20px; }
         
-        .book-container { max-width: 900px; margin: 10px auto; padding: 20px; }
-        .book-header-card { display: flex; gap: 30px; background: #fff; padding: 30px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        #storyCover { width: 200px; height: 280px; object-fit: cover; border-radius: 8px; background: #eee; }
-        
-        .chapter-list-section { background: #fff; padding: 25px; border-radius: 15px; margin-top: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .list-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .btn-latest { background: #ff4d6d; color: white; border: none; padding: 8px 15px; border-radius: 20px; cursor: pointer; font-weight: 600; }
-        .chapter-item { display: block; padding: 15px; border-bottom: 1px solid #f0f0f0; text-decoration: none; color: #333; transition: 0.3s; }
-        .chapter-item:hover { background: #fff5f7; color: #ff4d6d; }
+        /* Khung Profile Truyện */
+        .profile-card { background: #fff; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); text-align: center; }
+        #storyCover { width: 150px; height: 150px; object-fit: cover; border-radius: 20px; border: 4px solid #ffe5ec; margin-bottom: 15px; }
+        .story-title { font-size: 24px; font-weight: 700; color: #333; margin: 10px 0; }
+        .meta-info { color: #666; margin-bottom: 20px; }
+        .tag-container { display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; margin: 15px 0; }
+        .tag { background: #ffe5ec; color: #ff4d6d; padding: 5px 15px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+        .desc-box { background: #f9f9f9; padding: 20px; border-radius: 20px; text-align: left; color: #555; line-height: 1.6; margin-top: 20px; }
+
+        /* Danh sách chương */
+        .chapter-section { background: #fff; padding: 30px; border-radius: 25px; margin-top: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .chapter-item { display: block; padding: 15px; border-bottom: 1px solid #f8f8f8; text-decoration: none; color: #333; }
+        .chapter-item:hover { color: #ff4d6d; font-weight: 600; }
+        .pagination { margin-top: 20px; display: flex; justify-content: center; gap: 10px; }
+        .btn-nav { padding: 8px 16px; border-radius: 15px; border: none; background: #ffe5ec; color: #ff4d6d; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <header class="netflix-header">
         <div class="logo"><a href="index.html">Rùa<span>Novel</span></a></div>
-        <button class="btn-back" onclick="window.location.href='index.html'">Về Trang Chủ</button>
     </header>
 
     <div class="book-container">
-        <div class="book-header-card">
-            <img id="storyCover" src="placeholder.jpg" alt="Bìa truyện">
-            <div class="story-info">
-                <h1 id="storyTitle">Đang tải...</h1>
-                <p><strong>✒️ Tác giả:</strong> <span id="storyAuthor"></span></p>
-                <p><strong>🚀 Editor:</strong> <span id="storyEditor"></span></p>
-                <p><strong>📝 Mô tả:</strong> <span id="storyDesc"></span></p>
-            </div>
+        <div class="profile-card">
+            <img id="storyCover" src="" alt="Bìa">
+            <h1 id="storyTitle" class="story-title">Đang tải...</h1>
+            <div class="meta-info">✒️ <span id="storyAuthor"></span> | 🚀 Editor: <span id="storyEditor"></span></div>
+            <div id="tagList" class="tag-container"></div>
+            <div id="storyDesc" class="desc-box"></div>
         </div>
 
-        <div class="chapter-list-section">
-            <div class="list-header">
+        <div class="chapter-section">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
                 <h3>DANH SÁCH CHƯƠNG</h3>
-                <button id="latestChapterBtn" class="btn-latest">Chương mới nhất 📖</button>
+                <button id="btnNew" class="btn-nav">New 📖</button>
             </div>
-            <div id="chapterList">Đang tải dữ liệu...</div>
+            <div id="chapterList">Đang tải...</div>
+            <div id="pagination" class="pagination"></div>
         </div>
     </div>
 
@@ -54,55 +57,54 @@
         import { db } from "./firebase.js";
         import { ref, get } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
 
+        const storyId = new URLSearchParams(window.location.search).get('id');
+        let allChapters = [];
+        let currentPage = 1;
+        const perPage = 20;
+
         async function init() {
-            const storyId = new URLSearchParams(window.location.search).get('id');
-            if (!storyId) return alert("Không tìm thấy truyện!");
+            // Lấy thông tin truyện
+            const sSnap = await get(ref(db, `stories/${storyId}`));
+            if (sSnap.exists()) {
+                const s = sSnap.val();
+                document.getElementById('storyTitle').innerText = s.title;
+                document.getElementById('storyAuthor').innerText = s.author;
+                document.getElementById('storyEditor').innerText = s.editor;
+                document.getElementById('storyCover').src = s.cover;
+                document.getElementById('storyDesc').innerText = s.description;
+                
+                const tags = document.getElementById('tagList');
+                s.genres?.forEach(g => tags.innerHTML += `<span class="tag">${g}</span>`);
+            }
 
-            try {
-                // 1. Lấy thông tin truyện (Đồng bộ với studio.js)
-                const sSnap = await get(ref(db, `stories/${storyId}`));
-                if (sSnap.exists()) {
-                    const s = sSnap.val();
-                    document.getElementById('storyTitle').innerText = s.title || "Không tên";
-                    document.getElementById('storyAuthor').innerText = s.author || "Đang cập nhật";
-                    document.getElementById('storyEditor').innerText = s.editor || "Chưa có";
-                    document.getElementById('storyDesc').innerText = s.description || "Chưa có mô tả";
-                    
-                    // Xử lý ảnh (Khớp với các trường trong studio.js)
-                    const coverEl = document.getElementById('storyCover');
-                    coverEl.src = s.cover || "placeholder.jpg";
-                    coverEl.onerror = () => coverEl.src = "https://via.placeholder.com/200x280?text=Khong+co+anh";
-                }
-
-                // 2. Lấy danh sách chương
-                const cSnap = await get(ref(db, `chapters/${storyId}`));
-                const listDiv = document.getElementById('chapterList');
-                listDiv.innerHTML = ""; 
-
-                if (cSnap.exists()) {
-                    const chapters = cSnap.val();
-                    const entries = Object.entries(chapters).reverse();
-                    
-                    entries.forEach(([key, chapter]) => {
-                        const a = document.createElement('a');
-                        a.className = "chapter-item";
-                        a.href = `read.html?truyen=${storyId}&id=${key}`;
-                        a.innerText = chapter.title || "Chương không tên";
-                        listDiv.appendChild(a);
-                    });
-
-                    // 3. Nút chương mới nhất
-                    document.getElementById('latestChapterBtn').onclick = () => {
-                        window.location.href = `read.html?truyen=${storyId}&id=${entries[0][0]}`;
-                    };
-                } else {
-                    listDiv.innerHTML = "<p style='padding:15px; color:#888;'>Chưa có chương nào được đăng.</p>";
-                }
-            } catch (error) {
-                console.error("Lỗi:", error);
+            // Lấy chương
+            const cSnap = await get(ref(db, `chapters/${storyId}`));
+            if (cSnap.exists()) {
+                allChapters = Object.entries(cSnap.val()).reverse();
+                renderChapters();
             }
         }
 
+        function renderChapters() {
+            const list = document.getElementById('chapterList');
+            const start = (currentPage - 1) * perPage;
+            const paginated = allChapters.slice(start, start + perPage);
+            
+            list.innerHTML = paginated.map(([id, data]) => 
+                `<a href="read.html?truyen=${storyId}&id=${id}" class="chapter-item">${data.title}</a>`
+            ).join('');
+
+            // Nút New
+            document.getElementById('btnNew').onclick = () => window.location.href = `read.html?truyen=${storyId}&id=${allChapters[0][0]}`;
+
+            // Phân trang
+            const totalPages = Math.ceil(allChapters.length / perPage);
+            document.getElementById('pagination').innerHTML = Array.from({length: totalPages}, (_, i) => 
+                `<button class="btn-nav" onclick="changePage(${i+1})">${i+1}</button>`
+            ).join('');
+        }
+
+        window.changePage = (p) => { currentPage = p; renderChapters(); };
         init();
     </script>
 </body>
