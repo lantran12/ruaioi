@@ -474,4 +474,29 @@ body {
     font-size: 12px;
     flex-shrink: 0; /* Không cho ngày bị co lại */
 }
-.marquee-content:hover { animation-play-state: paused; }
+/* Khung bao ngoài - cố định chiều rộng và ẩn phần tràn */
+.marquee-wrapper {
+    width: 100%;
+    overflow: hidden;
+    position: relative;
+    padding: 10px 0;
+}
+
+/* Khung chứa các thẻ truyện - chạy animation */
+.marquee-inner {
+    display: flex;
+    gap: 20px;
+    animation: scroll-left 25s linear infinite;
+    width: max-content; /* Đảm bảo chiều rộng đủ cho cả 2 danh sách */
+}
+
+/* Định nghĩa chuyển động */
+@keyframes scroll-left {
+    from { transform: translateX(0); }
+    to { transform: translateX(-50%); } /* Chạy hết 1 nửa (danh sách gốc) là lặp lại */
+}
+
+/* Dừng lại khi di chuột vào */
+.marquee-inner:hover {
+    animation-play-state: paused;
+}
