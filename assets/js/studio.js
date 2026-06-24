@@ -65,7 +65,7 @@ async function handleCreateStory() {
     }
 
     // Tải lại danh sách để cập nhật giao diện
-    loadAdminStoryList();
+    ();
 
     // Xóa trắng các ô nhập sau khi hoàn tất
     document.getElementById('idInput').value = "";
@@ -95,21 +95,21 @@ function loadAdminStoryList() {
                 <h4 style="margin: 0; font-size: 16px;">${story.title}</h4>
                 <small style="color: #777;">ID: ${id}</small>
             </div>
-            <div style="display: flex; gap: 5px;">
-                <button onclick="editStory('${id}')" 
-                        style="background: #fff3bf; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
-                    Sửa
-                </button>
-                <button onclick="deleteStory('${id}')" 
-                        style="background: #ffdede; color: #d90429; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
-                    Xóa
-                </button>
 
-                <button onclick="openPostModal('${id}', '${story.title}')" 
-                 style="background: #e0f2f1; color: #00796b; border: none; padding: 6px 12px; border-radius: 20px; font-size: 12px; cursor: pointer;">
-             Đăng chương
-         </button>
-            </div>
+            <div style="display: flex; flex-direction: column; gap: 5px; min-width: 90px;">
+    <button onclick="editStory('${id}')" 
+            style="background: #fff3bf; border: none; padding: 5px; border-radius: 6px; font-size: 11px; cursor: pointer; width: 100%;">
+        Sửa
+    </button>
+    <button onclick="deleteStory('${id}')" 
+            style="background: #ffdede; color: #d90429; border: none; padding: 5px; border-radius: 6px; font-size: 11px; cursor: pointer; width: 100%;">
+        Xóa
+    </button>
+    <button onclick="openPostModal('${id}', '${story.title}')" 
+            style="background: #e0f2f1; color: #00796b; border: none; padding: 5px; border-radius: 6px; font-size: 11px; cursor: pointer; width: 100%;">
+        Đăng chương
+    </button>
+</div>
         `;
         listContainer.appendChild(item);
     }); 
