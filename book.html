@@ -12,10 +12,11 @@
         .book-container { max-width: 800px; margin: 0 auto 40px auto; padding: 0 20px; }
         .profile-card { background: #fff; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); margin-bottom: 30px; display: flex; flex-direction: column; }
         #storyCover { width: 180px; height: 240px; object-fit: cover; border-radius: 20px; margin-bottom: 15px; }
-        .desc-box { background: #f9f9f9; padding: 20px; border-radius: 15px; line-height: 1.8; color: #555; text-align: justify; overflow: hidden; position: relative; }
-        .btn-toggle { color: #ff4d6d; cursor: pointer; font-weight: bold; display: block; margin-top: 10px; }
+        /* Tóm tắt mặc định rút gọn */
+        .desc-box { background: #f9f9f9; padding: 20px; border-radius: 15px; line-height: 1.8; color: #555; text-align: justify; overflow: hidden; height: 150px; transition: height 0.3s ease; }
+        .btn-toggle { color: #ff4d6d; cursor: pointer; font-weight: bold; display: none; margin-top: 10px; }
         .chapter-section { background: #fff; padding: 30px; border-radius: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .btn-nav { padding: 5px 15px; border-radius: 10px; border: none; background: #ffe5ec; color: #ff4d6d; cursor: pointer; }
+        .btn-nav { padding: 5px 15px; border-radius: 10px; border: none; background: #ffe5ec; color: #ff4d6d; cursor: pointer; font-weight: 600; }
     </style>
 </head>
 <body>
@@ -31,7 +32,7 @@
         <h1 id="storyTitle">Đang tải...</h1>
         <p>✒️ <span id="storyAuthor"></span> | 🚀 Editor: <span id="storyEditor"></span></p>
         <div id="storyDesc" class="desc-box">Đang tải mô tả...</div>
-        <span id="toggleDesc" class="btn-toggle" onclick="toggleDesc()" style="display:none;">Xem thêm</span>
+        <span id="toggleDesc" class="btn-toggle" onclick="toggleDesc()">Xem thêm</span>
     </div>
 
     <div class="chapter-section">
@@ -48,8 +49,6 @@
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
 <script>
-    <script>
-    // Cấu hình Firebase (Chị copy từ file firebase.js vào đây)
     const firebaseConfig = {
         apiKey: "AIzaSyBimiEGQcW9at2pOxfdUaJHjim2fmyjjcc",
         authDomain: "dongchanrua.firebaseapp.com",
@@ -60,17 +59,13 @@
         appId: "1:640115424540:web:c9713b7921c09283150ed9"
     };
 
-    // Khởi tạo v8
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    // Lấy ID truyện
-    const urlParams = new URLSearchParams(window.location.search);
-    const storyId = urlParams.get('id');
+    const storyId = new URLSearchParams(window.location.search).get('id');
     
     let allChapters = [];
     let currentPage = 1;
-    let isAscending = true; // Mặc định từ 1 đến hết
+    let isAscending = true; 
 
     async function init() {
         db.ref('stories/' + storyId).once('value').then(snap => {
@@ -126,7 +121,6 @@
             btn.innerText = 'Rút gọn';
         }
     }
-    
     init();
 </script>
 </body>
