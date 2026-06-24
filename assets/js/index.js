@@ -285,49 +285,58 @@ function listenToNotifications() {
 /* ==========================================================================
    9. HÀM BỔ TRỢ: TẠO CARD TRUYỆN PHONG CÁCH NETFLIX (Kiểm tra trường 'img')
    ========================================================================== */
-function createNetflixCard(id, story) {
+async function createNetflixCard(id, story) {
     const div = document.createElement('div');
     div.className = 'story-card';
     div.onclick = () => window.location.href = `book.html?id=${id}`;
     
     const currentImg = story.img || story.cover || story.image || 'https://via.placeholder.com/180x250';
     
-    // --- XỬ LÝ 2 CHƯƠNG MỚI & ĐỊNH DẠNG ---
-    // Giả sử dữ liệu chương mới nhất chị lưu trong story.latestChapterTitle
-    // Nếu chưa có, chị cần đảm bảo lúc lưu truyện chị có đẩy trường này lên Firebase
-    let chapterInfo = `<div style="margin-top: 5px; font-size: 11px; color: #aaa;">Chưa có chương mới</div>`;
-    
-    if (story.latestChapterTitle) {
-        // 1. Cắt ngắn tiêu đề (giới hạn khoảng 20-25 ký tự để không tràn)
-        let title = story.latestChapterTitle;
-        if (title.length > 22) title = title.substring(0, 20) + "...";
-
-        // 2. Định dạng ngày tháng
-        let dateStr = "";
-        if (story.updatedAt) {
-            const d = new Date(story.updatedAt);
-            const day = String(d.getDate()).padStart(2, '0');
-            const month = String(d.getMonth() + 1).padStart(2, '0');
-            const year = d.getFullYear().toString().slice(-2); // Lấy 2 số cuối của năm (ví dụ: 26)
-            dateStr = `${day}/${month}/${year}`;
-        }
-
-        // 3. HTML flex để đẩy ngày sang phải
-        chapterInfo = `
-           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 11px; font-weight: 600;">
-               <span style="color: #ff4d6d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;">
-                   <i class="fa-solid fa-feather-pointed"></i> ${title}
-               </span>
-               <span style="color: #999; flex-shrink: 0; margin-left: 5px;">${dateStr}</span>
-           </div>`;
-    }
-
+    // --- ĐÂY LÀ KHUNG MỚI, CHỊ BỎ ĐOẠN chapterInfo CŨ ĐI NHÉ ---
     div.innerHTML = `
         <img src="${currentImg}" alt="${story.title}" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;">
         <h4 style="margin: 10px 0 5px 0; font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${story.title}</h4>
         <p style="margin: 0; font-size: 12px; color: #888;">${story.author || 'Động Chăn Rùa'}</p>
-        ${chapterInfo}
+        <div id="chapter-container-${id}" style="margin-top: 6px;">
+            <div style="font-size: 11px; color: #aaa;">Đang tải chương...</div>
+        </div>
     `;
+
+    // Sau khi tạo xong khung, mình mới đi "bốc" dữ liệu chương bỏ vào cái div đó
+    const chaptersRef = ref(db, `chapters/${id}`);
+    get(chaptersRef).then((snapshot) => {
+        const container = div.querySelector(`#chapter-container-${id}`);
+        if (!snapshot.exists()) {
+            container.innerHTML = `<div style="font-size: 11px; color: #aaa;">Chưa có chương mới</div>`;
+            return;
+        }
+
+        let chapters = [];
+        snapshot.forEach(child => {
+            chapters.push({ id: child.key, ...child.val() });
+        });
+
+        // Sắp xếp lấy 2 chương mới nhất
+        chapters.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+        const latestTwo = chapters.slice(0, 2);
+
+        container.innerHTML = latestTwo.map(ch => {
+            let title = ch.title;
+            if (title.length > 20) title = title.substring(0, 18) + "...";
+            
+            const d = new Date(ch.updatedAt || ch.createdAt);
+            const dateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear().toString().slice(-2)}`;
+            
+            return `
+               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; font-size: 11px; font-weight: 600;">
+                   <span style="color: #ff4d6d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;">
+                       <i class="fa-solid fa-feather-pointed"></i> ${title}
+                   </span>
+                   <span style="color: #999; flex-shrink: 0; margin-left: 5px;">${dateStr}</span>
+               </div>`;
+        }).join('');
+    });
+
     return div;
 }
 
