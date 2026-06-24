@@ -321,7 +321,8 @@ function createNetflixCard(id, story) {
             const dateStr = `${String(d.getDate()).padStart(2, '0')}/${String(d.getMonth() + 1).padStart(2, '0')}/${d.getFullYear().toString().slice(-2)}`;
             
             return `
-               <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; font-size: 11px; font-weight: 600;">
+               <div onclick="window.location.href='read.html?id=${id}&chapterId=${ch.id}'" 
+                    style="cursor: pointer; display: flex; justify-content: space-between; align-items: center; margin-bottom: 3px; font-size: 11px; font-weight: 600; padding: 2px 0;">
                    <span style="color: #ff4d6d; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 70%;">
                        <i class="fa-solid fa-feather-pointed"></i> ${title}
                    </span>
